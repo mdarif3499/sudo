@@ -17,4 +17,14 @@ class AppIcons {
   static const String profileI = '$baseurl/profile_i.png';
   static const String discoverA = '$baseurl/discover_a.png';
   static const String discoverI = '$baseurl/discover_i.png';
+
+  static const String kyc = '$baseurl/kyc.png';
+  static const String edit = '$baseurl/edit.png';
+  static const String help = '$baseurl/help.png';
+  static const String payment = '$baseurl/payment.png';
+  static const String profile = '$baseurl/profile.png';
+  static const String passport = '$baseurl/passport.png';
+  static const String notification = '$baseurl/notification.png';
+  static const String subscriptions = '$baseurl/subscriptions.png';
+  static const String notificationP = '$baseurl/notification_p.png';
 }

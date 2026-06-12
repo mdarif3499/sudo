@@ -4,7 +4,7 @@ import '../../utils/constants/app_colors.dart';
 import '../../component/text/common_text.dart';
 
 class ProfileMenuItem extends StatelessWidget {
-  final IconData icon;
+  final String iconPath;
   final String title;
   final String? trailingText;
   final Color? trailingTextColor;
@@ -15,7 +15,7 @@ class ProfileMenuItem extends StatelessWidget {
 
   const ProfileMenuItem({
     super.key,
-    required this.icon,
+    required this.iconPath,
     required this.title,
     this.trailingText,
     this.trailingTextColor,
@@ -30,13 +30,11 @@ class ProfileMenuItem extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       contentPadding: EdgeInsets.zero,
-      leading: Container(
-        padding: EdgeInsets.all(8.w),
-        decoration: BoxDecoration(
-          color: iconBgColor,
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-        child: Icon(icon, color: iconColor, size: 20.sp),
+      leading: Image.asset(
+        iconPath,
+        color: iconColor,
+        height: 40.sp,
+        width: 40.sp,
       ),
       title: CommonText(
         text: title,
@@ -52,7 +50,9 @@ class ProfileMenuItem extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
               margin: EdgeInsets.only(right: 8.w),
               decoration: BoxDecoration(
-                color: trailingTextColor?.withOpacity(0.1) ?? Colors.grey.withOpacity(0.1),
+                color:
+                    trailingTextColor?.withValues(alpha: 0.1) ??
+                    Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10.r),
               ),
               child: CommonText(
@@ -61,7 +61,8 @@ class ProfileMenuItem extends StatelessWidget {
                 color: trailingTextColor ?? AppColors.textSecondaryColor,
               ),
             ),
-          trailing ?? Icon(Icons.arrow_forward_ios, size: 14.sp, color: Colors.grey),
+          trailing ??
+              Icon(Icons.arrow_forward_ios, size: 14.sp, color: Colors.grey),
         ],
       ),
     );
