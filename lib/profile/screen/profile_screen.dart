@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_icons.dart';
+import '../../config/route/app_routes.dart';
 import '../controller/profile_controller.dart';
 import '../widget/profile_menu_item.dart';
 
@@ -45,14 +46,17 @@ class ProfileScreen extends StatelessWidget {
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
                     ),
-                    Image.asset(AppIcons.notification,
-                        height: 42.h, width: 42.w),
+                    Image.asset(
+                      AppIcons.notification,
+                      height: 42.h,
+                      width: 42.w,
+                    ),
                   ],
                 ),
                 SizedBox(height: 20.h),
                 Center(
                   child: CommonText(
-                    text: "Search your saving groups",
+                    text: "Your Account Settings",
                     fontSize: 14,
                     color: AppColors.textSecondaryColor7C7C7C,
                   ),
@@ -65,8 +69,9 @@ class ProfileScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20.r),
-                    border:
-                        Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+                    border: Border.all(
+                      color: Colors.grey.withValues(alpha: 0.1),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.02),
@@ -106,26 +111,35 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.textSecondaryColor,
                       ),
                       SizedBox(height: 16.h),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 20.w, vertical: 8.h),
-                        decoration: BoxDecoration(
-                          gradient: AppColors.primaryGradient,
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Image.asset(AppIcons.edit,
-                                color: Colors.white, height: 18.h, width: 18.w),
-                            SizedBox(width: 8.w),
-                            CommonText(
-                              text: "Edit Profile",
-                              fontSize: 14,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ],
+                      GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.editProfile),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20.w,
+                            vertical: 8.h,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset(
+                                AppIcons.edit,
+                                color: Colors.white,
+                                height: 18.h,
+                                width: 18.w,
+                              ),
+                              SizedBox(width: 8.w),
+                              CommonText(
+                                text: "Edit Profile",
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -135,36 +149,35 @@ class ProfileScreen extends StatelessWidget {
                 // Stats Row
                 Row(
                   children: [
-                    Expanded(
-                      child: _buildStatCard("4", "Active Groups"),
-                    ),
+                    Expanded(child: _buildStatCard("4", "Active Groups")),
                     SizedBox(width: 16.w),
-                    Expanded(
-                      child: _buildStatCard("\$12.5k", "Total Saved"),
-                    ),
+                    Expanded(child: _buildStatCard("\$12.5k", "Total Saved")),
                   ],
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: 12.h),
                 _buildSectionTitle("Account"),
-                SizedBox(height: 8.h),
+                SizedBox(height: 12.h),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16.r),
-                    border:
-                        Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+                    border: Border.all(
+                      color: Colors.grey.withValues(alpha: 0.1),
+                    ),
                   ),
                   child: Column(
                     children: [
+                      SizedBox(height: 16.h),
                       _buildProfileMenu(
                         icon: AppIcons.profile,
                         iconColor: Colors.blue,
                         iconBgColor: Colors.blue.withValues(alpha: 0.1),
                         title: "Edit Profile",
-                        onTap: () {},
+                        onTap: () => Get.toNamed(AppRoutes.editProfile),
                       ),
-                      const Divider(height: 1),
+                      SizedBox(height: 5.h),
+                      const Divider(height: 1, color: Color(0xFFE0E4ED)),
                       _buildProfileMenu(
                         icon: AppIcons.kyc,
                         iconColor: Colors.green,
@@ -172,9 +185,10 @@ class ProfileScreen extends StatelessWidget {
                         title: "KYC Verification",
                         trailingText: "Required",
                         trailingTextColor: Colors.orange,
-                        onTap: () {},
+                        onTap: () => Get.toNamed(AppRoutes.kyc),
                       ),
-                      const Divider(height: 1),
+                      SizedBox(height: 5.h),
+                      const Divider(height: 1, color: Color(0xFFE0E4ED)),
                       _buildProfileMenu(
                         icon: AppIcons.subscriptions,
                         iconColor: Colors.orange,
@@ -182,16 +196,19 @@ class ProfileScreen extends StatelessWidget {
                         title: "Subscriptions",
                         trailingText: "Free",
                         trailingTextColor: Colors.orange,
-                        onTap: () {},
+                        onTap: () {
+                          Get.toNamed(AppRoutes.subscriptionScreen);
+                        },
                       ),
-                      const Divider(height: 1),
+                      const Divider(height: 1, color: Color(0xFFE0E4ED)),
                       _buildProfileMenu(
                         icon: AppIcons.payment,
                         iconColor: Colors.purple,
                         iconBgColor: Colors.purple.withValues(alpha: 0.1),
                         title: "Payment Methods",
-                        onTap: () {},
+                        onTap: () => Get.toNamed(AppRoutes.paymentMethod),
                       ),
+                      SizedBox(height: 8.h),
                     ],
                   ),
                 ),
@@ -203,31 +220,57 @@ class ProfileScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16.r),
-                    border:
-                        Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+                    border: Border.all(
+                      color: Colors.grey.withValues(alpha: 0.1),
+                    ),
                   ),
                   child: Column(
                     children: [
+                      SizedBox(height: 8.h),
                       _buildProfileMenu(
                         icon: AppIcons.notificationP,
                         iconColor: Colors.orangeAccent,
                         iconBgColor: Colors.orangeAccent.withValues(alpha: 0.1),
                         title: "Notifications",
-                        trailing: Switch(
-                          value: true,
-                          onChanged: (val) {},
-                          activeColor: AppColors.buttonGradientEnd,
+                        trailing: Obx(
+                          () => Transform.scale(
+                            scale: 0.8,
+                            child: Switch(
+                              value: controller.isNotificationOn.value,
+                              onChanged: (val) {
+                                controller.toggleNotification(val);
+                              },
+                              activeTrackColor: const Color(0xFF4A7FE0),
+
+                              inactiveTrackColor: Colors.grey.shade300,
+
+                              thumbColor:
+                                  WidgetStateProperty.resolveWith<Color>((
+                                    states,
+                                  ) {
+                                    if (states.contains(WidgetState.selected)) {
+                                      return Colors.white;
+                                    }
+                                    return Colors.white;
+                                  }),
+
+                              trackOutlineColor: WidgetStateProperty.all(
+                                Colors.transparent,
+                              ),
+                            ),
+                          ),
                         ),
                         onTap: () {},
                       ),
-                      const Divider(height: 1),
+                      const Divider(height: 1, color: Color(0xFFE0E4ED)),
                       _buildProfileMenu(
                         icon: AppIcons.passport,
                         iconColor: Colors.brown.withValues(alpha: 0.5),
                         iconBgColor: Colors.brown.withValues(alpha: 0.1),
                         title: "Change Password",
-                        onTap: () {},
+                        onTap: () => Get.toNamed(AppRoutes.changePassword),
                       ),
+                      SizedBox(height: 8.h),
                     ],
                   ),
                 ),
@@ -239,15 +282,19 @@ class ProfileScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16.r),
-                    border:
-                        Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+                    border: Border.all(
+                      color: Colors.grey.withValues(alpha: 0.1),
+                    ),
                   ),
-                  child: _buildProfileMenu(
-                    icon: AppIcons.help,
-                    iconColor: Colors.blueGrey,
-                    iconBgColor: Colors.blueGrey.withValues(alpha: 0.1),
-                    title: "Help & Support",
-                    onTap: () {},
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                    child: _buildProfileMenu(
+                      icon: AppIcons.help,
+                      iconColor: Colors.blueGrey,
+                      iconBgColor: Colors.blueGrey.withValues(alpha: 0.1),
+                      title: "Help & Support",
+                      onTap: () => Get.toNamed(AppRoutes.helpSupport),
+                    ),
                   ),
                 ),
                 SizedBox(height: 32.h),
@@ -255,7 +302,7 @@ class ProfileScreen extends StatelessWidget {
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 12.h),
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.05),
+                    color: const Color(0xFFEF4444).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(30.r),
                   ),
                   child: Row(
@@ -313,11 +360,7 @@ class ProfileScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          CommonText(
-            text: value,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+          CommonText(text: value, fontSize: 20, fontWeight: FontWeight.w600),
           SizedBox(height: 4.h),
           CommonText(
             text: label,
@@ -333,7 +376,8 @@ class ProfileScreen extends StatelessWidget {
     return CommonText(
       text: title,
       fontSize: 18,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w400,
+      color: AppColors.textPrimary,
     );
   }
 }
