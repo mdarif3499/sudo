@@ -17,10 +17,10 @@ class CommonTextField extends StatelessWidget {
     this.controller,
     this.textInputAction = TextInputAction.next,
     this.keyboardType = TextInputType.text,
-    this.mexLength,
+    this.maxLength,
     this.validator,
     this.prefixText,
-    this.paddingHorizontal = 16,
+    this.paddingHorizontal = 12,
     this.paddingVertical = 12,
     this.borderRadius = 32,
     this.inputFormatters,
@@ -61,7 +61,7 @@ class CommonTextField extends StatelessWidget {
   final double paddingVertical;
   final int? maxLines;
   final double borderRadius;
-  final int? mexLength;
+  final int? maxLength;
   final bool isPassword;
   final bool? isDense;
   RxBool obscureText = false.obs;
@@ -97,7 +97,7 @@ class CommonTextField extends StatelessWidget {
             controller: controller,
             obscureText: isPassword ? !obscureText.value : obscureText.value,
             textInputAction: textInputAction,
-            maxLength: mexLength,
+            maxLength: maxLength,
             onChanged: onChanged,
             inputFormatters: inputFormatters,
             style: GoogleFonts.roboto(fontSize: 14, color: textColor),
@@ -110,16 +110,18 @@ class CommonTextField extends StatelessWidget {
               isDense: isDense ?? true,
               filled: true,
               prefixIconConstraints: BoxConstraints(
-                minWidth: 48.w,
+                minWidth: 40.w,
                 maxHeight: 48.h,
               ),
               prefixIcon: prefixIcon != null
                   ? Padding(
-                      padding: EdgeInsets.only(left: 16.w, right: 8.w),
+                      padding: EdgeInsets.only(left: 12.w, right: 4.w),
                       child: prefixIcon,
                     )
                   : null,
-              fillColor: fillColor ?? AppColors.indicatorActive.withValues(alpha: 0.08),
+              fillColor:
+                  fillColor ??
+                  AppColors.indicatorActive.withValues(alpha: 0.08),
               counterText: '',
               contentPadding: EdgeInsets.symmetric(
                 horizontal: paddingHorizontal.w,
@@ -132,13 +134,20 @@ class CommonTextField extends StatelessWidget {
               errorBorder: _buildBorder(isError: true),
               hintText: hintText,
               labelText: labelText,
-              hintStyle: GoogleFonts.roboto(fontSize: 14, color: hintTextColor?.withValues(alpha: 0.6)),
+              hintStyle: GoogleFonts.roboto(
+                fontSize: 14,
+                color: hintTextColor?.withValues(alpha: 0.6),
+              ),
               labelStyle: GoogleFonts.roboto(
                 fontSize: 14,
                 color: labelTextColor,
               ),
-              prefix: prefixText != null ? CommonText(
-                  text: prefixText ?? '', fontWeight: FontWeight.w400) : null,
+              prefix: prefixText != null
+                  ? CommonText(
+                      text: prefixText ?? '',
+                      fontWeight: FontWeight.w400,
+                    )
+                  : null,
               suffixIcon: isPassword ? _buildPasswordSuffixIcon() : suffixIcon,
             ),
           ),
@@ -151,9 +160,10 @@ class CommonTextField extends StatelessWidget {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(borderRadius.r),
       borderSide: BorderSide(
-        color: isError 
-            ? AppColors.red 
-            : (borderColor ?? AppColors.indicatorActive.withValues(alpha: 0.16)),
+        color: isError
+            ? AppColors.red
+            : (borderColor ??
+                  AppColors.indicatorActive.withValues(alpha: 0.16)),
         width: 1,
       ),
     );
