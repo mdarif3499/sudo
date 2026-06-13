@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import '../../profile/screen/subscription_screen.dart';
+import '../../profile/screen/terms_condition.dart';
 import '../../splash/mmu_bylaws_screen.dart';
 import '../../splash/splash_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
@@ -10,6 +12,12 @@ import '../../auth/forgot_password_screen.dart';
 import '../../auth/reset_password_screen.dart';
 import '../../auth/success_screen.dart';
 import '../../component/bottom_nav_bar/main_screen.dart';
+import '../../profile/screen/edit_profile_screen.dart';
+import '../../profile/screen/payment_method_screen.dart';
+import '../../profile/screen/change_password_screen.dart';
+import '../../profile/screen/faq_screen.dart';
+import '../../profile/screen/help_support_screen.dart';
+import '../../profile/screen/privacy_policy_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -24,6 +32,14 @@ class AppRoutes {
   static const String resetPassword = '/resetPassword';
   static const String success = '/success';
   static const String main = '/main';
+  static const String editProfile = '/editProfile';
+  static const String paymentMethod = '/paymentMethod';
+  static const String changePassword = '/changePassword';
+  static const String faq = '/faq';
+  static const String helpSupport = '/helpSupport';
+  static const String privacyPolicy = '/privacyPolicy';
+  static const String termsCondition = '/termsCondition';
+  static const String subscriptionScreen = '/subscriptionScreen';
 
   static const String mmuBylawsScreen = '/mmuBylawsScreen';
 
@@ -38,6 +54,14 @@ class AppRoutes {
     GetPage(name: resetPassword, page: () => const ResetPasswordScreen()),
     GetPage(name: success, page: () => const SuccessScreen()),
     GetPage(name: main, page: () => NavbarScreen()),
+    GetPage(name: editProfile, page: () => const EditProfileScreen()),
+    GetPage(name: paymentMethod, page: () => const PaymentMethodScreen()),
+    GetPage(name: changePassword, page: () => const ChangePasswordScreen()),
+    GetPage(name: faq, page: () => const FaqScreen()),
+    GetPage(name: helpSupport, page: () => const HelpSupportScreen()),
+    GetPage(name: privacyPolicy, page: () => const PrivacyPolicyScreen()),
+    GetPage(name: termsCondition, page: () => const TermsCondition()),
+    GetPage(name: subscriptionScreen, page: () => const SubscriptionScreen()),
 
     GetPage(name: mmuBylawsScreen, page: () => const MmuBylawsScreen()),
   ];
