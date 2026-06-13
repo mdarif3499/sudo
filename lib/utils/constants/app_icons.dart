@@ -27,4 +27,9 @@ class AppIcons {
   static const String notification = '$baseurl/notification.png';
   static const String subscriptions = '$baseurl/subscriptions.png';
   static const String notificationP = '$baseurl/notification_p.png';
+  
+  // New icons for Help & Support
+  static const String faqs = '$baseurl/faqs.png';
+  static const String privacy = '$baseurl/privacy.png';
+  static const String terms = '$baseurl/terms.png';
 }
