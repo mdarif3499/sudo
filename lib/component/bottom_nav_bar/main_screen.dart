@@ -6,6 +6,7 @@ import '../../utils/constants/app_icons.dart';
 import '../../utils/constants/app_colors.dart';
 import '../text/common_text.dart';
 import '../../profile/screen/profile_screen.dart';
+import '../../home/screen/dashboard_screen.dart';
 
 class NavbarScreen extends StatelessWidget {
   NavbarScreen({super.key});
@@ -13,7 +14,7 @@ class NavbarScreen extends StatelessWidget {
   final BottomNavController controller = Get.put(BottomNavController());
 
   final List<Widget> screens = [
-    const Center(child: CommonText(text: "Dashboard Screen")),
+    const DashboardScreen(),
     const Center(child: CommonText(text: "Groups Screen")),
     const Center(child: CommonText(text: "Discover Screen")),
     ProfileScreen(),

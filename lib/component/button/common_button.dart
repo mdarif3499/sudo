@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../utils/constants/app_colors.dart';
-import '../../utils/constants/app_icons.dart';
-import '../text/common_text.dart';
+
 
 class CommonButton extends StatelessWidget {
   final VoidCallback? onTap;
@@ -19,9 +17,12 @@ class CommonButton extends StatelessWidget {
   final double? buttonWidth;
   final bool isLoading;
   final EdgeInsetsGeometry? padding;
+
   final bool showIcon;
   final String? iconPath;
   final Color? iconColor;
+
+  final Widget? prefixIcon;
 
   const CommonButton({
     super.key,
@@ -42,6 +43,7 @@ class CommonButton extends StatelessWidget {
     this.showIcon = false,
     this.iconPath,
     this.iconColor,
+    this.prefixIcon,
   });
 
   @override
@@ -50,20 +52,11 @@ class CommonButton extends StatelessWidget {
       width: buttonWidth?.w,
       height: buttonHeight.h,
       decoration: BoxDecoration(
-        color: gradient == null ? (buttonColor ?? AppColors.primaryColor) : null,
+        color: gradient == null ? (buttonColor ?? Colors.blue) : null,
         gradient: gradient,
         borderRadius: BorderRadius.circular(buttonRadius.r),
         border: borderColor != null
             ? Border.all(color: borderColor!, width: borderWidth)
-            : null,
-        boxShadow: gradient != null
-            ? [
-                BoxShadow(
-                  color: (gradient as LinearGradient).colors.last.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ]
             : null,
       ),
       child: Material(
@@ -72,38 +65,39 @@ class CommonButton extends StatelessWidget {
           onTap: (isLoading || onTap == null) ? null : onTap,
           borderRadius: BorderRadius.circular(buttonRadius.r),
           child: Padding(
-            padding: padding ?? EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+            padding: padding ?? EdgeInsets.symmetric(horizontal: 10.w, vertical: 12.h),
             child: Center(
               child: isLoading
                   ? SizedBox(
-                      height: 20.h,
-                      width: 20.h,
-                      child: const CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
+                height: 20.h,
+                width: 20.h,
+                child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+              )
                   : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CommonText(
-                          text: titleText,
-                          color: titleColor,
-                          fontSize: titleSize,
-                          fontWeight: titleWeight,
-                        ),
-                        if (showIcon) ...[
-                          SizedBox(width: 8.w),
-                          Image.asset(
-                            iconPath ?? AppIcons.arrowR,
-                            height: 14.h,
-                            width: 14.w,
-                            color: iconColor ?? AppColors.white,
-                          ),
-                        ],
-                      ],
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (prefixIcon != null) ...[
+                    prefixIcon!,
+                    SizedBox(width: 8.w),
+                  ],
+
+                  Text(
+                    titleText,
+                    style: TextStyle(color: titleColor, fontSize: titleSize.sp, fontWeight: titleWeight),
+                  ),
+
+                  if (showIcon) ...[
+                    SizedBox(width: 8.w),
+                    Image.asset(
+                      iconPath ?? 'assets/icons/arrow_right.png',
+                      height: 14.h,
+                      width: 14.w,
+                      color: iconColor ?? Colors.white,
                     ),
+                  ],
+                ],
+              ),
             ),
           ),
         ),

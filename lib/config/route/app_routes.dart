@@ -18,6 +18,8 @@ import '../../profile/screen/change_password_screen.dart';
 import '../../profile/screen/faq_screen.dart';
 import '../../profile/screen/help_support_screen.dart';
 import '../../profile/screen/privacy_policy_screen.dart';
+import '../../home/screen/notification_screen.dart';
+import '../../home/screen/create_group_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -40,6 +42,8 @@ class AppRoutes {
   static const String privacyPolicy = '/privacyPolicy';
   static const String termsCondition = '/termsCondition';
   static const String subscriptionScreen = '/subscriptionScreen';
+  static const String notification = '/notification';
+  static const String createGroup = '/createGroup';
 
   static const String mmuBylawsScreen = '/mmuBylawsScreen';
 
@@ -49,7 +53,7 @@ class AppRoutes {
     GetPage(name: auth, page: () => const AuthScreen()),
     GetPage(name: login, page: () => const LoginScreen()),
     GetPage(name: register, page: () => const RegisterScreen()),
-    GetPage(name: kyc, page: () => const KycScreen()),
+    GetPage(name: kyc, page: () =>  KycScreen()),
     GetPage(name: forgotPassword, page: () => const ForgotPasswordScreen()),
     GetPage(name: resetPassword, page: () => const ResetPasswordScreen()),
     GetPage(name: success, page: () => const SuccessScreen()),
@@ -62,6 +66,8 @@ class AppRoutes {
     GetPage(name: privacyPolicy, page: () => const PrivacyPolicyScreen()),
     GetPage(name: termsCondition, page: () => const TermsCondition()),
     GetPage(name: subscriptionScreen, page: () => const SubscriptionScreen()),
+    GetPage(name: notification, page: () => const NotificationScreen()),
+    GetPage(name: createGroup, page: () => const CreateGroupScreen()),
 
     GetPage(name: mmuBylawsScreen, page: () => const MmuBylawsScreen()),
   ];
