@@ -20,12 +20,18 @@ import '../../profile/screen/help_support_screen.dart';
 import '../../profile/screen/privacy_policy_screen.dart';
 import '../../home/screen/notification_screen.dart';
 import '../../home/screen/create_group_screen.dart';
+import '../../groups/view/group_details_screen.dart';
+import '../../groups/view/invite_members_screen.dart';
+import '../../groups/view/chat_screen.dart';
+import '../../groups/view/make_payment_screen.dart';
+import '../../groups/view/review_payment_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
 
   static const String splash = '/';
   static const String onboarding = '/onboarding';
+  static const String onboardingResturent = '/onboardingResturent';
   static const String auth = '/auth';
   static const String login = '/login';
   static const String register = '/register';
@@ -44,6 +50,11 @@ class AppRoutes {
   static const String subscriptionScreen = '/subscriptionScreen';
   static const String notification = '/notification';
   static const String createGroup = '/createGroup';
+  static const String groupDetails = '/groupDetails';
+  static const String inviteMembers = '/inviteMembers';
+  static const String chat = '/chat';
+  static const String makePayment = '/makePayment';
+  static const String reviewPayment = '/reviewPayment';
 
   static const String mmuBylawsScreen = '/mmuBylawsScreen';
 
@@ -53,7 +64,7 @@ class AppRoutes {
     GetPage(name: auth, page: () => const AuthScreen()),
     GetPage(name: login, page: () => const LoginScreen()),
     GetPage(name: register, page: () => const RegisterScreen()),
-    GetPage(name: kyc, page: () =>  KycScreen()),
+    GetPage(name: kyc, page: () => KycScreen()),
     GetPage(name: forgotPassword, page: () => const ForgotPasswordScreen()),
     GetPage(name: resetPassword, page: () => const ResetPasswordScreen()),
     GetPage(name: success, page: () => const SuccessScreen()),
@@ -68,7 +79,11 @@ class AppRoutes {
     GetPage(name: subscriptionScreen, page: () => const SubscriptionScreen()),
     GetPage(name: notification, page: () => const NotificationScreen()),
     GetPage(name: createGroup, page: () => const CreateGroupScreen()),
-
+    GetPage(name: groupDetails, page: () => const GroupDetailsScreen()),
+    GetPage(name: inviteMembers, page: () => InviteMembersScreen()),
+    GetPage(name: chat, page: () => ChatScreen()),
+    GetPage(name: makePayment, page: () => const MakePaymentScreen()),
+    GetPage(name: reviewPayment, page: () => const ReviewPaymentScreen()),
     GetPage(name: mmuBylawsScreen, page: () => const MmuBylawsScreen()),
   ];
 }

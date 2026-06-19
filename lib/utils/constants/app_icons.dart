@@ -32,6 +32,7 @@ class AppIcons {
   static const String month = '$baseurl/month.png';
   static const String total = '$baseurl/total.png';
   static const String next = '$baseurl/next.png';
+  static const String link = '$baseurl/link.png';
 
   // New icons for Help & Support
   static const String faqs = '$baseurl/faqs.png';
