@@ -17,8 +17,7 @@ class AppImages {
   static const String sudo = '$baseurl/sudo.png';
   static const String sudoText = '$baseurl/sudo_text.png';
   static const String background = '$baseurl/background.png';
-
-
+  static const String onboarding_r_1 = '$baseurl/onboarding_r_1.png';
 
   // added by ajijul
 }
