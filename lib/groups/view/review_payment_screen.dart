@@ -140,19 +140,20 @@ class ReviewPaymentScreen extends StatelessWidget {
         children: [
           CommonText(
             text: "You're Paying",
-            fontSize: 14.sp,
+            fontSize: 14,
             color: Colors.white.withValues(alpha: 0.8),
           ),
           SizedBox(height: 8.h),
           CommonText(
             text: amount,
-            fontSize: 44.sp,
-            fontWeight: FontWeight.bold,
+            fontSize: 44,
+            fontWeight: FontWeight.w700,
             color: Colors.white,
           ),
           CommonText(
             text: "USD",
-            fontSize: 16.sp,
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
             color: Colors.white.withValues(alpha: 0.8),
           ),
         ],
