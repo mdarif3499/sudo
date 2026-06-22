@@ -1,16 +1,17 @@
 import 'package:get/get.dart';
+import '../../auth/screen/doc_submitted_screen.dart';
 import '../../profile/screen/subscription_screen.dart';
 import '../../profile/screen/terms_condition.dart';
 import '../../splash/mmu_bylaws_screen.dart';
 import '../../splash/splash_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
-import '../../auth/auth_screen.dart';
-import '../../auth/login_screen.dart';
-import '../../auth/register_screen.dart';
-import '../../auth/kyc_screen.dart';
-import '../../auth/forgot_password_screen.dart';
-import '../../auth/reset_password_screen.dart';
-import '../../auth/success_screen.dart';
+import '../../auth/screen/auth_screen.dart';
+import '../../auth/screen/login_screen.dart';
+import '../../auth/screen/register_screen.dart';
+import '../../auth/screen/kyc_screen.dart';
+import '../../auth/screen/forgot_password_screen.dart';
+import '../../auth/screen/reset_password_screen.dart';
+import '../../auth/screen/success_screen.dart';
 import '../../component/bottom_nav_bar/main_screen.dart';
 import '../../profile/screen/edit_profile_screen.dart';
 import '../../profile/screen/payment_method_screen.dart';
@@ -25,6 +26,7 @@ import '../../groups/view/invite_members_screen.dart';
 import '../../groups/view/chat_screen.dart';
 import '../../groups/view/make_payment_screen.dart';
 import '../../groups/view/review_payment_screen.dart';
+import '../../auth/screen/otp_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -36,6 +38,8 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String kyc = '/kyc';
+  static const String docSubmitted = '/docSubmitted';
+  static const String otp = '/otp';
   static const String forgotPassword = '/forgotPassword';
   static const String resetPassword = '/resetPassword';
   static const String success = '/success';
@@ -65,6 +69,8 @@ class AppRoutes {
     GetPage(name: login, page: () => const LoginScreen()),
     GetPage(name: register, page: () => const RegisterScreen()),
     GetPage(name: kyc, page: () => KycScreen()),
+    GetPage(name: docSubmitted, page: () => const DocSubmittedScreen()),
+    GetPage(name: otp, page: () => const OtpScreen()),
     GetPage(name: forgotPassword, page: () => const ForgotPasswordScreen()),
     GetPage(name: resetPassword, page: () => const ResetPasswordScreen()),
     GetPage(name: success, page: () => const SuccessScreen()),

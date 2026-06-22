@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:sudo/discoverd/screen/discover_screen.dart';
 import 'bottom_nav_controller.dart';
 import '../../utils/constants/app_icons.dart';
 import '../../utils/constants/app_colors.dart';
@@ -16,8 +17,8 @@ class NavbarScreen extends StatelessWidget {
 
   final List<Widget> screens = [
     const DashboardScreen(),
-     GroupsScreen(),
-    const Center(child: CommonText(text: "Discover Screen")),
+    GroupsScreen(),
+    DiscoverScreen(),
     ProfileScreen(),
   ];
 
@@ -46,9 +47,24 @@ class NavbarScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildNavItem(0, "Dashboard", AppIcons.homeA, AppIcons.homeI),
-                  _buildNavItem(1, "Groups", AppIcons.groupsA, AppIcons.groupsI),
-                  _buildNavItem(2, "Discover", AppIcons.discoverA, AppIcons.discoverI),
-                  _buildNavItem(3, "Profile", AppIcons.profileA, AppIcons.profileI),
+                  _buildNavItem(
+                    1,
+                    "Groups",
+                    AppIcons.groupsA,
+                    AppIcons.groupsI,
+                  ),
+                  _buildNavItem(
+                    2,
+                    "Discover",
+                    AppIcons.discoverA,
+                    AppIcons.discoverI,
+                  ),
+                  _buildNavItem(
+                    3,
+                    "Profile",
+                    AppIcons.profileA,
+                    AppIcons.profileI,
+                  ),
                 ],
               ),
             ),
@@ -58,7 +74,12 @@ class NavbarScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(int index, String label, String activeIcon, String inactiveIcon) {
+  Widget _buildNavItem(
+    int index,
+    String label,
+    String activeIcon,
+    String inactiveIcon,
+  ) {
     bool isSelected = controller.selectedIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changeIndex(index),
@@ -76,7 +97,9 @@ class NavbarScreen extends StatelessWidget {
             text: label,
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
-            color: isSelected ? AppColors.buttonGradientEnd : AppColors.textSecondaryColor7C7C7C,
+            color: isSelected
+                ? Color(0xFF48C8FC)
+                : AppColors.textSecondaryColor7C7C7C,
           ),
         ],
       ),

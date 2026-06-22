@@ -2,24 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../utils/constants/app_colors.dart';
-import '../../utils/constants/app_icons.dart';
 import '../../component/text/common_text.dart';
 import '../../component/text_field/common_text_field.dart';
 import '../../component/button/common_button.dart';
+import '../controller/create_group_controller.dart';
+import '../../component/bottom_nav_bar/bottom_nav_controller.dart';
 
-class CreateGroupScreen extends StatefulWidget {
+class CreateGroupScreen extends StatelessWidget {
   const CreateGroupScreen({super.key});
 
   @override
-  State<CreateGroupScreen> createState() => _CreateGroupScreenState();
-}
-
-class _CreateGroupScreenState extends State<CreateGroupScreen> {
-  String selectedFrequency = "Weekly";
-  String selectedVisibility = "Private";
-
-  @override
   Widget build(BuildContext context) {
+    final CreateGroupController controller = Get.put(CreateGroupController());
+    final BottomNavController navBarController = Get.find<BottomNavController>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -96,15 +92,38 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
             // Payment Frequency
             _buildLabel("Payment Frequency"),
-            Row(
+            Obx(() => Row(
               children: [
-                Expanded(child: _buildFrequencyItem("Weekly", Icons.access_time)),
+                Expanded(child: _buildFrequencyItem(controller, "Weekly", Icons.access_time)),
                 SizedBox(width: 12.w),
-                Expanded(child: _buildFrequencyItem("Monthly", Icons.access_time)),
+                Expanded(child: _buildFrequencyItem(controller, "Monthly", Icons.access_time)),
                 SizedBox(width: 12.w),
-                Expanded(child: _buildFrequencyItem("Quarterly", Icons.access_time)),
+                Expanded(child: _buildFrequencyItem(controller, "Quarterly", Icons.access_time)),
               ],
-            ),
+            )),
+            
+            // Show duration radio buttons only for Quarterly
+            Obx(() {
+              if (controller.selectedFrequency.value == "Quarterly") {
+                return Column(
+                  children: [
+                    SizedBox(height: 12.h),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildRadioButton(controller, "2 Months"),
+                          _buildRadioButton(controller, "3 Months"),
+                          _buildRadioButton(controller, "4 Months"),
+                          _buildRadioButton(controller, "5 Months"),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return const SizedBox.shrink();
+            }),
             SizedBox(height: 16.h),
 
             // Start Date
@@ -128,12 +147,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 color: Colors.grey.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(24.r),
               ),
-              child: Row(
+              child: Obx(() => Row(
                 children: [
-                  Expanded(child: _buildVisibilityItem("Private")),
-                  Expanded(child: _buildVisibilityItem("Public")),
+                  Expanded(child: _buildVisibilityItem(controller, "Private")),
+                  Expanded(child: _buildVisibilityItem(controller, "Public")),
                 ],
-              ),
+              )),
             ),
             SizedBox(height: 24.h),
 
@@ -163,7 +182,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               titleText: "Create Group",
               gradient: AppColors.primaryGradient,
               buttonRadius: 24,
-              onTap: () {},
+              onTap: () {
+                navBarController.changeIndex(1); // Index 2 is "Discover" as per NavbarScreen
+                Get.back();
+              },
             ),
             SizedBox(height: 12.h),
             Center(
@@ -196,10 +218,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     );
   }
 
-  Widget _buildFrequencyItem(String label, IconData icon) {
-    bool isSelected = selectedFrequency == label;
+  Widget _buildFrequencyItem(CreateGroupController controller, String label, IconData icon) {
+    bool isSelected = controller.selectedFrequency.value == label;
     return GestureDetector(
-      onTap: () => setState(() => selectedFrequency = label),
+      onTap: () => controller.setFrequency(label),
       child: Container(
         height: 80.h,
         decoration: BoxDecoration(
@@ -224,10 +246,37 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     );
   }
 
-  Widget _buildVisibilityItem(String label) {
-    bool isSelected = selectedVisibility == label;
+  Widget _buildRadioButton(CreateGroupController controller, String value) {
+    bool isSelected = controller.selectedDuration.value == value;
     return GestureDetector(
-      onTap: () => setState(() => selectedVisibility = label),
+      onTap: () => controller.setDuration(value),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Radio<String>(
+            value: value,
+            groupValue: controller.selectedDuration.value,
+            onChanged: (val) {
+              if (val != null) controller.setDuration(val);
+            },
+            activeColor: Colors.blue,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          CommonText(
+            text: value,
+            fontSize: 12.sp,
+            color: isSelected ? Colors.black : Colors.grey,
+          ),
+          SizedBox(width: 8.w),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVisibilityItem(CreateGroupController controller, String label) {
+    bool isSelected = controller.selectedVisibility.value == label;
+    return GestureDetector(
+      onTap: () => controller.setVisibility(label),
       child: Container(
         height: double.infinity,
         decoration: BoxDecoration(

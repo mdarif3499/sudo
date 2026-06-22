@@ -73,14 +73,7 @@ class KycController extends GetxController {
 
   void submitKyc() {
     if (isAllUploaded) {
-      Get.snackbar(
-        "Success",
-        "KYC Documents submitted successfully",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
-
-      Get.toNamed(AppRoutes.login);
-  }}
+      Get.toNamed(AppRoutes.docSubmitted);
+    }
+  }
 }

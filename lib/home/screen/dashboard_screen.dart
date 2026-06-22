@@ -35,7 +35,11 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.notification),
-                    child: Image.asset(AppIcons.notification, height: 47.h, width: 47.w),
+                    child: Image.asset(
+                      AppIcons.notification,
+                      height: 47.h,
+                      width: 47.w,
+                    ),
                   ),
                 ],
               ),
@@ -72,12 +76,16 @@ class DashboardScreen extends StatelessWidget {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),
-                    prefixIcon: Icon(Icons.add, color: Colors.white, size: 20.sp),
+                    prefixIcon: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 20.sp,
+                    ),
                     onTap: () => Get.toNamed(AppRoutes.createGroup),
                   ),
                 ],
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 10.h),
 
               // Total Contribution Card
               Container(
@@ -189,7 +197,11 @@ class DashboardScreen extends StatelessWidget {
                             color: const Color(0xFFE3F2FD),
                             borderRadius: BorderRadius.circular(12.r),
                           ),
-                          child: Icon(Icons.calendar_month, color: Colors.blue, size: 24.sp),
+                          child: Icon(
+                            Icons.calendar_month,
+                            color: Colors.blue,
+                            size: 24.sp,
+                          ),
                         ),
                         SizedBox(width: 15.w),
                         Expanded(
@@ -288,7 +300,7 @@ class DashboardScreen extends StatelessWidget {
     Color bdrColor,
   ) {
     return Container(
-      padding: EdgeInsets.all(12.r),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 18.r),
       decoration: BoxDecoration(
         color: bgColor.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20.r),

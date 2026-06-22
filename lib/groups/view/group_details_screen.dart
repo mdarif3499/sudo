@@ -43,7 +43,7 @@ class GroupDetailsScreen extends StatelessWidget {
                       SizedBox(height: 20.h),
                       _buildActionButtons(),
                       SizedBox(height: 15.h),
-                      _buildContributionTrends(),
+                      _buildCurrentReceiverCard(),
                       SizedBox(height: 25.h),
                       CommonText(
                         text: AppString.members,
@@ -250,75 +250,36 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContributionTrends() {
+  Widget _buildCurrentReceiverCard() {
     return Container(
-      padding: EdgeInsets.all(20.r),
+      width: double.infinity,
+      height: 59.h,
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        color: const Color(0xFF06D6A0).withOpacity(0.07),
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(
+          color: const Color(0xFF06D6A0).withOpacity(0.20),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CommonText(
-                text: AppString.contributionTrends,
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFF242424),
-              ),
-              Icon(
-                Icons.trending_up,
-                color: const Color(0xFF242424),
-                size: 20.sp,
-              ),
-            ],
+          CommonText(
+            text: "Current Receiver",
+            fontSize: 12.sp,
+            color: const Color(0xFF828282),
           ),
-          SizedBox(height: 20.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _buildBar("Jan", 0.7),
-              _buildBar("Feb", 0.75),
-              _buildBar("Mar", 0.7),
-              _buildBar("Apr", 0.72),
-              _buildBar("May", 0.7),
-              _buildBar("Jun", 0.5),
-            ],
+          CommonText(
+            text: "Emeka Eze",
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w500,
+            color: const Color(0xFF06D6A0),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBar(String month, double heightFactor) {
-    return Column(
-      children: [
-        Container(
-          width: 32.w,
-          height: 90.h * heightFactor,
-          decoration: BoxDecoration(
-            color: const Color(0xFF48C8FC),
-            borderRadius: BorderRadius.circular(6.r),
-          ),
-        ),
-        SizedBox(height: 10.h),
-        CommonText(
-          text: month,
-          fontSize: 12.sp,
-          color: const Color(0xFF828282),
-        ),
-      ],
     );
   }
 
@@ -521,13 +482,13 @@ class GroupDetailsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(24.r),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF000000).withOpacity(0.12),
+            color: const Color(0xFF000000).withValues(alpha: 0.12),
             spreadRadius: 1,
             blurRadius: 0,
             offset: const Offset(0, 0),
           ),
           BoxShadow(
-            color: const Color(0xFF000000).withOpacity(0.18),
+            color: const Color(0xFF000000).withValues(alpha: 0.18),
             spreadRadius: 0,
             blurRadius: 80,
             offset: const Offset(0, 40),
@@ -559,37 +520,19 @@ class GroupDetailsScreen extends StatelessWidget {
                     CommonText(
                       text: AppString.nextContribution,
                       fontSize: 16.sp,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
                     ),
-                    SizedBox(height: 2.h),
+                    SizedBox(height: 4.h),
                     CommonText(
-                      text: "Due by ${group.nextDue}",
-                      fontSize: 13.sp,
-                      color: const Color(0xFF828282),
+                      text: group.nextDue,
+                      fontSize: 14.sp,
+                      color: AppColors.textSecondaryColor7C7C7C,
                     ),
                   ],
                 ),
               ),
             ],
-          ),
-          SizedBox(height: 24.h),
-          CommonButton(
-            titleText: "Pay ${group.myShare}",
-            buttonHeight: 54.h,
-            gradient: const LinearGradient(
-              colors: [Color(0xFF00ADEF), Color(0xFF3B44D1)],
-            ),
-            onTap: () {
-              Get.toNamed(
-                AppRoutes.makePayment,
-                arguments: {
-                  'amount': group.myShare,
-                  'groupName': group.name,
-                  'dueDate': group.nextDue,
-                },
-              );
-            },
           ),
         ],
       ),

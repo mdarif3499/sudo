@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../../component/button/common_button.dart';
-import '../../component/text/common_text.dart';
-import '../../utils/constants/app_colors.dart';
-import '../component/common_appbar/common_appbar.dart';
-import 'controller/kyc_controller.dart';
+import '../../../component/button/common_button.dart';
+import '../../../component/text/common_text.dart';
+import '../../../utils/constants/app_colors.dart';
+import '../../component/common_appbar/common_appbar.dart';
+import '../controller/kyc_controller.dart';
 
 class KycScreen extends StatelessWidget {
   KycScreen({super.key});
