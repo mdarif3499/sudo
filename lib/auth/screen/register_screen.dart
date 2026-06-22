@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../../component/button/common_button.dart';
-import '../../component/text/common_text.dart';
-import '../../component/text_field/common_text_field.dart';
-import '../../utils/constants/app_colors.dart';
-import '../../config/route/app_routes.dart';
+import '../../../component/button/common_button.dart';
+import '../../../component/text/common_text.dart';
+import '../../../component/text_field/common_text_field.dart';
+import '../../../utils/constants/app_colors.dart';
+import '../../../config/route/app_routes.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -69,7 +69,7 @@ class RegisterScreen extends StatelessWidget {
               SizedBox(height: 20.h),
               CommonTextField(
                 title: "Address",
-                hintText: "+1 (555) 000-0000",
+                hintText: "Enter your address",
                 prefixIcon: const Icon(
                   Icons.location_on_outlined,
                   size: 20,
@@ -98,11 +98,11 @@ class RegisterScreen extends StatelessWidget {
                   color: AppColors.textSecondaryColor,
                 ),
               ),
-              SizedBox(height: 11.h),
+              SizedBox(height: 30.h),
               CommonButton(
                 titleText: "Next",
                 gradient: AppColors.primaryGradient,
-                onTap: () => Get.toNamed(AppRoutes.kyc),
+                onTap: () => Get.toNamed(AppRoutes.otp),
               ),
               SizedBox(height: 24.h),
               Center(

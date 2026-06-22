@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../../component/button/common_button.dart';
-import '../../component/text/common_text.dart';
-import '../../component/text_field/common_text_field.dart';
-import '../../component/common_appbar/common_appbar.dart';
-import '../../utils/constants/app_colors.dart';
-import '../../config/route/app_routes.dart';
+import '../../../component/button/common_button.dart';
+import '../../../component/text/common_text.dart';
+import '../../../component/text_field/common_text_field.dart';
+import '../../../component/common_appbar/common_appbar.dart';
+import '../../../utils/constants/app_colors.dart';
+import '../../../config/route/app_routes.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
   const ResetPasswordScreen({super.key});

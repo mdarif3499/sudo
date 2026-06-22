@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../../component/button/common_button.dart';
-import '../../component/text/common_text.dart';
-import '../../component/text_field/common_text_field.dart';
-import '../../utils/constants/app_colors.dart';
-import '../../config/route/app_routes.dart';
+import '../../../component/button/common_button.dart';
+import '../../../component/text/common_text.dart';
+import '../../../component/text_field/common_text_field.dart';
+import '../../../utils/constants/app_colors.dart';
+import '../../../config/route/app_routes.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -78,7 +78,7 @@ class LoginScreen extends StatelessWidget {
                 titleText: "Sign In",
                 gradient: AppColors.primaryGradient,
                 onTap: () {
-                  Get.offAllNamed(AppRoutes.main);
+                  Get.offAllNamed(AppRoutes.subscriptionScreen);
                 },
               ),
               SizedBox(height: 24.h),

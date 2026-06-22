@@ -38,4 +38,5 @@ class AppIcons {
   static const String faqs = '$baseurl/faqs.png';
   static const String privacy = '$baseurl/privacy.png';
   static const String terms = '$baseurl/terms.png';
+  static const String submitted = '$baseurl/submitted.png';
 }

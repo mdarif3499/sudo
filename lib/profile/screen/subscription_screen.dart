@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../component/common_appbar/common_appbar.dart';
 import '../../component/text/common_text.dart';
+import 'package:get/get.dart';
 
+import '../../config/route/app_routes.dart';
 class SubscriptionScreen extends StatelessWidget {
   const SubscriptionScreen({super.key});
 
@@ -26,6 +28,10 @@ class SubscriptionScreen extends StatelessWidget {
             SizedBox(height: 32.h),
             
             _buildPlanCard(
+              onTap: (){
+                Get.toNamed(AppRoutes.main);
+
+              },
               title: "Current Plan",
               subtitle: "Free",
               price: "\$0",
@@ -38,6 +44,7 @@ class SubscriptionScreen extends StatelessWidget {
             SizedBox(height: 24.h),
             
             _buildPlanCard(
+              onTap: (){},
               title: "Plus",
               subtitle: "/month",
               price: "\$9.99",
@@ -51,6 +58,7 @@ class SubscriptionScreen extends StatelessWidget {
             SizedBox(height: 24.h),
             
             _buildPlanCard(
+              onTap: (){},
               title: "Family",
               subtitle: "/month",
               price: "\$19.99",
@@ -63,6 +71,7 @@ class SubscriptionScreen extends StatelessWidget {
             SizedBox(height: 24.h),
             
             _buildPlanCard(
+             onTap: (){},
               title: "Community",
               subtitle: "/month",
               price: "\$39.99",
@@ -82,6 +91,7 @@ class SubscriptionScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     required String price,
+  required VoidCallback onTap,
     required List<String> features,
     bool isActive = false,
     bool isPopular = false,
@@ -89,184 +99,187 @@ class SubscriptionScreen extends StatelessWidget {
     required IconData icon,
     required Color iconColor,
   }) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(20.w),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color(0xFFE9E8FD), // Left side
-                Color(0xFFDAF6FF), // Right side
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(20.w),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color(0xFFE9E8FD), // Left side
+                  Color(0xFFDAF6FF), // Right side
+                ],
+              ),
+              borderRadius: BorderRadius.circular(24.r),
+              border: Border.all(
+                color: isPopular ? const Color(0xFF4A7FE0) : Colors.white.withValues(alpha: 0.5),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFE9E8FD).withValues(alpha: 0.8),
+                  blurRadius: 20,
+                  offset: const Offset(-8, 0),
+                ),
+                BoxShadow(
+                  color: const Color(0xFFDAF6FF).withValues(alpha: 0.8),
+                  blurRadius: 20,
+                  offset: const Offset(8, 0),
+                ),
               ],
             ),
-            borderRadius: BorderRadius.circular(24.r),
-            border: Border.all(
-              color: isPopular ? const Color(0xFF4A7FE0) : Colors.white.withValues(alpha: 0.5),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFE9E8FD).withValues(alpha: 0.8),
-                blurRadius: 20,
-                offset: const Offset(-8, 0),
-              ),
-              BoxShadow(
-                color: const Color(0xFFDAF6FF).withValues(alpha: 0.8),
-                blurRadius: 20,
-                offset: const Offset(8, 0),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(icon, color: iconColor, size: 24.sp),
-                      ),
-                      SizedBox(width: 12.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CommonText(
-                            text: title,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF1E293B),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.5),
+                            shape: BoxShape.circle,
                           ),
-                          if (subtitle == "Free")
+                          child: Icon(icon, color: iconColor, size: 24.sp),
+                        ),
+                        SizedBox(width: 12.w),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             CommonText(
-                              text: subtitle,
-                              fontSize: 13,
-                              color: const Color(0xFF64748B),
+                              text: title,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF1E293B),
                             ),
-                        ],
+                            if (subtitle == "Free")
+                              CommonText(
+                                text: subtitle,
+                                fontSize: 13,
+                                color: const Color(0xFF64748B),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (isActive)
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFDCFCE7),
+                          borderRadius: BorderRadius.circular(100.r),
+                        ),
+                        child: CommonText(
+                          text: "Active",
+                          fontSize: 12,
+                          color: const Color(0xFF166534),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CommonText(
+                      text: price,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E293B),
+                    ),
+                    if (subtitle != "Free")
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 4.h),
+                        child: CommonText(
+                          text: subtitle,
+                          fontSize: 14,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+                ...features.map((feature) => Padding(
+                  padding: EdgeInsets.only(bottom: 8.h),
+                  child: Row(
+                    children: [
+                      Icon(Icons.check_rounded, color: const Color(0xFF0EA5E9), size: 18.sp),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: CommonText(
+                          text: feature,
+                          fontSize: 13,
+                          color: const Color(0xFF475569),
+                        ),
                       ),
                     ],
                   ),
-                  if (isActive)
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFDCFCE7),
-                        borderRadius: BorderRadius.circular(100.r),
+                )),
+                if (showButton) ...[
+                  SizedBox(height: 20.h),
+                  Container(
+                    width: double.infinity,
+                    height: 50.h,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF00A3FF), Color(0xFF3D5AFE)],
                       ),
+                      borderRadius: BorderRadius.circular(16.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF3D5AFE).withValues(alpha: 0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Center(
                       child: CommonText(
-                        text: "Active",
-                        fontSize: 12,
-                        color: const Color(0xFF166534),
+                        text: "Upgrade Now",
+                        color: Colors.white,
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  CommonText(
-                    text: price,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1E293B),
                   ),
-                  if (subtitle != "Free")
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 4.h),
-                      child: CommonText(
-                        text: subtitle,
-                        fontSize: 14,
-                        color: const Color(0xFF64748B),
-                      ),
-                    ),
                 ],
-              ),
-              SizedBox(height: 16.h),
-              ...features.map((feature) => Padding(
-                padding: EdgeInsets.only(bottom: 8.h),
-                child: Row(
-                  children: [
-                    Icon(Icons.check_rounded, color: const Color(0xFF0EA5E9), size: 18.sp),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: CommonText(
-                        text: feature,
-                        fontSize: 13,
-                        color: const Color(0xFF475569),
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-              if (showButton) ...[
-                SizedBox(height: 20.h),
-                Container(
-                  width: double.infinity,
-                  height: 50.h,
+              ],
+            ),
+          ),
+          if (isPopular)
+            Positioned(
+              top: -12.h,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFF00A3FF), Color(0xFF3D5AFE)],
                     ),
-                    borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF3D5AFE).withValues(alpha: 0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                    borderRadius: BorderRadius.circular(100.r),
                   ),
-                  child: Center(
-                    child: CommonText(
-                      text: "Upgrade Now",
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: CommonText(
+                    text: "Most Popular",
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
                   ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        if (isPopular)
-          Positioned(
-            top: -12.h,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF00A3FF), Color(0xFF3D5AFE)],
-                  ),
-                  borderRadius: BorderRadius.circular(100.r),
-                ),
-                child: CommonText(
-                  text: "Most Popular",
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
