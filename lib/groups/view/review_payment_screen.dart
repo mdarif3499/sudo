@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../component/button/common_button.dart';
 import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
+import 'stripe_web_view_page.dart';
 
 class ReviewPaymentScreen extends StatelessWidget {
   const ReviewPaymentScreen({super.key});
@@ -60,7 +61,10 @@ class ReviewPaymentScreen extends StatelessWidget {
                         colors: [Color(0xFF00ADEF), Color(0xFF3B44D1)],
                       ),
                       onTap: () {
-                        // Handle payment confirmation
+                        // Navigate to Stripe WebView
+                        Get.to(() => const StripeWebViewPage(
+                              checkoutUrl: 'https://checkout.stripe.com/pay/placeholder_url',
+                            ));
                       },
                     ),
                     SizedBox(height: 12.h),
@@ -130,7 +134,7 @@ class ReviewPaymentScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3B44D1).withValues(alpha: 0.3),
+            color: const Color(0xFF3B44D1).withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -141,7 +145,7 @@ class ReviewPaymentScreen extends StatelessWidget {
           CommonText(
             text: "You're Paying",
             fontSize: 14,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Colors.white.withOpacity(0.8),
           ),
           SizedBox(height: 8.h),
           CommonText(
@@ -154,7 +158,7 @@ class ReviewPaymentScreen extends StatelessWidget {
             text: "USD",
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Colors.white.withOpacity(0.8),
           ),
         ],
       ),

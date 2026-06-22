@@ -181,7 +181,7 @@ class DashboardScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24.r),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 15,
                       offset: const Offset(0, 8),
                     ),
@@ -255,7 +255,9 @@ class DashboardScreen extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Get.toNamed(AppRoutes.paymentHistory);
+                    },
                     child: Row(
                       children: [
                         CommonText(
@@ -373,26 +375,32 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildGradientButton(String text, double width, double height) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+    return GestureDetector(
+      onTap: (){
+          Get.toNamed(AppRoutes.makePayment);
+
+      },
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          gradient: AppColors.primaryGradient,
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.withValues(alpha: 0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Center(
+          child: CommonText(
+            text: text,
+            fontSize: 14.sp,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
           ),
-        ],
-      ),
-      child: Center(
-        child: CommonText(
-          text: text,
-          fontSize: 14.sp,
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
         ),
       ),
     );

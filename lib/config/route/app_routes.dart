@@ -26,7 +26,9 @@ import '../../groups/view/invite_members_screen.dart';
 import '../../groups/view/chat_screen.dart';
 import '../../groups/view/make_payment_screen.dart';
 import '../../groups/view/review_payment_screen.dart';
+import '../../groups/view/payment_history_screen.dart';
 import '../../auth/screen/otp_screen.dart';
+import '../../auth/screen/forgot_password_otp_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -41,6 +43,7 @@ class AppRoutes {
   static const String docSubmitted = '/docSubmitted';
   static const String otp = '/otp';
   static const String forgotPassword = '/forgotPassword';
+  static const String forgotPasswordOtp = '/forgotPasswordOtp';
   static const String resetPassword = '/resetPassword';
   static const String success = '/success';
   static const String main = '/main';
@@ -59,6 +62,7 @@ class AppRoutes {
   static const String chat = '/chat';
   static const String makePayment = '/makePayment';
   static const String reviewPayment = '/reviewPayment';
+  static const String paymentHistory = '/paymentHistory';
 
   static const String mmuBylawsScreen = '/mmuBylawsScreen';
 
@@ -72,6 +76,7 @@ class AppRoutes {
     GetPage(name: docSubmitted, page: () => const DocSubmittedScreen()),
     GetPage(name: otp, page: () => const OtpScreen()),
     GetPage(name: forgotPassword, page: () => const ForgotPasswordScreen()),
+    GetPage(name: forgotPasswordOtp, page: () => const ForgotPasswordOtpScreen()),
     GetPage(name: resetPassword, page: () => const ResetPasswordScreen()),
     GetPage(name: success, page: () => const SuccessScreen()),
     GetPage(name: main, page: () => NavbarScreen()),
@@ -90,6 +95,7 @@ class AppRoutes {
     GetPage(name: chat, page: () => ChatScreen()),
     GetPage(name: makePayment, page: () => const MakePaymentScreen()),
     GetPage(name: reviewPayment, page: () => const ReviewPaymentScreen()),
+    GetPage(name: paymentHistory, page: () => const PaymentHistoryScreen()),
     GetPage(name: mmuBylawsScreen, page: () => const MmuBylawsScreen()),
   ];
 }
