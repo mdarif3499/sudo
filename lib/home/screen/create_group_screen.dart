@@ -78,7 +78,6 @@ class CreateGroupScreen extends StatelessWidget {
             ),
             SizedBox(height: 16.h),
 
-            // Contribution Amount
             _buildLabel("Contribution Amount (per member)"),
             CommonTextField(
               hintText: "200",
@@ -90,7 +89,6 @@ class CreateGroupScreen extends StatelessWidget {
             ),
             SizedBox(height: 16.h),
 
-            // Payment Frequency
             _buildLabel("Payment Frequency"),
             Obx(() => Row(
               children: [
@@ -102,21 +100,26 @@ class CreateGroupScreen extends StatelessWidget {
               ],
             )),
             
-            // Show duration radio buttons only for Quarterly
             Obx(() {
-              if (controller.selectedFrequency.value == "Quarterly") {
+              final frequency = controller.selectedFrequency.value;
+              List<String> options = [];
+              
+              if (frequency == "Weekly") {
+                options = ["2 Weeks", "3 Weeks", "4 Weeks"];
+              } else if (frequency == "Monthly") {
+                options = List.generate(12, (index) => "${index + 1} Month${index == 0 ? '' : 's'}");
+              } else if (frequency == "Quarterly") {
+                options = ["2 Months", "3 Months", "4 Months", "5 Months","6 Months"];
+              }
+
+              if (options.isNotEmpty) {
                 return Column(
                   children: [
                     SizedBox(height: 12.h),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: [
-                          _buildRadioButton(controller, "2 Months"),
-                          _buildRadioButton(controller, "3 Months"),
-                          _buildRadioButton(controller, "4 Months"),
-                          _buildRadioButton(controller, "5 Months"),
-                        ],
+                        children: options.map((opt) => _buildRadioButton(controller, opt)).toList(),
                       ),
                     ),
                   ],
@@ -144,7 +147,7 @@ class CreateGroupScreen extends StatelessWidget {
             Container(
               height: 48.h,
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.05),
+                color: Colors.grey.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(24.r),
               ),
               child: Obx(() => Row(

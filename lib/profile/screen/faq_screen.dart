@@ -75,7 +75,7 @@ class FaqScreen extends StatelessWidget {
                       child: CommonText(
                         text: faq['answer']!,
                         fontSize: 13,
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: Colors.black,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
