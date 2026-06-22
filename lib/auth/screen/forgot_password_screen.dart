@@ -45,9 +45,9 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
               SizedBox(height: 40.h),
               CommonButton(
-                titleText: "Send Reset Link",
+                titleText: "Send Otp",
                 gradient: AppColors.primaryGradient,
-                onTap: () => Get.toNamed(AppRoutes.resetPassword),
+                onTap: () => Get.toNamed(AppRoutes.forgotPasswordOtp),
               ),
               SizedBox(height: 24.h),
               Center(

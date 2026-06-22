@@ -298,25 +298,31 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 32.h),
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 12.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEF4444).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(30.r),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.logout, color: Colors.red, size: 20.sp),
-                      SizedBox(width: 8.w),
-                      CommonText(
-                        text: "Log Out",
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.red,
-                      ),
-                    ],
+                GestureDetector(
+                  onTap: (){
+                    Get.offAllNamed(AppRoutes.login);
+
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(30.r),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.logout, color: Colors.red, size: 20.sp),
+                        SizedBox(width: 8.w),
+                        CommonText(
+                          text: "Log Out",
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: 40.h),

@@ -237,7 +237,7 @@ class MakePaymentScreen extends StatelessWidget {
         buttonHeight: 54.h,
         buttonRadius: 30,
         onTap: () {
-          // Navigate to payment history
+          Get.toNamed(AppRoutes.paymentHistory);
         },
       ),
     );
