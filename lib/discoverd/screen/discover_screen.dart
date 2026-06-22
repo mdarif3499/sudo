@@ -64,22 +64,23 @@ class DiscoverScreen extends StatelessWidget {
                           ),
                         );
                       }
-                      return ListView.separated(
+                      return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: controller.filteredGroups.length,
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 12.h),
                         itemBuilder: (context, index) {
                           final group = controller.filteredGroups[index];
-                          return _buildGroupCard(
-                            title: group.title,
-                            members: group.members,
-                            frequency: group.frequency,
-                            target: group.target,
-                            perMember: group.perMember,
-                            iconColor: group.iconColor,
-                            icon: group.icon,
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 12.h),
+                            child: _buildGroupCard(
+                              title: group.title,
+                              members: group.members,
+                              frequency: group.frequency,
+                              target: group.target,
+                              perMember: group.perMember,
+                              iconColor: group.iconColor,
+                              icon: group.icon,
+                            ),
                           );
                         },
                       );
@@ -249,8 +250,9 @@ class DiscoverScreen extends StatelessWidget {
               ),
               CommonButton(
                 titleText: "Join",
-                buttonWidth: 70, // Fixed width added to resolve layout error
+                buttonWidth: 70,
                 buttonHeight: 36.h,
+                padding: EdgeInsets.symmetric(vertical: 0),
                 buttonRadius: 8,
                 gradient: AppColors.primaryGradient,
                 onTap: () {},

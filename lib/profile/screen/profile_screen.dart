@@ -62,7 +62,6 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                // Profile Card
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(20.w),
