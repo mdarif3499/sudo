@@ -5,8 +5,8 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../component/button/common_button.dart';
 import '../../../component/text/common_text.dart';
 import '../../../utils/constants/app_colors.dart';
-import '../../config/route/app_routes.dart';
 import '../controller/otp_controller.dart';
+import '../../../component/text_field/common_pin_code_field.dart';
 
 class OtpScreen extends StatelessWidget {
   const OtpScreen({super.key});
@@ -47,26 +47,32 @@ class OtpScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 40.h),
+              
               MaterialPinField(
                 length: 6,
                 onCompleted: (pin) {
+                  controller.otpCode = pin;
                   controller.verifyOtp(pin);
                 },
-                onChanged: (value) {},
+                onChanged: (value) {
+                  controller.otpCode = value;
+                },
                 theme: MaterialPinTheme(
                   shape: MaterialPinShape.outlined,
                   cellSize: Size(50.w, 50.h),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
+
               SizedBox(height: 32.h),
-              CommonButton(
+              Obx(() => CommonButton(
+                isLoading: controller.isLoading.value,
                 titleText: "Verify",
                 gradient: AppColors.primaryGradient,
                 onTap: () {
-                  Get.toNamed(AppRoutes.kyc);
+                  controller.verifyOtp(controller.otpCode);
                 },
-              ),
+              )),
               SizedBox(height: 24.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

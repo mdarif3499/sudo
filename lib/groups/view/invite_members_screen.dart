@@ -108,7 +108,7 @@ class InviteMembersScreen extends StatelessWidget {
         border: Border.all(color: const Color(0xFFF2F2F7)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -214,7 +214,7 @@ class InviteMembersScreen extends StatelessWidget {
         border: Border.all(color: const Color(0xFFF2F2F7)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -257,25 +257,25 @@ class InviteMembersScreen extends StatelessWidget {
                 fontSize: 14.sp,
               ),
               filled: true,
-              fillColor: const Color(0xFF48C8FC).withOpacity(0.08),
+              fillColor: const Color(0xFF48C8FC).withValues(alpha: 0.08),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(22.r),
                 borderSide: BorderSide(
-                  color: const Color(0xFF48C8FC).withOpacity(0.16),
+                  color: const Color(0xFF48C8FC).withValues(alpha: 0.16),
                   width: 1,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(22.r),
                 borderSide: BorderSide(
-                  color: const Color(0xFF48C8FC).withOpacity(0.16),
+                  color: const Color(0xFF48C8FC).withValues(alpha: 0.16),
                   width: 1,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(22.r),
                 borderSide: BorderSide(
-                  color: const Color(0xFF48C8FC).withOpacity(0.16),
+                  color: const Color(0xFF48C8FC).withValues(alpha: 0.16),
                   width: 1,
                 ),
               ),

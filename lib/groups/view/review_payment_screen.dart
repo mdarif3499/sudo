@@ -134,7 +134,7 @@ class ReviewPaymentScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3B44D1).withOpacity(0.3),
+            color: const Color(0xFF3B44D1).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -145,7 +145,7 @@ class ReviewPaymentScreen extends StatelessWidget {
           CommonText(
             text: "You're Paying",
             fontSize: 14,
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
           ),
           SizedBox(height: 8.h),
           CommonText(
@@ -158,7 +158,7 @@ class ReviewPaymentScreen extends StatelessWidget {
             text: "USD",
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
           ),
         ],
       ),
@@ -174,7 +174,7 @@ class ReviewPaymentScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),

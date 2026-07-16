@@ -93,10 +93,10 @@ class KycScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -145,7 +145,7 @@ class KycScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -189,7 +189,7 @@ class KycScreen extends StatelessWidget {
             buttonHeight: 40,
             buttonRadius: 20,
             buttonColor: Colors.white,
-            borderColor: Colors.grey.withOpacity(0.3),
+            borderColor: Colors.grey.withValues(alpha: 0.3),
             titleColor: isUploaded ? Colors.green : AppColors.textSecondaryColor,
             titleSize: 14,
             showIcon: !isUploaded,

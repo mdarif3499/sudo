@@ -28,7 +28,7 @@ class CreateGroupScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
               ),
               child: Icon(Icons.arrow_back, color: Colors.black, size: 20.sp),
             ),
@@ -165,7 +165,7 @@ class CreateGroupScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +231,7 @@ class CreateGroupScreen extends StatelessWidget {
           color: isSelected ? null : Colors.white,
           gradient: isSelected ? AppColors.primaryGradient : null,
           borderRadius: BorderRadius.circular(12.r),
-          border: isSelected ? null : Border.all(color: Colors.grey.withOpacity(0.2)),
+          border: isSelected ? null : Border.all(color: Colors.grey.withValues(alpha: 0.2)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

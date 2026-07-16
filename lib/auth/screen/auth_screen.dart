@@ -6,9 +6,12 @@ import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_images.dart';
 import '../../config/route/app_routes.dart';
+import '../controller/sign_in_controller.dart';
 
 class AuthScreen extends StatelessWidget {
-  const AuthScreen({super.key});
+   AuthScreen({super.key});
+
+  var controller = Get.put(SignInController());
 
   @override
   Widget build(BuildContext context) {
