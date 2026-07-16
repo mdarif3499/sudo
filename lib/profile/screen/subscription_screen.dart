@@ -1,89 +1,98 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import '../../component/common_appbar/common_appbar.dart';
 import '../../component/text/common_text.dart';
-import 'package:get/get.dart';
+import '../controller/subscription_controller.dart';
 
-import '../../config/route/app_routes.dart';
 class SubscriptionScreen extends StatelessWidget {
   const SubscriptionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white, // Screen background is now plain white
-      appBar: const CommonAppBar(title: "Choose your plan"),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 16.h),
-            CommonText(
-              text: "You are currently using the free plan. Upgrade anytime to unlock premium smart navigation features.",
-              fontSize: 13,
-              color: const Color(0xFF475569),
-              fontWeight: FontWeight.w400,
-            ),
-            SizedBox(height: 32.h),
-            
-            _buildPlanCard(
-              onTap: (){
-                Get.toNamed(AppRoutes.main);
+    final controller = Get.put(SubscriptionController());
 
-              },
-              title: "Current Plan",
-              subtitle: "Free",
-              price: "\$0",
-              features: ["Pot size: up to \$1000", "Up to 5 members", "1 active circle"],
-              isActive: true,
-              icon: Icons.bolt,
-              iconColor: const Color(0xFF0EA5E9),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: const CommonAppBar(title: "Choose your plan"),
+      body: Obx(() => Stack(
+        children: [
+          SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 16.h),
+                CommonText(
+                  text: "You are currently using the free plan. Upgrade anytime to unlock premium smart navigation features.",
+                  fontSize: 13,
+                  color: const Color(0xFF475569),
+                  fontWeight: FontWeight.w400,
+                ),
+                SizedBox(height: 32.h),
+                
+                _buildPlanCard(
+                  onTap: () {
+                    controller.checkProfileAndKyc();
+                  },
+                  title: "Current Plan",
+                  subtitle: "Free",
+                  price: "\$0",
+                  features: ["Pot size: up to \$1000", "Up to 5 members", "1 active circle"],
+                  isActive: true,
+                  icon: Icons.bolt,
+                  iconColor: const Color(0xFF0EA5E9),
+                ),
+                
+                SizedBox(height: 24.h),
+                
+                _buildPlanCard(
+                  onTap: () {},
+                  title: "Plus",
+                  subtitle: "/month",
+                  price: "\$9.99",
+                  features: ["Pot size: up to \$10,000", "Up to 25 members", "5 active circles"],
+                  isPopular: true,
+                  icon: Icons.workspace_premium_outlined,
+                  iconColor: const Color(0xFF0EA5E9),
+                  showButton: true,
+                ),
+                
+                SizedBox(height: 24.h),
+                
+                _buildPlanCard(
+                  onTap: () {},
+                  title: "Family",
+                  subtitle: "/month",
+                  price: "\$19.99",
+                  features: ["Pot size: up to \$50,000", "Up to 50 members", "unlimited circles"],
+                  icon: Icons.workspace_premium_outlined,
+                  iconColor: const Color(0xFF0EA5E9),
+                  showButton: true,
+                ),
+                
+                SizedBox(height: 24.h),
+                
+                _buildPlanCard(
+                  onTap: () {},
+                  title: "Community",
+                  subtitle: "/month",
+                  price: "\$39.99",
+                  features: ["Pot size: up to \$250,000", "Up to 200 members", "Advanced reporting and governance tools"],
+                  icon: Icons.workspace_premium_outlined,
+                  iconColor: const Color(0xFF0EA5E9),
+                  showButton: true,
+                ),
+                SizedBox(height: 40.h),
+              ],
             ),
-            
-            SizedBox(height: 24.h),
-            
-            _buildPlanCard(
-              onTap: (){},
-              title: "Plus",
-              subtitle: "/month",
-              price: "\$9.99",
-              features: ["Pot size: up to \$10,000", "Up to 25 members", "5 active circles"],
-              isPopular: true,
-              icon: Icons.workspace_premium_outlined,
-              iconColor: const Color(0xFF0EA5E9),
-              showButton: true,
+          ),
+          if (controller.isLoading.value)
+            const Center(
+              child: CircularProgressIndicator(),
             ),
-            
-            SizedBox(height: 24.h),
-            
-            _buildPlanCard(
-              onTap: (){},
-              title: "Family",
-              subtitle: "/month",
-              price: "\$19.99",
-              features: ["Pot size: up to \$50,000", "Up to 50 members", "unlimited circles"],
-              icon: Icons.workspace_premium_outlined,
-              iconColor: const Color(0xFF0EA5E9),
-              showButton: true,
-            ),
-            
-            SizedBox(height: 24.h),
-            
-            _buildPlanCard(
-             onTap: (){},
-              title: "Community",
-              subtitle: "/month",
-              price: "\$39.99",
-              features: ["Pot size: up to \$250,000", "Up to 200 members", "Advanced reporting and governance tools"],
-              icon: Icons.workspace_premium_outlined,
-              iconColor: const Color(0xFF0EA5E9),
-              showButton: true,
-            ),
-            SizedBox(height: 40.h),
-          ],
-        ),
-      ),
+        ],
+      )),
     );
   }
 
@@ -91,7 +100,7 @@ class SubscriptionScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     required String price,
-  required VoidCallback onTap,
+    required VoidCallback onTap,
     required List<String> features,
     bool isActive = false,
     bool isPopular = false,
@@ -112,8 +121,8 @@ class SubscriptionScreen extends StatelessWidget {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  Color(0xFFE9E8FD), // Left side
-                  Color(0xFFDAF6FF), // Right side
+                  Color(0xFFE9E8FD),
+                  Color(0xFFDAF6FF),
                 ],
               ),
               borderRadius: BorderRadius.circular(24.r),

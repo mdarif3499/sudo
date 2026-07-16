@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../component/button/common_button.dart';
 import '../../component/common_appbar/common_appbar.dart';
 import '../../component/text_field/common_text_field.dart';
-import '../../utils/constants/app_colors.dart';
 import '../controller/change_password_controller.dart';
 
 class ChangePasswordScreen extends StatelessWidget {

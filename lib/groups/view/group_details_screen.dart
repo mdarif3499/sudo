@@ -255,10 +255,10 @@ class GroupDetailsScreen extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: const Color(0xFF06D6A0).withOpacity(0.07),
+        color: const Color(0xFF06D6A0).withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(
-          color: const Color(0xFF06D6A0).withOpacity(0.20),
+          color: const Color(0xFF06D6A0).withValues(alpha: 0.20),
           width: 1,
         ),
       ),
@@ -501,13 +501,13 @@ class GroupDetailsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(24.r),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF000000).withOpacity(0.12),
+            color: const Color(0xFF000000).withValues(alpha: 0.12),
             spreadRadius: 1,
             blurRadius: 0,
             offset: const Offset(0, 0),
           ),
           BoxShadow(
-            color: const Color(0xFF000000).withOpacity(0.18),
+            color: const Color(0xFF000000).withValues(alpha: 0.18),
             spreadRadius: 0,
             blurRadius: 80,
             offset: const Offset(0, 40),

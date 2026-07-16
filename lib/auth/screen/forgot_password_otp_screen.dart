@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../component/button/common_button.dart';
 import '../../../component/text/common_text.dart';
+import '../../../component/text_field/common_pin_code_field.dart';
 import '../../../utils/constants/app_colors.dart';
 import '../../config/route/app_routes.dart';
 import '../controller/otp_controller.dart';
 
 class ForgotPasswordOtpScreen extends StatelessWidget {
-  const ForgotPasswordOtpScreen({super.key});
+  ForgotPasswordOtpScreen({super.key});
+
+  // Using the same controller with a tag or finding existing one
+  final controller = Get.put(OtpController());
 
   @override
   Widget build(BuildContext context) {
-    // We can reuse the same OtpController for timer logic
-    final controller = Get.put(OtpController(), tag: 'forgot_password_otp');
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -48,26 +48,28 @@ class ForgotPasswordOtpScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 40.h),
-            MaterialPinField(
-              length: 6,
-              onCompleted: (pin) {
-                controller.verifyOtp(pin);
-              },
-              onChanged: (value) {},
-              theme: MaterialPinTheme(
-                shape: MaterialPinShape.outlined,
-                cellSize: Size(50.w, 50.h),
-                borderRadius: BorderRadius.circular(12.r),
+              
+              // Using CommonPinCodeField for consistency
+              CommonPinCodeField(
+                controller: controller.otpController,
+                length: 6,
+                onChanged: (value) {
+                  controller.otpCode = value;
+                },
+                onCompleted: (pin) {
+                  controller.verifyOtp(pin);
+                },
               ),
-            ),
+
               SizedBox(height: 32.h),
-              CommonButton(
+              Obx(() => CommonButton(
+                isLoading: controller.isLoading.value,
                 titleText: "Verify",
                 gradient: AppColors.primaryGradient,
                 onTap: () {
-                  Get.toNamed(AppRoutes.resetPassword);
+                  controller.verifyOtp(controller.otpCode);
                 },
-              ),
+              )),
               SizedBox(height: 24.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

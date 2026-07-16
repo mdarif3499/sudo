@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../../utils/constants/app_colors.dart';
 import '../../component/text/common_text.dart';
 
 class NotificationScreen extends StatelessWidget {
@@ -21,7 +20,7 @@ class NotificationScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
               ),
               child: Icon(Icons.arrow_back, color: Colors.black, size: 20.sp),
             ),
@@ -135,10 +134,10 @@ class NotificationScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -211,7 +210,7 @@ class NotificationScreen extends StatelessWidget {
                         CommonText(
                           text: time,
                           fontSize: 12.sp,
-                          color: Colors.grey.withOpacity(0.7),
+                          color: Colors.grey.withValues(alpha: 0.7),
                         ),
                       ],
                     ),
