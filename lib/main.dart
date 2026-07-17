@@ -3,10 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'config/dependency/dependency_injection.dart';
 import 'config/route/app_routes.dart';
+import 'services/storage/storage_services.dart';
 import 'utils/constants/app_colors.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // স্টোরেজ ইনিশিয়ালাইজ করা হলো
+  await LocalStorage.init();
+
   runApp(const MyApp());
 }
 

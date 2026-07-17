@@ -7,9 +7,12 @@ import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_icons.dart';
 import '../../utils/constants/app_images.dart';
 import '../../component/text/common_text.dart';
+import '../controller/dashboard_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+  DashboardScreen({super.key});
+
+  final DashboardController controller = Get.put(DashboardController());
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +71,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   CommonButton(
                     titleText: "New Group",
+                    titleSize: 16,
                     buttonWidth: 130.w,
                     buttonHeight: 45.h,
                     buttonRadius: 12,
@@ -93,16 +97,15 @@ class DashboardScreen extends StatelessWidget {
                 padding: EdgeInsets.all(20.r),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFdee8f9), Color(0xFFe8f6f3)],
+                    colors: [Color(0xFFDEE8F9), Color(0xFFE8F6F3)],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ),
                   borderRadius: BorderRadius.circular(12.r),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08), // 8% opacity
-                      blurRadius: 12,
-                      spreadRadius: -2,
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
                   ],
@@ -181,9 +184,9 @@ class DashboardScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24.r),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -243,9 +246,11 @@ class DashboardScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
+
               SizedBox(height: 25.h),
 
-              // Recent Activity Section
+              // (compile: 53 ms, reload: 599 ms, reassemble: 157 ms).Recent Activity Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -304,7 +309,7 @@ class DashboardScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 18.r),
       decoration: BoxDecoration(
-        color: bgColor.withValues(alpha: 0.3),
+        color: bgColor.withOpacity(0.3),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: bdrColor, width: 1.r),
       ),
@@ -388,7 +393,7 @@ class DashboardScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.withValues(alpha: 0.3),
+              color: Colors.blue.withOpacity(0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

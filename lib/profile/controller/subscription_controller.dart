@@ -13,7 +13,7 @@ class SubscriptionController extends GetxController {
   final isLoading = false.obs;
 
   Future<void> checkProfileAndKyc() async {
-    String token = await LocalStorage.getString(LocalStorageKeys.token);
+    String token = LocalStorage.token;
     if (token.isEmpty) return;
 
     isLoading.value = true;
@@ -21,12 +21,17 @@ class SubscriptionController extends GetxController {
       final response = await _apiClient.get(ApiEndPoint.getProfile);
       if (response.isSuccess) {
         final data = response.data['data'];
-        final kycStatus = data['kycStatus']; 
+        final kycStatus = data['kycStatus'] ?? ""; 
 
-        if (kycStatus != 'approved') {
-          await createKycSession();
+        // ১. এপিআই থেকে পাওয়া KYC স্ট্যাটাস স্টোরেজে সেভ করা হচ্ছে
+        await LocalStorage.setString(LocalStorageKeys.kycStatus, kycStatus);
+
+        if (kycStatus == 'approved') {
+          // ২. যদি অ্যাপ্রুভড হয় তবে মেইন স্ক্রিনে যাবে
+          Get.offAllNamed(AppRoutes.main);
         } else {
-          Get.toNamed(AppRoutes.main);
+          // ৩. অন্যথায় কেওয়াইসি সেশন তৈরি করবে
+          await createKycSession();
         }
       }
     } catch (e) {
@@ -42,7 +47,7 @@ class SubscriptionController extends GetxController {
       if (response.isSuccess) {
         final kycUrl = response.data['data']['url'];
         if (kycUrl != null && kycUrl.isNotEmpty) {
-          Get.to(() => StripeWebViewPage(checkoutUrl: kycUrl));
+          Get.to(() => WebviewScreen(checkoutUrl: kycUrl));
         }
       }
     } catch (e) {

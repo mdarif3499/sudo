@@ -176,7 +176,7 @@ class OtpController extends GetxController {
       if (response.isSuccess) {
         final kycUrl = response.data['data']['url'];
         if (kycUrl != null && kycUrl.isNotEmpty) {
-           Get.offAll(() => StripeWebViewPage(checkoutUrl: kycUrl));
+           Get.offAll(() => WebviewScreen(checkoutUrl: kycUrl));
         } else {
           Utils.errorSnackBar("KYC Error", "Could not initialize KYC session");
         }

@@ -240,22 +240,9 @@ class ProfileScreen extends StatelessWidget {
                                 controller.toggleNotification(val);
                               },
                               activeTrackColor: const Color(0xFF4A7FE0),
-
                               inactiveTrackColor: Colors.grey.shade300,
-
-                              thumbColor:
-                                  WidgetStateProperty.resolveWith<Color>((
-                                    states,
-                                  ) {
-                                    if (states.contains(WidgetState.selected)) {
-                                      return Colors.white;
-                                    }
-                                    return Colors.white;
-                                  }),
-
-                              trackOutlineColor: WidgetStateProperty.all(
-                                Colors.transparent,
-                              ),
+                              thumbColor: WidgetStateProperty.all(Colors.white),
+                              trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
                             ),
                           ),
                         ),
@@ -298,9 +285,9 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 32.h),
                 GestureDetector(
-                  onTap: (){
-                    Get.offAllNamed(AppRoutes.login);
-
+                  onTap: () {
+                    // প্রফেশনাল লগআউট কল করা হলো
+                    controller.logOut();
                   },
                   child: Container(
                     width: double.infinity,

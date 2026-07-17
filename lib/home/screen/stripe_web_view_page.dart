@@ -5,20 +5,18 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:file_picker/file_picker.dart';
-
-import '../../../config/route/app_routes.dart';
 import '../../utils/log/app_utils.dart';
 
-class WebviewScreen extends StatefulWidget {
+class StripeWebViewPage extends StatefulWidget {
   final String checkoutUrl;
 
-  const WebviewScreen({super.key, required this.checkoutUrl});
+  const StripeWebViewPage({super.key, required this.checkoutUrl});
 
   @override
-  State<WebviewScreen> createState() => _WebviewScreenState();
+  State<StripeWebViewPage> createState() => _StripeWebViewPageState();
 }
 
-class _WebviewScreenState extends State<WebviewScreen> {
+class _StripeWebViewPageState extends State<StripeWebViewPage> {
   late final WebViewController _controller;
   bool _isLoading = true;
   bool _isControllerInitialized = false;
@@ -44,7 +42,6 @@ class _WebviewScreenState extends State<WebviewScreen> {
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
-      // Standard Mobile User-Agent
       ..setUserAgent("Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36")
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -61,12 +58,16 @@ class _WebviewScreenState extends State<WebviewScreen> {
                 _isLoading = false;
               });
             }
-            if (url.contains("Approved")) {
-              Utils.successSnackBar("Verification Successful. Please Login.");
-              Get.offAllNamed(AppRoutes.subscriptionScreen);
-            } else if (url.contains("cancel") || url.contains("failure")) {
-              Get.offAllNamed(AppRoutes.subscriptionScreen);
-              Utils.errorSnackBar("KYC Status", "Verification was cancelled or failed.");
+            
+            // Stripe onboarding success check
+            if (url.contains("success") || url.contains("Approved")) {
+              Utils.successSnackBar( "Stripe account connected successfully.");
+              Get.back();
+            } 
+            // Stripe cancel or failure check
+            else if (url.contains("cancel") || url.contains("failure") || url.contains("reauth")) {
+              Utils.errorSnackBar("Stripe Status", "Connection was incomplete or cancelled.");
+              Get.back();
             }
           },
         ),
@@ -74,18 +75,16 @@ class _WebviewScreenState extends State<WebviewScreen> {
 
     if (_controller.platform is AndroidWebViewController) {
       final androidController = _controller.platform as AndroidWebViewController;
-      
 
       androidController.setOnPlatformPermissionRequest(
-        (request) async {
-          debugPrint("WebView requesting: ${request.types}");
+            (request) async {
           if (request.types.contains(WebViewPermissionResourceType.camera)) {
             await Permission.camera.request();
           }
           if (request.types.contains(WebViewPermissionResourceType.microphone)) {
             await Permission.microphone.request();
           }
-          request.grant(); 
+          request.grant();
         },
       );
 
@@ -94,7 +93,6 @@ class _WebviewScreenState extends State<WebviewScreen> {
       androidController.setOnShowFileSelector((params) async {
         try {
           await [Permission.photos, Permission.storage].request();
-
           final result = await FilePicker.platform.pickFiles(
             type: FileType.custom,
             allowedExtensions: ['jpg', 'jpeg', 'png', 'webp', 'tiff', 'pdf'],
@@ -109,14 +107,13 @@ class _WebviewScreenState extends State<WebviewScreen> {
       });
     }
 
-    // ফিক্স: 'X-Requested-With' হেডার খালি পাঠানো হচ্ছে যাতে Stripe গ্যালারি ব্লক না করে
     _controller.loadRequest(
       Uri.parse(widget.checkoutUrl),
       headers: const {
         'X-Requested-With': '',
       },
     );
-    
+
     if (mounted) {
       setState(() {
         _isControllerInitialized = true;
@@ -128,7 +125,7 @@ class _WebviewScreenState extends State<WebviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("KYC Verification"),
+        title: const Text("Stripe Connection"),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -144,7 +141,7 @@ class _WebviewScreenState extends State<WebviewScreen> {
             WebViewWidget(controller: _controller)
           else
             const Center(child: CircularProgressIndicator()),
-            
+
           if (_isLoading && _isControllerInitialized)
             const Center(
               child: CircularProgressIndicator(color: Colors.blue),

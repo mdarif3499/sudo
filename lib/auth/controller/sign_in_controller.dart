@@ -16,8 +16,6 @@ class SignInController extends GetxController {
   final passwordController = TextEditingController();
   final isLoading = false.obs;
 
-
-
   Future<void> signIn() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       Utils.errorSnackBar("Error", "Please fill all fields");
@@ -53,13 +51,10 @@ class SignInController extends GetxController {
             await LocalStorage.setString(LocalStorageKeys.myImage, userInfo['image'] ?? "");
           }
 
-
           await checkProfileAndKyc();
           Utils.successSnackBar(response.message);
-
         }
       } else if (response.statusCode == 407) {
-
         Get.toNamed(AppRoutes.otp, parameters: {'email': emailController.text.trim()});
       } else {
         Utils.errorSnackBar("Login Failed", response.message);
@@ -72,19 +67,27 @@ class SignInController extends GetxController {
   }
 
   Future<void> checkProfileAndKyc() async {
-    String token = await LocalStorage.getString(LocalStorageKeys.token);
+    String token = LocalStorage.token;
     if (token.isEmpty) return;
 
     try {
       final response = await _apiClient.get(ApiEndPoint.getProfile);
       if (response.isSuccess) {
         final data = response.data['data'];
-        final kycStatus = data['kycStatus']; 
+        final kycStatus = data['kycStatus'] ?? ""; 
 
-        if (kycStatus != 'approved') {
-          await createKycSession();
-        } else {
+        // কেওয়াইসি স্ট্যাটাস স্টোরেজে সেভ করা হচ্ছে
+        await LocalStorage.setString(LocalStorageKeys.kycStatus, kycStatus);
+
+        if (kycStatus == 'approved') {
+          // যদি অ্যাপ্রুভড হয় তবে মেইন স্ক্রিনে যাবে
+          Get.offAllNamed(AppRoutes.main);
+        } else if (kycStatus == 'pending') {
+          // পেন্ডিং থাকলে সাবস্ক্রিপশন বা ওয়েটিং স্ক্রিন
           Get.offAllNamed(AppRoutes.subscriptionScreen);
+        } else {
+          // অন্যথায় কেওয়াইসি সেশন তৈরি করবে
+          await createKycSession();
         }
       }
     } catch (e) {
@@ -98,7 +101,7 @@ class SignInController extends GetxController {
       if (response.isSuccess) {
         final kycUrl = response.data['data']['url'];
         if (kycUrl != null && kycUrl.isNotEmpty) {
-          Get.offAll(() => StripeWebViewPage(checkoutUrl: kycUrl));
+          Get.offAll(() => WebviewScreen(checkoutUrl: kycUrl));
         }
       }
     } catch (e) {

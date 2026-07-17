@@ -38,6 +38,7 @@ class GroupsScreen extends StatelessWidget {
                     children: [
                       CommonButton(
                         titleText: "New Group",
+                        titleSize: 12,
                         buttonWidth: 130.w,
                         buttonHeight: 45.h,
                         buttonRadius: 12,

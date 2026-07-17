@@ -16,7 +16,7 @@ class NavbarScreen extends StatelessWidget {
   final BottomNavController controller = Get.put(BottomNavController());
 
   final List<Widget> screens = [
-    const DashboardScreen(),
+     DashboardScreen(),
     GroupsScreen(),
     DiscoverScreen(),
     ProfileScreen(),
