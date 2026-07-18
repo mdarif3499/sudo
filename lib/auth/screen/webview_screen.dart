@@ -109,7 +109,6 @@ class _WebviewScreenState extends State<WebviewScreen> {
       });
     }
 
-    // ফিক্স: 'X-Requested-With' হেডার খালি পাঠানো হচ্ছে যাতে Stripe গ্যালারি ব্লক না করে
     _controller.loadRequest(
       Uri.parse(widget.checkoutUrl),
       headers: const {
@@ -126,15 +125,18 @@ class _WebviewScreenState extends State<WebviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("KYC Verification"),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
           onPressed: () => Get.back(),
         ),
       ),

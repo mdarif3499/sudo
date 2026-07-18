@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../component/text/common_text.dart';
+import '../../utils/constants/app_colors.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.r),
@@ -20,9 +23,9 @@ class NotificationScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                border: Border.all(color: isDark ? Colors.white12 : Colors.grey.withValues(alpha: 0.2)),
               ),
-              child: Icon(Icons.arrow_back, color: Colors.black, size: 20.sp),
+              child: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black, size: 20.sp),
             ),
           ),
         ),
@@ -43,13 +46,13 @@ class NotificationScreen extends StatelessWidget {
                 CommonText(
                   text: "2 unread",
                   fontSize: 14.sp,
-                  color: Colors.grey,
+                  color: isDark ? Colors.white60 : Colors.grey,
                 ),
                 GestureDetector(
                   onTap: () {},
-                  child: CommonText(
+                  child: const CommonText(
                     text: "Mark all as read",
-                    fontSize: 14.sp,
+                    fontSize: 14,
                     color: Colors.blue,
                   ),
                 ),
@@ -61,53 +64,58 @@ class NotificationScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               children: [
                 _buildNotificationItem(
+                  context,
                   title: "Payment Reminder",
                   description: "Your contribution of \$200 is due in 2 days for Family Savings",
                   time: "2 hours ago",
                   icon: Icons.attach_money,
-                  iconBgColor: const Color(0xFFFFF8E1),
+                  iconBgColor: isDark ? const Color(0xFF2C2510) : const Color(0xFFFFF8E1),
                   iconColor: Colors.orange,
                   isUnread: true,
                   hasGradientBorder: true,
                 ),
                 SizedBox(height: 15.h),
                 _buildNotificationItem(
+                  context,
                   title: "New Member Joined",
                   description: "Sarah Williams joined Wedding Fund group",
                   time: "5 hours ago",
                   icon: Icons.person_outline,
-                  iconBgColor: const Color(0xFFE8EAF6),
+                  iconBgColor: isDark ? const Color(0xFF1A1C2E) : const Color(0xFFE8EAF6),
                   iconColor: Colors.indigo,
                   isUnread: true,
                   hasGradientBorder: true,
                 ),
                 SizedBox(height: 15.h),
                 _buildNotificationItem(
+                  context,
                   title: "Payment Successful",
                   description: "Your \$150 contribution to Friends Circle was processed",
                   time: "1 day ago",
                   icon: Icons.check_circle_outline,
-                  iconBgColor: const Color(0xFFE8F5E9),
+                  iconBgColor: isDark ? const Color(0xFF0E2411) : const Color(0xFFE8F5E9),
                   iconColor: Colors.green,
                   isUnread: false,
                 ),
                 SizedBox(height: 15.h),
                 _buildNotificationItem(
+                  context,
                   title: "Payout Received",
                   description: "You received \$1,500 from Wedding Fund",
                   time: "2 days ago",
                   icon: Icons.trending_up,
-                  iconBgColor: const Color(0xFFF3E5F5),
+                  iconBgColor: isDark ? const Color(0xFF21132B) : const Color(0xFFF3E5F5),
                   iconColor: Colors.purple,
                   isUnread: false,
                 ),
                 SizedBox(height: 15.h),
                 _buildNotificationItem(
+                  context,
                   title: "Group Update",
                   description: "Family Savings reached 75% of target amount",
                   time: "3 days ago",
                   icon: Icons.people_outline,
-                  iconBgColor: const Color(0xFFE3F2FD),
+                  iconBgColor: isDark ? const Color(0xFF0D1E2E) : const Color(0xFFE3F2FD),
                   iconColor: Colors.blue,
                   isUnread: false,
                 ),
@@ -120,7 +128,8 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationItem({
+  Widget _buildNotificationItem(
+    BuildContext context, {
     required String title,
     required String description,
     required String time,
@@ -130,11 +139,13 @@ class NotificationScreen extends StatelessWidget {
     bool isUnread = false,
     bool hasGradientBorder = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+        border: Border.all(color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -204,13 +215,13 @@ class NotificationScreen extends StatelessWidget {
                         CommonText(
                           text: description,
                           fontSize: 13.sp,
-                          color: Colors.grey,
+                          color: isDark ? Colors.white60 : Colors.grey,
                         ),
                         SizedBox(height: 8.h),
                         CommonText(
                           text: time,
                           fontSize: 12.sp,
-                          color: Colors.grey.withValues(alpha: 0.7),
+                          color: isDark ? Colors.white38 : Colors.grey.withValues(alpha: 0.7),
                         ),
                       ],
                     ),

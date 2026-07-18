@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'storage_keys.dart';
 import '../../utils/log/app_log.dart';
@@ -17,6 +18,7 @@ class LocalStorage {
   static String plan = "";
   static String adminId = "";
   static String kycStatus = "";
+  static bool isDarkMode = false;
 
   static Future<void> init() async {
     preferences = await SharedPreferences.getInstance();
@@ -42,6 +44,7 @@ class LocalStorage {
     plan = localStorage.getString(LocalStorageKeys.plan) ?? "";
     adminId = localStorage.getString(LocalStorageKeys.adminId) ?? "";
     kycStatus = localStorage.getString(LocalStorageKeys.kycStatus) ?? "";
+    isDarkMode = localStorage.getBool(LocalStorageKeys.isDarkMode) ?? false;
 
     appLog(userId, source: "Local Storage");
   }
@@ -80,6 +83,7 @@ class LocalStorage {
     final localStorage = await _getStorage();
     await localStorage.setBool(key, value);
     if (key == LocalStorageKeys.isLogIn) isLogIn = value;
+    if (key == LocalStorageKeys.isDarkMode) isDarkMode = value;
   }
 
   static Future<void> setInt(String key, int value) async {
@@ -111,5 +115,6 @@ class LocalStorage {
     plan = "";
     adminId = "";
     kycStatus = "";
+    isDarkMode = false;
   }
 }

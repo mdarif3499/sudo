@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import '../../../component/text/common_text.dart';
 import '../../../utils/constants/app_colors.dart';
 import '../../../utils/constants/app_icons.dart';
-import '../../config/route/app_routes.dart';
+import '../../../config/route/app_routes.dart';
 
 class DocSubmittedScreen extends StatefulWidget {
   const DocSubmittedScreen({super.key});
@@ -48,8 +48,10 @@ class _DocSubmittedScreenState extends State<DocSubmittedScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -64,6 +66,8 @@ class _DocSubmittedScreenState extends State<DocSubmittedScreen>
                     AppIcons.submitted,
                     height: 120.h,
                     width: 120.w,
+                    // If the icon is a black/dark asset, you might want to tint it for dark mode
+                    // color: isDark ? Colors.white : null, 
                   ),
                   Positioned(
                     bottom: 0.h,
@@ -80,7 +84,7 @@ class _DocSubmittedScreenState extends State<DocSubmittedScreen>
                           value: _animation.value,
                           backgroundColor: Colors.transparent,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            const Color(0xFF6C92F4).withValues(alpha: 0.6), // স্ক্রিনশট অনুযায়ী নীল রঙ
+                            const Color(0xFF6C92F4).withValues(alpha: 0.6),
                           ),
                         ),
                       ),
@@ -89,7 +93,7 @@ class _DocSubmittedScreenState extends State<DocSubmittedScreen>
                 ],
               ),
               SizedBox(height: 40.h),
-              CommonText(
+              const CommonText(
                 text: "Documents Submitted Successfully",
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
@@ -100,7 +104,7 @@ class _DocSubmittedScreenState extends State<DocSubmittedScreen>
                 text:
                     "We've received your documents and they're now being reviewed. Please sit tight while we verify your information. We'll notify you as soon as the review is complete.",
                 fontSize: 14,
-                color: AppColors.textSecondaryColor,
+                color: isDark ? Colors.white70 : AppColors.textSecondaryColor,
                 textAlign: TextAlign.center,
               ),
             ],

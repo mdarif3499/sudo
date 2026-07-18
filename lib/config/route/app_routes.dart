@@ -77,7 +77,7 @@ class AppRoutes {
     GetPage(name: kyc, page: () => KycScreen()),
     GetPage(name: docSubmitted, page: () => const DocSubmittedScreen()),
     GetPage(name: otp, page: () => const OtpScreen()),
-    GetPage(name: forgotPassword, page: () => const ForgotPasswordScreen()),
+    GetPage(name: forgotPassword, page: () =>  ForgotPasswordScreen()),
     GetPage(name: forgotPasswordOtp, page: () =>  ForgotPasswordOtpScreen()),
     GetPage(name: resetPassword, page: () => const ResetPasswordScreen()),
     GetPage(name: success, page: () => const SuccessScreen()),

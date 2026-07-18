@@ -8,6 +8,10 @@ class AppColors {
   static const Color black = Color(0xFF000000);
   static const Color background = Color(0xFF000000);
 
+  // Dark Mode Specific Colors
+  static const Color darkCardBg = Color(0xFF01052B);
+  static const Color darkCardBorder = Color(0xFF13295C);
+
   // Button Gradient Colors from Screenshot
   static const Color gradientColor1 = Color(0xFF04A1CD);
   static const Color gradientColor2 = Color(0xFF068FD8);

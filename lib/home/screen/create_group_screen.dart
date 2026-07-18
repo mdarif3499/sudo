@@ -15,11 +15,12 @@ class CreateGroupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final CreateGroupController controller = Get.put(CreateGroupController());
     final BottomNavController navBarController = Get.find<BottomNavController>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.r),
@@ -28,9 +29,9 @@ class CreateGroupScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                border: Border.all(color: isDark ? Colors.white12 : Colors.grey.withValues(alpha: 0.2)),
               ),
-              child: Icon(Icons.arrow_back, color: Colors.black, size: 20.sp),
+              child: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black, size: 20.sp),
             ),
           ),
         ),
@@ -51,52 +52,52 @@ class CreateGroupScreen extends StatelessWidget {
               child: CommonText(
                 text: "Set up your group details and invite members to\njoin",
                 fontSize: 14.sp,
-                color: Colors.grey,
+                color: isDark ? Colors.white60 : Colors.grey,
                 textAlign: TextAlign.center,
               ),
             ),
             SizedBox(height: 20.h),
 
             // Group Name
-            _buildLabel("Group Name"),
+            _buildLabel(context, "Group Name"),
             CommonTextField(
               hintText: "e.g., Family Savings",
-              prefixIcon: Icon(Icons.people_outline, size: 20.sp, color: Colors.grey),
+              prefixIcon: Icon(Icons.people_outline, size: 20.sp, color: isDark ? Colors.white38 : Colors.grey),
               borderRadius: 24,
             ),
             SizedBox(height: 16.h),
 
             // Target Pool Amount
-            _buildLabel("Target Pool Amount"),
+            _buildLabel(context, "Target Pool Amount"),
             CommonTextField(
               hintText: "100000",
               prefixIcon: Padding(
                 padding: EdgeInsets.all(12.r),
-                child: CommonText(text: "\$", fontSize: 16.sp, color: Colors.grey),
+                child: CommonText(text: "\$", fontSize: 16.sp, color: isDark ? Colors.white38 : Colors.grey),
               ),
               borderRadius: 24,
             ),
             SizedBox(height: 16.h),
 
-            _buildLabel("Contribution Amount (per member)"),
+            _buildLabel(context, "Contribution Amount (per member)"),
             CommonTextField(
               hintText: "200",
               prefixIcon: Padding(
                 padding: EdgeInsets.all(12.r),
-                child: CommonText(text: "\$", fontSize: 16.sp, color: Colors.grey),
+                child: CommonText(text: "\$", fontSize: 16.sp, color: isDark ? Colors.white38 : Colors.grey),
               ),
               borderRadius: 24,
             ),
             SizedBox(height: 16.h),
 
-            _buildLabel("Payment Frequency"),
+            _buildLabel(context, "Payment Frequency"),
             Obx(() => Row(
               children: [
-                Expanded(child: _buildFrequencyItem(controller, "Weekly", Icons.access_time)),
+                Expanded(child: _buildFrequencyItem(context, controller, "Weekly", Icons.access_time)),
                 SizedBox(width: 12.w),
-                Expanded(child: _buildFrequencyItem(controller, "Monthly", Icons.access_time)),
+                Expanded(child: _buildFrequencyItem(context, controller, "Monthly", Icons.access_time)),
                 SizedBox(width: 12.w),
-                Expanded(child: _buildFrequencyItem(controller, "Quarterly", Icons.access_time)),
+                Expanded(child: _buildFrequencyItem(context, controller, "Quarterly", Icons.access_time)),
               ],
             )),
             
@@ -119,7 +120,7 @@ class CreateGroupScreen extends StatelessWidget {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: options.map((opt) => _buildRadioButton(controller, opt)).toList(),
+                        children: options.map((opt) => _buildRadioButton(context, controller, opt)).toList(),
                       ),
                     ),
                   ],
@@ -130,10 +131,10 @@ class CreateGroupScreen extends StatelessWidget {
             SizedBox(height: 16.h),
 
             // Start Date
-            _buildLabel("Start Date"),
+            _buildLabel(context, "Start Date"),
             CommonTextField(
               hintText: "02/12/2026",
-              prefixIcon: Icon(Icons.calendar_today_outlined, size: 20.sp, color: Colors.grey),
+              prefixIcon: Icon(Icons.calendar_today_outlined, size: 20.sp, color: isDark ? Colors.white38 : Colors.grey),
               borderRadius: 24,
               readOnly: true,
               onTap: () {
@@ -143,17 +144,17 @@ class CreateGroupScreen extends StatelessWidget {
             SizedBox(height: 16.h),
 
             // Visibility
-            _buildLabel("Visibility"),
+            _buildLabel(context, "Visibility"),
             Container(
               height: 48.h,
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.05),
+                color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(24.r),
               ),
               child: Obx(() => Row(
                 children: [
-                  Expanded(child: _buildVisibilityItem(controller, "Private")),
-                  Expanded(child: _buildVisibilityItem(controller, "Public")),
+                  Expanded(child: _buildVisibilityItem(context, controller, "Private")),
+                  Expanded(child: _buildVisibilityItem(context, controller, "Public")),
                 ],
               )),
             ),
@@ -163,18 +164,18 @@ class CreateGroupScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(20.r),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? AppColors.darkCardBg : Colors.white,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+                border: Border.all(color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CommonText(text: "Preview", fontSize: 16.sp, fontWeight: FontWeight.bold),
                   SizedBox(height: 12.h),
-                  _buildPreviewRow("Members needed:", "—"),
+                  _buildPreviewRow(context, "Members needed:", "—"),
                   SizedBox(height: 8.h),
-                  _buildPreviewRow("Duration estimate:", "12 months"),
+                  _buildPreviewRow(context, "Duration estimate:", "12 months"),
                 ],
               ),
             ),
@@ -197,7 +198,7 @@ class CreateGroupScreen extends StatelessWidget {
                 child: CommonText(
                   text: "Cancel",
                   fontSize: 16.sp,
-                  color: Colors.grey,
+                  color: isDark ? Colors.white38 : Colors.grey,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -209,39 +210,41 @@ class CreateGroupScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLabel(String text) {
+  Widget _buildLabel(BuildContext context, String text) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.only(bottom: 8.h),
       child: CommonText(
         text: text,
         fontSize: 14.sp,
         fontWeight: FontWeight.w500,
-        color: Colors.black87,
+        color: isDark ? Colors.white70 : Colors.black87,
       ),
     );
   }
 
-  Widget _buildFrequencyItem(CreateGroupController controller, String label, IconData icon) {
+  Widget _buildFrequencyItem(BuildContext context, CreateGroupController controller, String label, IconData icon) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     bool isSelected = controller.selectedFrequency.value == label;
     return GestureDetector(
       onTap: () => controller.setFrequency(label),
       child: Container(
         height: 80.h,
         decoration: BoxDecoration(
-          color: isSelected ? null : Colors.white,
+          color: isSelected ? null : (isDark ? AppColors.darkCardBg : Colors.white),
           gradient: isSelected ? AppColors.primaryGradient : null,
           borderRadius: BorderRadius.circular(12.r),
-          border: isSelected ? null : Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+          border: isSelected ? null : Border.all(color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.2)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: isSelected ? Colors.white : Colors.grey, size: 24.sp),
+            Icon(icon, color: isSelected ? Colors.white : (isDark ? Colors.white38 : Colors.grey), size: 24.sp),
             SizedBox(height: 4.h),
             CommonText(
               text: label,
               fontSize: 12.sp,
-              color: isSelected ? Colors.white : Colors.grey,
+              color: isSelected ? Colors.white : (isDark ? Colors.white38 : Colors.grey),
             ),
           ],
         ),
@@ -249,7 +252,8 @@ class CreateGroupScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRadioButton(CreateGroupController controller, String value) {
+  Widget _buildRadioButton(BuildContext context, CreateGroupController controller, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     bool isSelected = controller.selectedDuration.value == value;
     return GestureDetector(
       onTap: () => controller.setDuration(value),
@@ -268,7 +272,7 @@ class CreateGroupScreen extends StatelessWidget {
           CommonText(
             text: value,
             fontSize: 12.sp,
-            color: isSelected ? Colors.black : Colors.grey,
+            color: isSelected ? (isDark ? Colors.white : Colors.black) : (isDark ? Colors.white38 : Colors.grey),
           ),
           SizedBox(width: 8.w),
         ],
@@ -276,7 +280,8 @@ class CreateGroupScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildVisibilityItem(CreateGroupController controller, String label) {
+  Widget _buildVisibilityItem(BuildContext context, CreateGroupController controller, String label) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     bool isSelected = controller.selectedVisibility.value == label;
     return GestureDetector(
       onTap: () => controller.setVisibility(label),
@@ -290,18 +295,19 @@ class CreateGroupScreen extends StatelessWidget {
         child: CommonText(
           text: label,
           fontSize: 14.sp,
-          color: isSelected ? Colors.white : Colors.grey,
+          color: isSelected ? Colors.white : (isDark ? Colors.white38 : Colors.grey),
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
     );
   }
 
-  Widget _buildPreviewRow(String label, String value) {
+  Widget _buildPreviewRow(BuildContext context, String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CommonText(text: label, fontSize: 14.sp, color: Colors.grey),
+        CommonText(text: label, fontSize: 14.sp, color: isDark ? Colors.white60 : Colors.grey),
         CommonText(text: value, fontSize: 14.sp, fontWeight: FontWeight.bold),
       ],
     );

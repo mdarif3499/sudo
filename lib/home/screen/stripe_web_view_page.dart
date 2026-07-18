@@ -123,15 +123,18 @@ class _StripeWebViewPageState extends State<StripeWebViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("Stripe Connection"),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
           onPressed: () => Get.back(),
         ),
       ),
@@ -143,8 +146,8 @@ class _StripeWebViewPageState extends State<StripeWebViewPage> {
             const Center(child: CircularProgressIndicator()),
 
           if (_isLoading && _isControllerInitialized)
-            const Center(
-              child: CircularProgressIndicator(color: Colors.blue),
+            Center(
+              child: CircularProgressIndicator(color: isDark ? Colors.blueAccent : Colors.blue),
             ),
         ],
       ),

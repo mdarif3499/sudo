@@ -17,9 +17,10 @@ class GroupDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GroupsController controller = Get.put(GroupsController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Obx(() {
           if (controller.groupsList.isEmpty) {
@@ -30,7 +31,7 @@ class GroupDetailsScreen extends StatelessWidget {
 
           return Column(
             children: [
-              _buildAppBar(),
+              _buildAppBar(context),
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -41,29 +42,29 @@ class GroupDetailsScreen extends StatelessWidget {
                       SizedBox(height: 15.h),
                       _buildSavingsCard(group),
                       SizedBox(height: 20.h),
-                      _buildActionButtons(),
+                      _buildActionButtons(context),
                       SizedBox(height: 15.h),
-                      _buildCurrentReceiverCard(),
+                      _buildCurrentReceiverCard(context),
                       SizedBox(height: 25.h),
                       CommonText(
                         text: AppString.members,
-                        fontSize: 18.sp,
+                        fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF4F4F4F),
+                        color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
                       ),
                       SizedBox(height: 12.h),
-                      _buildMembersList(group),
+                      _buildMembersList(context, group),
                       SizedBox(height: 20.h),
                       CommonText(
                         text: AppString.recentContributions,
-                        fontSize: 18.sp,
+                        fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF4F4F4F),
+                        color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
                       ),
                       SizedBox(height: 12.h),
-                      _buildRecentContributions(),
+                      _buildRecentContributions(context),
                       SizedBox(height: 20.h),
-                      _buildNextContributionCard(group),
+                      _buildNextContributionCard(context, group),
                       SizedBox(height: 20.h),
                     ],
                   ),
@@ -76,10 +77,11 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-      color: Colors.white,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
         children: [
           GestureDetector(
@@ -88,21 +90,20 @@ class GroupDetailsScreen extends StatelessWidget {
               padding: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE0E0E0)),
+                border: Border.all(color: isDark ? Colors.white12 : const Color(0xFFE0E0E0)),
               ),
               child: Icon(
                 Icons.arrow_back,
                 size: 20.sp,
-                color: AppColors.black,
+                color: isDark ? Colors.white : AppColors.black,
               ),
             ),
           ),
           SizedBox(width: 15.w),
-          CommonText(
+          const CommonText(
             text: AppString.groupDetails,
-            fontSize: 20.sp,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
-            color: AppColors.black,
           ),
         ],
       ),
@@ -133,7 +134,7 @@ class GroupDetailsScreen extends StatelessWidget {
         children: [
           CommonText(
             text: group.name,
-            fontSize: 24.sp,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -144,7 +145,7 @@ class GroupDetailsScreen extends StatelessWidget {
               SizedBox(width: 6.w),
               CommonText(
                 text: "${group.members} Members",
-                fontSize: 14.sp,
+                fontSize: 14,
                 color: Colors.white70,
               ),
             ],
@@ -152,12 +153,12 @@ class GroupDetailsScreen extends StatelessWidget {
           SizedBox(height: 25.h),
           CommonText(
             text: AppString.totalPool,
-            fontSize: 14.sp,
+            fontSize: 14,
             color: Colors.white70,
           ),
           CommonText(
             text: group.poolTotal,
-            fontSize: 32.sp,
+            fontSize: 32,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -192,12 +193,12 @@ class GroupDetailsScreen extends StatelessWidget {
             children: [
               CommonText(
                 text: group.percentage,
-                fontSize: 14.sp,
+                fontSize: 14,
                 color: Colors.white,
               ),
               CommonText(
                 text: "${group.myShare} / ${group.poolTotal}",
-                fontSize: 14.sp,
+                fontSize: 14,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),
@@ -208,7 +209,8 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       children: [
         Expanded(
@@ -231,14 +233,14 @@ class GroupDetailsScreen extends StatelessWidget {
         Expanded(
           child: CommonButton(
             titleText: AppString.chat,
-            titleColor: AppColors.black,
-            buttonColor: Colors.white,
-            borderColor: const Color(0xFFE0E0E0),
+            titleColor: isDark ? Colors.white : AppColors.black,
+            buttonColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+            borderColor: isDark ? AppColors.darkCardBorder : const Color(0xFFE0E0E0),
             buttonHeight: 52.h,
             buttonRadius: 14,
             prefixIcon: Icon(
               Icons.chat_bubble_outline,
-              color: AppColors.black,
+              color: isDark ? Colors.white : AppColors.black,
               size: 20.sp,
             ),
             onTap: () {
@@ -250,12 +252,13 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCurrentReceiverCard() {
+  Widget _buildCurrentReceiverCard(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: const Color(0xFF06D6A0).withValues(alpha: 0.07),
+        color: const Color(0xFF06D6A0).withValues(alpha: isDark ? 0.1 : 0.07),
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(
           color: const Color(0xFF06D6A0).withValues(alpha: 0.20),
@@ -268,46 +271,28 @@ class GroupDetailsScreen extends StatelessWidget {
         children: [
           CommonText(
             text: "Current Receiver",
-            fontSize: 12.sp,
-            color: const Color(0xFF828282),
+            fontSize: 12,
+            color: isDark ? Colors.white38 : const Color(0xFF828282),
           ),
-          CommonText(
+          const CommonText(
             text: "Emeka Eze",
-            fontSize: 16.sp,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: const Color(0xFF06D6A0),
+            color: Color(0xFF06D6A0),
           ),
         ],
       ),
     );
   }
-  Widget _buildBar(String month, double heightFactor) {
-    return Column(
-      children: [
-        Container(
-          width: 32.w,
-          height: 90.h * heightFactor,
-          decoration: BoxDecoration(
-            color: const Color(0xFF48C8FC),
-            borderRadius: BorderRadius.circular(6.r),
-          ),
-        ),
-        SizedBox(height: 10.h),
-        CommonText(
-          text: month,
-          fontSize: 12.sp,
-          color: const Color(0xFF828282),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildMembersList(GroupModel group) {
+  Widget _buildMembersList(BuildContext context, GroupModel group) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final members = group.membersList ?? [];
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
+        border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -324,6 +309,7 @@ class GroupDetailsScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final member = members[index];
           return _buildMemberItem(
+            context,
             member.name,
             member.amount,
             member.status,
@@ -338,6 +324,7 @@ class GroupDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildMemberItem(
+    BuildContext context,
     String name,
     String amount,
     String status,
@@ -346,13 +333,14 @@ class GroupDetailsScreen extends StatelessWidget {
     Color avatarColor, {
     bool isLast = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         border: isLast
             ? null
             : Border(
-                bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
+                bottom: BorderSide(color: isDark ? Colors.white10 : Colors.grey.withValues(alpha: 0.1)),
               ),
       ),
       child: Row(
@@ -367,7 +355,7 @@ class GroupDetailsScreen extends StatelessWidget {
             child: Center(
               child: CommonText(
                 text: initials,
-                fontSize: 14.sp,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF48C8FC),
               ),
@@ -380,15 +368,15 @@ class GroupDetailsScreen extends StatelessWidget {
               children: [
                 CommonText(
                   text: name,
-                  fontSize: 15.sp,
+                  fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.primaryColor,
+                  color: isDark ? Colors.white : AppColors.primaryColor,
                 ),
                 SizedBox(height: 2.h),
                 CommonText(
                   text: amount,
-                  fontSize: 13.sp,
-                  color: AppColors.textSecondaryColor7C7C7C,
+                  fontSize: 13,
+                  color: isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C,
                 ),
               ],
             ),
@@ -405,7 +393,7 @@ class GroupDetailsScreen extends StatelessWidget {
               SizedBox(width: 5.w),
               CommonText(
                 text: status,
-                fontSize: 14.sp,
+                fontSize: 14,
                 color: isPaid
                     ? const Color(0xFF27AE60)
                     : const Color(0xFFF2C94C),
@@ -418,24 +406,26 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentContributions() {
+  Widget _buildRecentContributions(BuildContext context) {
     return Column(
       children: [
-        _buildContributionItem("John Doe", "Jun 1, 2026", "\$200"),
+        _buildContributionItem(context, "John Doe", "Jun 1, 2026", "\$200"),
         SizedBox(height: 12.h),
-        _buildContributionItem("Jane Smith", "Jun 1, 2026", "\$200"),
+        _buildContributionItem(context, "Jane Smith", "Jun 1, 2026", "\$200"),
         SizedBox(height: 12.h),
-        _buildContributionItem("All Members", "May 1, 2026", "\$800"),
+        _buildContributionItem(context, "All Members", "May 1, 2026", "\$800"),
       ],
     );
   }
 
-  Widget _buildContributionItem(String name, String date, String amount) {
+  Widget _buildContributionItem(BuildContext context, String name, String date, String amount) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.all(18.r),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(16.r),
+        border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -449,12 +439,12 @@ class GroupDetailsScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(8.r),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: isDark ? Colors.white.withValues(alpha: 0.05) : AppColors.white,
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.check_circle_outline_rounded,
-              color: AppColors.black,
+              color: isDark ? Colors.white : AppColors.black,
               size: 18.sp,
             ),
           ),
@@ -465,40 +455,44 @@ class GroupDetailsScreen extends StatelessWidget {
               children: [
                 CommonText(
                   text: name,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.black,
+                  color: isDark ? Colors.white : AppColors.black,
                 ),
                 SizedBox(height: 2.h),
                 CommonText(
                   text: date,
-                  fontSize: 12.sp,
-                  color: AppColors.textSecondaryColor7C7C7C,
+                  fontSize: 12,
+                  color: isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C,
                 ),
               ],
             ),
           ),
           CommonText(
             text: amount,
-            fontSize: 16.sp,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppColors.primaryColor,
+            color: isDark ? Colors.white : AppColors.primaryColor,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildNextContributionCard(GroupModel group) {
+  Widget _buildNextContributionCard(BuildContext context, GroupModel group) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFFFFFFF), Color(0xFFF2F2F7)],
+          colors: isDark 
+            ? [AppColors.darkCardBg, AppColors.darkCardBg.withValues(alpha: 0.8)]
+            : [const Color(0xFFFFFFFF), const Color(0xFFF2F2F7)],
         ),
         borderRadius: BorderRadius.circular(24.r),
+        border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF000000).withValues(alpha: 0.12),
@@ -522,7 +516,7 @@ class GroupDetailsScreen extends StatelessWidget {
                 height: 48.r,
                 width: 48.r,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEBF8FF),
+                  color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFEBF8FF),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Icon(
@@ -538,15 +532,15 @@ class GroupDetailsScreen extends StatelessWidget {
                   children: [
                     CommonText(
                       text: AppString.nextContribution,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: AppColors.primaryColor,
+                      color: isDark ? Colors.white : AppColors.primaryColor,
                     ),
                     SizedBox(height: 2.h),
                     CommonText(
                       text: "Due by ${group.nextDue}",
-                      fontSize: 13.sp,
-                      color: const Color(0xFF828282),
+                      fontSize: 13,
+                      color: isDark ? Colors.white38 : const Color(0xFF828282),
                     ),
                   ],
                 ),

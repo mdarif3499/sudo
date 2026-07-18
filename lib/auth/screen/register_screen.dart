@@ -19,8 +19,10 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -30,22 +32,21 @@ class RegisterScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 40.h),
-                CommonText(
+                const CommonText(
                   text: "Create Account",
                   fontSize: 24,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimaryColor,
                 ),
                 SizedBox(height: 8.h),
                 CommonText(
                   text: "Join thousands saving together",
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.textSecondaryColor,
+                  color: isDark ? Colors.white70 : AppColors.textSecondaryColor,
                 ),
                 SizedBox(height: 24.h),
 
-                // Profile Image Picker (Optional)
+                // Profile Image Picker
                 Center(
                   child: GestureDetector(
                     onTap: () => controller.pickImage(),
@@ -53,11 +54,14 @@ class RegisterScreen extends StatelessWidget {
                           height: 100.h,
                           width: 100.h,
                           decoration: BoxDecoration(
-                            color: AppColors.indicatorActive.withValues(alpha: 0.08),
+                            color: isDark 
+                                ? AppColors.darkCardBg 
+                                : AppColors.indicatorActive.withValues(alpha: 0.08),
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: AppColors.indicatorActive
-                                    .withValues(alpha: 0.16)),
+                                color: isDark 
+                                    ? AppColors.darkCardBorder 
+                                    : AppColors.indicatorActive.withValues(alpha: 0.16)),
                             image: controller.profileImagePath.isNotEmpty
                                 ? DecorationImage(
                                     image: FileImage(
@@ -67,10 +71,10 @@ class RegisterScreen extends StatelessWidget {
                                 : null,
                           ),
                           child: controller.profileImagePath.isEmpty
-                              ? const Icon(
+                              ? Icon(
                                   Icons.camera_alt_outlined,
                                   size: 32,
-                                  color: AppColors.textSecondaryColor,
+                                  color: isDark ? Colors.white38 : AppColors.textSecondaryColor,
                                 )
                               : null,
                         )),
@@ -82,10 +86,10 @@ class RegisterScreen extends StatelessWidget {
                   controller: controller.fullNameController,
                   title: "Full Name",
                   hintText: "John Doe",
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.person_outline,
                     size: 20,
-                    color: AppColors.textSecondaryColor,
+                    color: isDark ? Colors.white54 : AppColors.textSecondaryColor,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -99,10 +103,10 @@ class RegisterScreen extends StatelessWidget {
                   controller: controller.emailController,
                   title: "Email Address",
                   hintText: "john@example.com",
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.email_outlined,
                     size: 20,
-                    color: AppColors.textSecondaryColor,
+                    color: isDark ? Colors.white54 : AppColors.textSecondaryColor,
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -117,7 +121,6 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 20.h),
                 
-                // Professional Phone Number Field with Country Code
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -125,27 +128,35 @@ class RegisterScreen extends StatelessWidget {
                       text: "Phone Number",
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
-                      color: AppColors.color333333,
+                      color: isDark ? Colors.white70 : AppColors.color333333,
                     ),
                     SizedBox(height: 8.h),
                     IntlPhoneField(
                       controller: controller.phoneController,
-                      style: GoogleFonts.roboto(fontSize: 14, color: AppColors.black),
-                      dropdownTextStyle: GoogleFonts.roboto(fontSize: 14, color: AppColors.black),
+                      style: GoogleFonts.roboto(
+                        fontSize: 14, 
+                        color: isDark ? Colors.white : AppColors.black
+                      ),
+                      dropdownTextStyle: GoogleFonts.roboto(
+                        fontSize: 14, 
+                        color: isDark ? Colors.white : AppColors.black
+                      ),
                       decoration: InputDecoration(
                         hintText: 'Phone Number',
                         hintStyle: GoogleFonts.roboto(
                           fontSize: 14,
-                          color: AppColors.textSecondaryColor.withValues(alpha: 0.6),
+                          color: isDark ? Colors.white38 : AppColors.textSecondaryColor.withValues(alpha: 0.6),
                         ),
                         filled: true,
-                        fillColor: AppColors.indicatorActive.withValues(alpha: 0.08),
+                        fillColor: isDark 
+                            ? AppColors.darkCardBg 
+                            : AppColors.indicatorActive.withValues(alpha: 0.08),
                         contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-                        border: _buildPhoneBorder(),
-                        enabledBorder: _buildPhoneBorder(),
-                        focusedBorder: _buildPhoneBorder(),
-                        errorBorder: _buildPhoneBorder(isError: true),
-                        focusedErrorBorder: _buildPhoneBorder(isError: true),
+                        border: _buildPhoneBorder(context),
+                        enabledBorder: _buildPhoneBorder(context),
+                        focusedBorder: _buildPhoneBorder(context, isFocused: true),
+                        errorBorder: _buildPhoneBorder(context, isError: true),
+                        focusedErrorBorder: _buildPhoneBorder(context, isError: true),
                         counterText: '',
                       ),
                       initialCountryCode: 'NG',
@@ -167,10 +178,10 @@ class RegisterScreen extends StatelessWidget {
                   controller: controller.addressController,
                   title: "Address",
                   hintText: "Enter your address",
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.location_on_outlined,
                     size: 20,
-                    color: AppColors.textSecondaryColor,
+                    color: isDark ? Colors.white54 : AppColors.textSecondaryColor,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -185,10 +196,10 @@ class RegisterScreen extends StatelessWidget {
                   title: "Password",
                   hintText: "Min. 6 characters",
                   isPassword: true,
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.lock_outline,
                     size: 20,
-                    color: AppColors.textSecondaryColor,
+                    color: isDark ? Colors.white54 : AppColors.textSecondaryColor,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -206,10 +217,10 @@ class RegisterScreen extends StatelessWidget {
                   title: "Confirm Password",
                   hintText: "Min. 6 characters",
                   isPassword: true,
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.lock_outline,
                     size: 20,
-                    color: AppColors.textSecondaryColor,
+                    color: isDark ? Colors.white54 : AppColors.textSecondaryColor,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -237,7 +248,7 @@ class RegisterScreen extends StatelessWidget {
                       text: TextSpan(
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: AppColors.textSecondaryColor,
+                          color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
                           fontFamily: 'Roboto',
                           height: 1.5,
                         ),
@@ -245,7 +256,7 @@ class RegisterScreen extends StatelessWidget {
                           const TextSpan(
                             text: "By signing up, you agree to our ",
                           ),
-                          TextSpan(
+                          const TextSpan(
                             text: "Terms of Service",
                             style: TextStyle(
                               color: AppColors.color2F80ED,
@@ -253,7 +264,7 @@ class RegisterScreen extends StatelessWidget {
                             ),
                           ),
                           const TextSpan(text: " and "),
-                          TextSpan(
+                          const TextSpan(
                             text: "Privacy Policy",
                             style: TextStyle(
                               color: AppColors.color2F80ED,
@@ -272,11 +283,11 @@ class RegisterScreen extends StatelessWidget {
                     CommonText(
                       text: "Already have an account? ",
                       fontSize: 14,
-                      color: AppColors.textSecondaryColor,
+                      color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
                     ),
                     GestureDetector(
                       onTap: () => Get.toNamed(AppRoutes.login),
-                      child: CommonText(
+                      child: const CommonText(
                         text: "Sign In",
                         fontSize: 14,
                         color: AppColors.color2F80ED,
@@ -294,13 +305,17 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  OutlineInputBorder _buildPhoneBorder({bool isError = false}) {
+  OutlineInputBorder _buildPhoneBorder(BuildContext context, {bool isError = false, bool isFocused = false}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(32.r),
-      borderSide: BorderSide(
+      borderSide:
+      BorderSide(
         color: isError
             ? AppColors.red
-            : AppColors.indicatorActive.withValues(alpha: 0.16),
+            : (isFocused 
+                ? AppColors.indicatorActive 
+                : (isDark ? AppColors.darkCardBorder : AppColors.indicatorActive.withValues(alpha: 0.16))),
         width: 1,
       ),
     );

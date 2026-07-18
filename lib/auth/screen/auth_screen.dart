@@ -15,8 +15,10 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -39,6 +41,7 @@ class AuthScreen extends StatelessWidget {
                   width: 150.w,
                   height: 32.h,
                   fit: BoxFit.contain,
+                  color: isDark ? Colors.white : null,
                 ),
                 SizedBox(height: 16.h),
                 Image.asset(
@@ -46,17 +49,20 @@ class AuthScreen extends StatelessWidget {
                   height: 8.h,
                   width: 220.w,
                   fit: BoxFit.contain,
+                  color: isDark ? Colors.white70 : null,
                 ),
                 
                 const Spacer(flex: 2),
 
                 // Feature Cards
                 _buildFeatureCard(
+                  context: context,
                   title: 'Build wealth together',
                   subtitle: 'Join savings circles, contribute regularly, and achieve your financial goals faster.',
                 ),
                 SizedBox(height: 16.h),
                 _buildFeatureCard(
+                  context: context,
                   title: '100% Secure',
                   subtitle: 'Bank-level encryption and transparent tracking for complete peace of mind.',
                 ),
@@ -74,9 +80,9 @@ class AuthScreen extends StatelessWidget {
                 SizedBox(height: 12.h),
                 CommonButton(
                   titleText: 'Sign In',
-                  buttonColor: AppColors.white,
-                  titleColor: AppColors.textPrimary,
-                  borderColor: Colors.grey.shade300,
+                  buttonColor: isDark ? Colors.white.withValues(alpha: 0.1) : AppColors.white,
+                  titleColor: isDark ? Colors.white : AppColors.textPrimary,
+                  borderColor: isDark ? Colors.white24 : Colors.grey.shade300,
                   onTap: () {
                      Get.toNamed(AppRoutes.login);
                   },
@@ -90,14 +96,16 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard({required String title, required String subtitle}) {
+  Widget _buildFeatureCard({required BuildContext context, required String title, required String subtitle}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.9),
+        color: isDark ? AppColors.darkCardBg : AppColors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: const Color(0xFFE0E4ED)),
+        border: Border.all(color: isDark ? AppColors.darkCardBorder : const Color(0xFFE0E4ED)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -111,16 +119,16 @@ class AuthScreen extends StatelessWidget {
         children: [
           CommonText(
             text: title,
-            fontSize: 18.sp,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: isDark ? Colors.white : AppColors.textPrimary,
           ),
           SizedBox(height: 8.h),
           CommonText(
             text: subtitle,
-            fontSize: 14.sp,
+            fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: AppColors.textSecondaryColor,
+            color: isDark ? Colors.white70 : AppColors.textSecondaryColor,
             height: 1.5,
           ),
         ],

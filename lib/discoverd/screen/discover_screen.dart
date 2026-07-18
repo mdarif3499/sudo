@@ -15,12 +15,14 @@ class DiscoverScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(context),
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -31,8 +33,8 @@ class DiscoverScreen extends StatelessWidget {
                     Center(
                       child: CommonText(
                         text: "Search your favourite groups",
-                        fontSize: 16.sp,
-                        color: Colors.grey,
+                        fontSize: 16,
+                        color: isDark ? Colors.white38 : Colors.grey,
                       ),
                     ),
                     SizedBox(height: 12.h),
@@ -40,14 +42,13 @@ class DiscoverScreen extends StatelessWidget {
                       controller: controller.searchController,
                       onChanged: (value) => controller.filterGroups(value),
                       hintText: "Search groups...",
-                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                      fillColor: const Color(0xFF1A1A1A).withValues(alpha: 0.05),
+                      prefixIcon: Icon(Icons.search, color: isDark ? Colors.white38 : Colors.grey),
                       borderRadius: 16,
                     ),
                     SizedBox(height: 24.h),
-                    CommonText(
+                    const CommonText(
                       text: "All Public Circles",
-                      fontSize: 18.sp,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                     SizedBox(height: 16.h),
@@ -58,8 +59,8 @@ class DiscoverScreen extends StatelessWidget {
                             padding: EdgeInsets.only(top: 40.h),
                             child: CommonText(
                               text: "No groups found",
-                              fontSize: 14.sp,
-                              color: Colors.grey,
+                              fontSize: 14,
+                              color: isDark ? Colors.white38 : Colors.grey,
                             ),
                           ),
                         );
@@ -73,12 +74,13 @@ class DiscoverScreen extends StatelessWidget {
                           return Padding(
                             padding: EdgeInsets.only(bottom: 12.h),
                             child: _buildGroupCard(
+                              context,
                               title: group.title,
                               members: group.members,
                               frequency: group.frequency,
                               target: group.target,
                               perMember: group.perMember,
-                              iconColor: group.iconColor,
+                              iconColor: isDark ? group.iconColor.withValues(alpha: 0.1) : group.iconColor,
                               icon: group.icon,
                             ),
                           );
@@ -96,15 +98,16 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          CommonText(
+          const CommonText(
             text: "Discover",
-            fontSize: 24.sp,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
           Row(
@@ -121,10 +124,10 @@ class DiscoverScreen extends StatelessWidget {
                     children: [
                       Icon(Icons.add, color: Colors.white, size: 16.sp),
                       SizedBox(width: 4.w),
-                      CommonText(
+                      const CommonText(
                         text: "New Group",
                         color: Colors.white,
-                        fontSize: 12.sp,
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
                     ],
@@ -135,13 +138,13 @@ class DiscoverScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(8.r),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F7),
+                  color: isDark ? Colors.white.withValues(alpha: 0.1) : const Color(0xFFF2F2F7),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Icon(
                   Icons.notifications_none_outlined,
                   size: 20.sp,
-                  color: Colors.black,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
             ],
@@ -151,7 +154,8 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGroupCard({
+  Widget _buildGroupCard(
+    BuildContext context, {
     required String title,
     required String members,
     required String frequency,
@@ -160,11 +164,13 @@ class DiscoverScreen extends StatelessWidget {
     required Color iconColor,
     required IconData icon,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(16.r),
+        border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -183,7 +189,7 @@ class DiscoverScreen extends StatelessWidget {
                   color: iconColor,
                   borderRadius: BorderRadius.circular(12.r),
                 ),
-                child: Icon(icon, color: const Color(0xFF00ADEF), size: 24.sp),
+                child: const Icon(Icons.group, color: Color(0xFF00ADEF), size: 24),
               ),
               SizedBox(width: 12.w),
               Expanded(
@@ -192,19 +198,19 @@ class DiscoverScreen extends StatelessWidget {
                   children: [
                     CommonText(
                       text: title,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                     SizedBox(height: 4.h),
                     Row(
                       children: [
                         Icon(Icons.people_outline,
-                            color: Colors.grey, size: 14.sp),
+                            color: isDark ? Colors.white38 : Colors.grey, size: 14.sp),
                         SizedBox(width: 4.w),
                         CommonText(
                           text: "$members  •  $frequency",
-                          fontSize: 12.sp,
-                          color: Colors.grey,
+                          fontSize: 12,
+                          color: isDark ? Colors.white38 : Colors.grey,
                         ),
                       ],
                     ),
@@ -214,7 +220,7 @@ class DiscoverScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.h),
-          const Divider(height: 1, color: Color(0xFFF2F2F7)),
+          Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFF2F2F7)),
           SizedBox(height: 16.h),
           Row(
             children: [
@@ -223,11 +229,11 @@ class DiscoverScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CommonText(
-                        text: "Target", fontSize: 12.sp, color: Colors.grey),
+                        text: "Target", fontSize: 12, color: isDark ? Colors.white38 : Colors.grey),
                     SizedBox(height: 4.h),
                     CommonText(
                       text: target,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ],
@@ -238,11 +244,11 @@ class DiscoverScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CommonText(
-                        text: "Per Member", fontSize: 12.sp, color: Colors.grey),
+                        text: "Per Member", fontSize: 12, color: isDark ? Colors.white38 : Colors.grey),
                     SizedBox(height: 4.h),
                     CommonText(
                       text: perMember,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ],
@@ -251,8 +257,8 @@ class DiscoverScreen extends StatelessWidget {
               CommonButton(
                 titleText: "Join",
                 buttonWidth: 70,
-                buttonHeight: 36.h,
-                padding: EdgeInsets.symmetric(vertical: 0),
+                buttonHeight: 36,
+                padding: EdgeInsets.zero,
                 buttonRadius: 8,
                 gradient: AppColors.primaryGradient,
                 onTap: () {},

@@ -6,19 +6,22 @@ import '../../../component/text/common_text.dart';
 import '../../../component/text_field/common_text_field.dart';
 import '../../../utils/constants/app_colors.dart';
 import '../../../config/route/app_routes.dart';
+import '../../services/theme/theme_controller.dart';
 import '../controller/sign_in_controller.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<SignInController>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -27,29 +30,48 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 60.h),
-                CommonText(
+                // Professional Theme Toggle Icon
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 10.h),
+                    child: Obx(() => IconButton(
+                      onPressed: () => themeController.toggleTheme(),
+                      icon: Icon(
+                        themeController.isDarkMode.value
+                            ? Icons.wb_sunny_rounded
+                            : Icons.nightlight_round,
+                        size: 28.sp,
+                        color: themeController.isDarkMode.value 
+                            ? Colors.orangeAccent 
+                            : AppColors.textPrimaryColor,
+                      ),
+                    )),
+                  ),
+                ),
+                
+                SizedBox(height: 20.h),
+                const CommonText(
                   text: "Welcome Back",
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimaryColor,
                 ),
                 SizedBox(height: 8.h),
                 CommonText(
                   text: "Sign in to continue saving",
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.textSecondaryColor7C7C7C,
+                  color: isDark ? Colors.white70 : AppColors.textSecondaryColor7C7C7C,
                 ),
                 SizedBox(height: 36.h),
                 CommonTextField(
                   controller: controller.emailController,
                   title: "Email Address",
                   hintText: "john@example.com",
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.email_outlined,
                     size: 20,
-                    color: AppColors.textSecondaryColor,
+                    color: isDark ? Colors.white54 : AppColors.textSecondaryColor,
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -69,10 +91,10 @@ class LoginScreen extends StatelessWidget {
                   hintText: "Min. 8 characters",
                   isPassword: true,
                   textInputAction: TextInputAction.done,
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.lock_outline,
                     size: 20,
-                    color: AppColors.textSecondaryColor,
+                    color: isDark ? Colors.white54 : AppColors.textSecondaryColor,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -98,7 +120,7 @@ class LoginScreen extends StatelessWidget {
                       minimumSize: const Size(0, 0),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: CommonText(
+                    child: const CommonText(
                       text: "Forgot Password?",
                       fontSize: 14,
                       color: AppColors.buttonGradientEnd,
@@ -125,11 +147,11 @@ class LoginScreen extends StatelessWidget {
                       text: "Don’t have an account? ",
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: AppColors.textSecondaryColor,
+                      color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
                     ),
                     GestureDetector(
                       onTap: () => Get.toNamed(AppRoutes.register),
-                      child: CommonText(
+                      child: const CommonText(
                         text: "Sign Up",
                         fontSize: 14,
                         color: AppColors.buttonGradientEnd,

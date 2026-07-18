@@ -7,11 +7,13 @@ import '../../profile/controller/profile_controller.dart';
 import '../../home/controller/dashboard_controller.dart';
 import '../../home/controller/create_group_controller.dart';
 import '../../services/api/api_service.dart';
+import '../../services/theme/theme_controller.dart';
 
 class DependencyInjection extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => DioApiClient(), fenix: true);
+    Get.put(ThemeController(), permanent: true);
     
     Get.lazyPut(() => SignInController(), fenix: true);
     Get.lazyPut(() => RegisterController(), fenix: true);

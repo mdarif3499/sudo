@@ -16,8 +16,10 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FBFF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -33,7 +35,11 @@ class DashboardScreen extends StatelessWidget {
                     children: [
                       Image.asset(AppImages.splash, height: 32.h),
                       SizedBox(width: 6.w),
-                      Image.asset(AppImages.sudo, height: 16.h),
+                      Image.asset(
+                        AppImages.sudo, 
+                        height: 16.h,
+                        color: isDark ? Colors.white : null,
+                      ),
                     ],
                   ),
                   GestureDetector(
@@ -59,20 +65,20 @@ class DashboardScreen extends StatelessWidget {
                         text: "Welcome back,",
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textPrimary,
+                        color: isDark ? Colors.white70 : AppColors.textPrimary,
                       ),
                       CommonText(
                         text: "John Doe",
                         fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textSecondaryColor7C7C7C,
+                        color: isDark ? Colors.white : AppColors.textSecondaryColor7C7C7C,
                       ),
                     ],
                   ),
                   CommonButton(
                     titleText: "New Group",
                     titleSize: 16,
-                    buttonWidth: 130.w,
+                    buttonWidth: 140.w,
                     buttonHeight: 45.h,
                     buttonRadius: 12,
                     gradient: const LinearGradient(
@@ -96,15 +102,23 @@ class DashboardScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.all(20.r),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFDEE8F9), Color(0xFFE8F6F3)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
+                  gradient: isDark 
+                    ? LinearGradient(
+                        colors: [
+                          AppColors.darkCardBg,
+                          AppColors.darkCardBg.withValues(alpha: 0.8),
+                        ],
+                      )
+                    : const LinearGradient(
+                        colors: [Color(0xFFDEE8F9), Color(0xFFE8F6F3)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
                   borderRadius: BorderRadius.circular(12.r),
+                  border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -119,11 +133,11 @@ class DashboardScreen extends StatelessWidget {
                         CommonText(
                           text: "Total Contribution",
                           fontSize: 14.sp,
-                          color: AppColors.textSecondary,
+                          color: isDark ? Colors.white70 : AppColors.textSecondary,
                         ),
                         Icon(
                           Icons.trending_up,
-                          color: AppColors.textPrimary,
+                          color: isDark ? Colors.white : AppColors.textPrimary,
                           size: 24.r,
                         ),
                       ],
@@ -133,7 +147,7 @@ class DashboardScreen extends StatelessWidget {
                       text: "\$12,450",
                       fontSize: 32.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: isDark ? Colors.white : AppColors.textPrimary,
                     ),
                   ],
                 ),
@@ -145,31 +159,34 @@ class DashboardScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       "Total Savings",
                       "\$12,450",
                       Icons.account_balance_wallet_outlined,
-                      const Color(0xFFE4FFF9),
-                      const Color(0xFFAAFFED),
+                      isDark ? AppColors.darkCardBg : const Color(0xFFE4FFF9),
+                      isDark ? AppColors.darkCardBorder : const Color(0xFFAAFFED),
                     ),
                   ),
                   SizedBox(width: 15.w),
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       "Active Groups",
                       "4",
                       Icons.group_outlined,
-                      const Color(0xFFEAF9FF),
-                      const Color(0xFFCAF0FF),
+                      isDark ? AppColors.darkCardBg : const Color(0xFFEAF9FF),
+                      isDark ? AppColors.darkCardBorder : const Color(0xFFCAF0FF),
                     ),
                   ),
                   SizedBox(width: 15.w),
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       "This Month",
                       "\$850",
                       Icons.calendar_today_outlined,
-                      const Color(0xFFE9FEFF),
-                      const Color(0xFFB8FCFF),
+                      isDark ? AppColors.darkCardBg : const Color(0xFFE9FEFF),
+                      isDark ? AppColors.darkCardBorder : const Color(0xFFB8FCFF),
                     ),
                   ),
                 ],
@@ -180,8 +197,9 @@ class DashboardScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(20.r),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? AppColors.darkCardBg : Colors.white,
                   borderRadius: BorderRadius.circular(24.r),
+                  border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.02),
@@ -197,7 +215,7 @@ class DashboardScreen extends StatelessWidget {
                         Container(
                           padding: EdgeInsets.all(12.r),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE3F2FD),
+                            color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFE3F2FD),
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                           child: Icon(
@@ -211,22 +229,22 @@ class DashboardScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CommonText(
+                              const CommonText(
                                 text: "Next Contribution",
-                                fontSize: 16.sp,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w400,
                               ),
                               CommonText(
                                 text: "Family Savings",
                                 fontSize: 13.sp,
-                                color: AppColors.textSecondary,
+                                color: isDark ? Colors.white60 : AppColors.textSecondary,
                               ),
                             ],
                           ),
                         ),
-                        CommonText(
+                        const CommonText(
                           text: "\$200",
-                          fontSize: 18.sp,
+                          fontSize: 18,
                           fontWeight: FontWeight.w400,
                         ),
                       ],
@@ -238,7 +256,7 @@ class DashboardScreen extends StatelessWidget {
                         CommonText(
                           text: "Due: Jun 15, 2026",
                           fontSize: 14.sp,
-                          color: AppColors.textSecondary,
+                          color: isDark ? Colors.white60 : AppColors.textSecondary,
                         ),
                         _buildGradientButton("Pay Now", 100.w, 40.h),
                       ],
@@ -250,13 +268,13 @@ class DashboardScreen extends StatelessWidget {
 
               SizedBox(height: 25.h),
 
-              // (compile: 53 ms, reload: 599 ms, reassemble: 157 ms).Recent Activity Section
+              // Recent Activity Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CommonText(
+                  const CommonText(
                     text: "Recent Activity",
-                    fontSize: 18.sp,
+                    fontSize: 18,
                     fontWeight: FontWeight.w400,
                   ),
                   GestureDetector(
@@ -278,6 +296,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               SizedBox(height: 15.h),
               _buildActivityItem(
+                context,
                 "Family Savings",
                 "Today, 2:30 PM",
                 "\$200",
@@ -285,6 +304,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               SizedBox(height: 10.h),
               _buildActivityItem(
+                context,
                 "Friends Circle",
                 "Yesterday",
                 "\$150",
@@ -300,28 +320,30 @@ class DashboardScreen extends StatelessWidget {
 
   // Helper Widgets
   Widget _buildStatCard(
+    BuildContext context,
     String title,
     String value,
     IconData icon,
     Color bgColor,
     Color bdrColor,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 18.r),
       decoration: BoxDecoration(
-        color: bgColor.withOpacity(0.3),
+        color: isDark ? bgColor : bgColor.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: bdrColor, width: 1.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: 24.sp, color: Colors.blueGrey),
+          Icon(icon, size: 24.sp, color: isDark ? Colors.white70 : Colors.blueGrey),
           SizedBox(height: 10.h),
           CommonText(
             text: title,
             fontSize: 11.sp,
-            color: AppColors.textSecondary,
+            color: isDark ? Colors.white60 : AppColors.textSecondary,
           ),
           CommonText(text: value, fontSize: 15.sp, fontWeight: FontWeight.bold),
         ],
@@ -330,21 +352,23 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildActivityItem(
+    BuildContext context,
     String title,
     String date,
     String amount,
     String status,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.all(15.r),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+        color: isDark ? AppColors.darkCardBg : Colors.white,
+        border: Border.all(color: isDark ? AppColors.darkCardBorder : const Color(0xFFE5E7EB), width: 1),
         borderRadius: BorderRadius.circular(16.r),
       ),
       child: Row(
         children: [
-          Icon(Icons.trending_up, color: Colors.blueGrey, size: 24.r),
+          Icon(Icons.trending_up, color: isDark ? Colors.white70 : Colors.blueGrey, size: 24.r),
           SizedBox(width: 15.w),
           Expanded(
             child: Column(
@@ -352,13 +376,13 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 CommonText(
                   text: title,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
                 CommonText(
                   text: date,
                   fontSize: 12.sp,
-                  color: AppColors.textSecondaryColor7C7C7C,
+                  color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
                 ),
               ],
             ),
@@ -371,7 +395,7 @@ class DashboardScreen extends StatelessWidget {
                 fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
               ),
-              CommonText(text: status, fontSize: 11.sp, color: Colors.grey),
+              CommonText(text: status, fontSize: 11.sp, color: isDark ? Colors.white38 : Colors.grey),
             ],
           ),
         ],
@@ -393,7 +417,7 @@ class DashboardScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.withOpacity(0.2),
+              color: Colors.blue.withValues(alpha: 0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

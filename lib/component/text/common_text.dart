@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../utils/constants/app_colors.dart';
 
 class CommonText extends StatelessWidget {
   const CommonText({
@@ -14,7 +13,7 @@ class CommonText extends StatelessWidget {
     this.bottom = 0,
     this.fontSize = 14,
     this.fontWeight = FontWeight.w500,
-    this.color = AppColors.color333333,
+    this.color,
     required this.text,
     this.overflow = TextOverflow.ellipsis,
     this.letterSpacing,
@@ -29,7 +28,7 @@ class CommonText extends StatelessWidget {
   final double bottom;
   final double fontSize;
   final FontWeight fontWeight;
-  final Color color;
+  final Color? color;
   final String text;
   final TextAlign textAlign;
   final int? maxLines;                        // nullable
@@ -60,7 +59,7 @@ class CommonText extends StatelessWidget {
           letterSpacing: letterSpacing,
           fontSize: fontSize.sp,
           fontWeight: fontWeight,
-          color: color,
+          color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
           height: height,
           decoration: decoration,
         ),
