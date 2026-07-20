@@ -11,19 +11,23 @@ import '../../../services/storage/storage_services.dart';
 import '../screen/webview_screen.dart';
 
 class OtpController extends GetxController {
-  final ApiClient _apiClient = DioApiClient();
+  final DioApiClient _apiClient = Get.find<DioApiClient>();
   
   final otpController = TextEditingController();
   final timerText = '02:00'.obs;
   final canResend = false.obs;
   final isLoading = false.obs;
   
+  // ওটিপি কোড হোল্ড করার জন্য ভেরিয়েবল
+  final _otpCode = "".obs;
+  String get otpCode => _otpCode.value;
+  set otpCode(String value) => _otpCode.value = value;
+  
   Timer? _timer;
   int _start = 120;
   
   String email = "";
   bool isForgotPassword = false;
-  String otpCode = "";
 
   @override
   void onInit() {
@@ -64,14 +68,14 @@ class OtpController extends GetxController {
         },
       );
 
-      if (response.isSuccess) {
+      if (response.statusCode == 200) {
         Utils.successSnackBar(response.message);
         startTimer();
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar("Resend Failed", response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", e.toString());
+      Utils.errorSnackBar("Error", "Something went wrong.");
     } finally {
       isLoading.value = false;
     }
@@ -79,7 +83,7 @@ class OtpController extends GetxController {
 
   Future<void> verifyOtp(String code) async {
     if (code.length != 6) {
-      Utils.errorSnackBar("Validation Error", "Please enter 6 digit OTP");
+      Utils.errorSnackBar("Error", "Please enter 6 digit code");
       return;
     }
 
@@ -95,96 +99,75 @@ class OtpController extends GetxController {
         },
       );
 
-      if (response.isSuccess) {
+      if (response.statusCode == 200) {
         if (isForgotPassword) {
-          Utils.successSnackBar(response.message);
+          Utils.successSnackBar("OTP Verified");
           Get.toNamed(AppRoutes.resetPassword, parameters: {
             'email': email,
             'otp': code,
           });
         } else {
-          // Registration flow: Save tokens
-          final data = response.data['data'];
-          if (data != null) {
-            // Save Tokens
-            await LocalStorage.setString(LocalStorageKeys.token, data['accessToken'] ?? "");
-            await LocalStorage.setString(LocalStorageKeys.refreshToken, data['refreshToken'] ?? "");
-            await LocalStorage.setBool(LocalStorageKeys.isLogIn, true);
-            
-            // Save User Info
-            final userInfo = data['userInfo'];
-            if (userInfo != null) {
-              await LocalStorage.setString(LocalStorageKeys.userId, userInfo['id'] ?? "");
-              await LocalStorage.setString(LocalStorageKeys.role, userInfo['role'] ?? "");
-              await LocalStorage.setString(LocalStorageKeys.myName, userInfo['name'] ?? "");
-              await LocalStorage.setString(LocalStorageKeys.myEmail, userInfo['email'] ?? "");
-              await LocalStorage.setString(LocalStorageKeys.myImage, userInfo['image'] ?? "");
-            }
-            
+          var responseData = response.data['data'];
+          if (responseData != null) {
+            await _saveUserData(responseData);
             Utils.successSnackBar(response.message);
-
-            // Check Profile and KYC Status
             await checkProfileAndKyc();
-          } else {
-             Utils.errorSnackBar("Error", "Invalid response from server");
           }
         }
       } else {
-        Utils.errorSnackBar("Verification Failed", response.message);
+        Utils.errorSnackBar("Failed", response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", e.toString());
+      Utils.errorSnackBar("Error", "Something went wrong.");
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> checkProfileAndKyc() async {
-    String token = await LocalStorage.getString(LocalStorageKeys.token);
-    if (token.isEmpty) {
-      debugPrint("===> No token found.");
-      return;
+  Future<void> _saveUserData(dynamic data) async {
+    await LocalStorage.setString(LocalStorageKeys.token, data['accessToken'] ?? "");
+    await LocalStorage.setString(LocalStorageKeys.refreshToken, data['refreshToken'] ?? "");
+    await LocalStorage.setBool(LocalStorageKeys.isLogIn, true);
+    
+    final userInfo = data['userInfo'];
+    if (userInfo != null) {
+      await LocalStorage.setString(LocalStorageKeys.userId, userInfo['id'] ?? "");
+      await LocalStorage.setString(LocalStorageKeys.role, userInfo['role'] ?? "");
+      await LocalStorage.setString(LocalStorageKeys.myName, userInfo['name'] ?? "");
+      await LocalStorage.setString(LocalStorageKeys.myEmail, userInfo['email'] ?? "");
+      await LocalStorage.setString(LocalStorageKeys.myImage, userInfo['image'] ?? "");
     }
+  }
 
+  Future<void> checkProfileAndKyc() async {
     try {
-      debugPrint("===> Calling Profile API: ${ApiEndPoint.getProfile}");
       final response = await _apiClient.get(ApiEndPoint.getProfile);
-      
-      if (response.isSuccess) {
+      if (response.statusCode == 200) {
         final data = response.data['data'];
-        final kycStatus = data['kycStatus']; // 'unverified' | 'pending' | 'approved' | 'rejected'
-        debugPrint("===> KYC Status: $kycStatus");
+        final kycStatus = data['kycStatus']; 
 
         if (kycStatus != 'approved') {
           await createKycSession();
         } else {
           Get.offAllNamed(AppRoutes.subscriptionScreen);
         }
-      } else {
-        debugPrint("===> Profile API Error: ${response.message}");
       }
     } catch (e) {
-      debugPrint("===> checkProfileAndKyc Exception: $e");
+      debugPrint("Error: $e");
     }
   }
 
   Future<void> createKycSession() async {
     try {
-      debugPrint("===> Creating KYC Session...");
       final response = await _apiClient.post(ApiEndPoint.createKycSession);
-      
-      if (response.isSuccess) {
-        final kycUrl = response.data['data']['url'];
-        if (kycUrl != null && kycUrl.isNotEmpty) {
-           Get.offAll(() => StripeWebViewPage(checkoutUrl: kycUrl));
-        } else {
-          Utils.errorSnackBar("KYC Error", "Could not initialize KYC session");
+      if (response.statusCode == 200) {
+        final kycUrl = response.data['data']?['url'];
+        if (kycUrl != null) {
+           Get.offAll(() => WebviewScreen(checkoutUrl: kycUrl));
         }
-      } else {
-        debugPrint("===> KYC Session API Failed: ${response.message}");
       }
     } catch (e) {
-      debugPrint("===> createKycSession Exception: $e");
+      debugPrint("Error: $e");
     }
   }
 

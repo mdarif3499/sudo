@@ -13,4 +13,6 @@ class LocalStorageKeys {
   static const String deviceId = "deviceId";
   static const String rememberMe = "rememberMe";
   static const String password = "password";
+  static const String kycStatus = "kycStatus";
+  static const String isDarkMode = "isDarkMode";
 }

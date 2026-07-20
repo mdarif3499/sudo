@@ -11,6 +11,8 @@ class MakePaymentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     // Getting arguments if passed, otherwise using default values
     final Map<String, dynamic> args =
         Get.arguments ??
@@ -21,11 +23,11 @@ class MakePaymentScreen extends StatelessWidget {
         };
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(),
+            _buildAppBar(context),
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -37,12 +39,13 @@ class MakePaymentScreen extends StatelessWidget {
                     SizedBox(height: 30.h),
                     CommonText(
                       text: "Select Payment Method",
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF4F4F4F),
+                      color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
                     ),
                     SizedBox(height: 16.h),
                     _buildPaymentOption(
+                      context,
                       icon: Icons.credit_card_outlined,
                       title: "Stripe",
                       onTap: () {
@@ -57,7 +60,7 @@ class MakePaymentScreen extends StatelessWidget {
                 ),
               ),
             ),
-            _buildBottomButton(),
+            _buildBottomButton(context),
             SizedBox(height: 20.h),
           ],
         ),
@@ -65,7 +68,8 @@ class MakePaymentScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       child: Row(
@@ -76,21 +80,20 @@ class MakePaymentScreen extends StatelessWidget {
               padding: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE0E0E0)),
+                border: Border.all(color: isDark ? Colors.white12 : const Color(0xFFE0E0E0)),
               ),
               child: Icon(
                 Icons.arrow_back,
                 size: 20.sp,
-                color: AppColors.black,
+                color: isDark ? Colors.white : AppColors.black,
               ),
             ),
           ),
           SizedBox(width: 15.w),
-          CommonText(
+          const CommonText(
             text: "Make Payment",
-            fontSize: 20.sp,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
-            color: AppColors.black,
           ),
         ],
       ),
@@ -121,13 +124,13 @@ class MakePaymentScreen extends StatelessWidget {
         children: [
           CommonText(
             text: "Payment Amount",
-            fontSize: 14.sp,
+            fontSize: 14,
             color: Colors.white.withValues(alpha: 0.8),
           ),
           SizedBox(height: 8.h),
           CommonText(
             text: args['amount'],
-            fontSize: 40.sp,
+            fontSize: 40,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -158,12 +161,12 @@ class MakePaymentScreen extends StatelessWidget {
       children: [
         CommonText(
           text: label,
-          fontSize: 14.sp,
+          fontSize: 14,
           color: Colors.white.withValues(alpha: 0.7),
         ),
         CommonText(
           text: value,
-          fontSize: 14.sp,
+          fontSize: 14,
           fontWeight: FontWeight.w500,
           color: Colors.white,
         ),
@@ -171,19 +174,21 @@ class MakePaymentScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentOption({
+  Widget _buildPaymentOption(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(20.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? AppColors.darkCardBg : Colors.white,
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: const Color(0xFFF2F2F7)),
+          border: Border.all(color: isDark ? AppColors.darkCardBorder : const Color(0xFFF2F2F7)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
@@ -197,7 +202,7 @@ class MakePaymentScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F8FF),
+                color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF1F8FF),
                 borderRadius: BorderRadius.circular(10.r),
               ),
               child: Icon(
@@ -210,14 +215,13 @@ class MakePaymentScreen extends StatelessWidget {
             Expanded(
               child: CommonText(
                 text: title,
-                fontSize: 16.sp,
+                fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: AppColors.black,
               ),
             ),
             Icon(
               Icons.chevron_right,
-              color: Colors.grey,
+              color: isDark ? Colors.white38 : Colors.grey,
               size: 20.sp,
             ),
           ],
@@ -226,14 +230,15 @@ class MakePaymentScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomButton() {
+  Widget _buildBottomButton(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: CommonButton(
         titleText: "View Payment History",
-        titleColor: const Color(0xFF828282),
-        buttonColor: Colors.white,
-        borderColor: const Color(0xFFD1D1D6),
+        titleColor: isDark ? Colors.white70 : const Color(0xFF828282),
+        buttonColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderColor: isDark ? AppColors.darkCardBorder : const Color(0xFFD1D1D6),
         buttonHeight: 54.h,
         buttonRadius: 30,
         onTap: () {

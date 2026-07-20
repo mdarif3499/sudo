@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../component/button/common_button.dart';
 import '../../../component/text/common_text.dart';
 import '../../../utils/constants/app_colors.dart';
@@ -14,14 +13,15 @@ class OtpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(OtpController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
           onPressed: () => Get.back(),
         ),
       ),
@@ -32,23 +32,22 @@ class OtpScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 40.h),
-              CommonText(
+              const CommonText(
                 text: "OTP Verification",
-                fontSize: 24.sp,
+                fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.black,
               ),
               SizedBox(height: 12.h),
               CommonText(
-                text:
-                    "Enter the verification code we just sent to your email address.",
-                fontSize: 14.sp,
-                color: AppColors.textSecondaryColor,
+                text: "Enter the verification code we just sent to your email address.",
+                fontSize: 14,
+                color: isDark ? Colors.white70 : AppColors.textSecondaryColor,
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 40.h),
               
-              MaterialPinField(
+              CommonPinCodeField(
+                controller: controller.otpController,
                 length: 6,
                 onCompleted: (pin) {
                   controller.otpCode = pin;
@@ -57,11 +56,6 @@ class OtpScreen extends StatelessWidget {
                 onChanged: (value) {
                   controller.otpCode = value;
                 },
-                theme: MaterialPinTheme(
-                  shape: MaterialPinShape.outlined,
-                  cellSize: Size(50.w, 50.h),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
               ),
 
               SizedBox(height: 32.h),
@@ -79,8 +73,8 @@ class OtpScreen extends StatelessWidget {
                 children: [
                   CommonText(
                     text: "Didn't receive code? ",
-                    fontSize: 14.sp,
-                    color: AppColors.textSecondaryColor,
+                    fontSize: 14,
+                    color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
                   ),
                   Obx(
                     () => GestureDetector(
@@ -91,10 +85,10 @@ class OtpScreen extends StatelessWidget {
                         text: controller.canResend.value
                             ? "Resend"
                             : "Resend in ${controller.timerText.value}",
-                        fontSize: 14.sp,
+                        fontSize: 14,
                         color: controller.canResend.value
                             ? AppColors.color2F80ED
-                            : AppColors.textSecondaryColor,
+                            : (isDark ? Colors.white38 : AppColors.textSecondaryColor),
                         fontWeight: FontWeight.w600,
                       ),
                     ),

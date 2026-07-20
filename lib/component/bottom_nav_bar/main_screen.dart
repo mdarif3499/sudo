@@ -16,7 +16,7 @@ class NavbarScreen extends StatelessWidget {
   final BottomNavController controller = Get.put(BottomNavController());
 
   final List<Widget> screens = [
-    const DashboardScreen(),
+    DashboardScreen(),
     GroupsScreen(),
     DiscoverScreen(),
     ProfileScreen(),
@@ -24,19 +24,22 @@ class NavbarScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Obx(() => screens[controller.selectedIndex.value]),
       bottomNavigationBar: Obx(
         () => Container(
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: isDark ? AppColors.darkCardBg : AppColors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, -5),
               ),
             ],
+            border: isDark ? Border(top: BorderSide(color: AppColors.darkCardBorder, width: 0.5)) : null,
           ),
           child: SafeArea(
             top: false,
@@ -46,20 +49,23 @@ class NavbarScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildNavItem(0, "Dashboard", AppIcons.homeA, AppIcons.homeI),
+                  _buildNavItem(context, 0, "Dashboard", AppIcons.homeA, AppIcons.homeI),
                   _buildNavItem(
+                    context,
                     1,
                     "Groups",
                     AppIcons.groupsA,
                     AppIcons.groupsI,
                   ),
                   _buildNavItem(
+                    context,
                     2,
                     "Discover",
                     AppIcons.discoverA,
                     AppIcons.discoverI,
                   ),
                   _buildNavItem(
+                    context,
                     3,
                     "Profile",
                     AppIcons.profileA,
@@ -75,11 +81,13 @@ class NavbarScreen extends StatelessWidget {
   }
 
   Widget _buildNavItem(
+    BuildContext context,
     int index,
     String label,
     String activeIcon,
     String inactiveIcon,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     bool isSelected = controller.selectedIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changeIndex(index),
@@ -91,6 +99,7 @@ class NavbarScreen extends StatelessWidget {
             isSelected ? activeIcon : inactiveIcon,
             width: 24.w,
             height: 24.h,
+            color: isSelected ? const Color(0xFF48C8FC) : (isDark ? Colors.white60 : null),
           ),
           SizedBox(height: 4.h),
           CommonText(
@@ -98,8 +107,8 @@ class NavbarScreen extends StatelessWidget {
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
             color: isSelected
-                ? Color(0xFF48C8FC)
-                : AppColors.textSecondaryColor7C7C7C,
+                ? const Color(0xFF48C8FC)
+                : (isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C),
           ),
         ],
       ),

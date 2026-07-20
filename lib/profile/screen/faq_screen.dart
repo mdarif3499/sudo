@@ -12,9 +12,10 @@ class FaqScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(FaqController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CommonAppBar(title: "FAQ's"),
       body: ListView.builder(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
@@ -28,13 +29,17 @@ class FaqScreen extends StatelessWidget {
               margin: EdgeInsets.only(bottom: 12.h),
               width: double.infinity,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                color: isDark ? AppColors.darkCardBg : null,
+                gradient: isDark ? null : const LinearGradient(
                   colors: [Color(0xFFf4f4fe), Color(0xFFf4fcfe)],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),
                 borderRadius: BorderRadius.circular(4.r),
-                border: Border.all(color: const Color(0xFFE5E7EB), width: 0.5),
+                border: Border.all(
+                  color: isDark ? AppColors.darkCardBorder : const Color(0xFFE5E7EB), 
+                  width: 0.5
+                ),
               ),
               child: Column(
                 children: [
@@ -52,13 +57,13 @@ class FaqScreen extends StatelessWidget {
                               text: faq['question']!,
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              color: AppColors.textPrimary,
+                              color: isDark ? Colors.white : AppColors.textPrimary,
                             ),
                           ),
                           Icon(
                             isExpanded ? Icons.remove : Icons.add,
                             size: 20.sp,
-                            color: Color(0xFF7C7C7C),
+                            color: isDark ? Colors.white70 : const Color(0xFF7C7C7C),
                           ),
                         ],
                       ),
@@ -75,7 +80,7 @@ class FaqScreen extends StatelessWidget {
                       child: CommonText(
                         text: faq['answer']!,
                         fontSize: 13,
-                        color: Colors.black,
+                        color: isDark ? Colors.white70 : Colors.black,
                         fontWeight: FontWeight.w400,
                       ),
                     ),

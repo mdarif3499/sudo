@@ -25,9 +25,9 @@ class CommonTextField extends StatelessWidget {
     this.borderRadius = 32,
     this.inputFormatters,
     this.fillColor,
-    this.hintTextColor = AppColors.textSecondaryColor,
-    this.labelTextColor = AppColors.textFiledColor,
-    this.textColor = AppColors.black,
+    this.hintTextColor,
+    this.labelTextColor,
+    this.textColor,
     this.borderColor,
     this.onSubmitted,
     this.onChanged,
@@ -40,6 +40,7 @@ class CommonTextField extends StatelessWidget {
     this.fontWeight,
     this.title,
     this.readOnly,
+    this.errorText,
   });
 
   final String? hintText;
@@ -74,9 +75,13 @@ class CommonTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final bool? readOnly;
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Obx(
       () => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +91,7 @@ class CommonTextField extends StatelessWidget {
               text: title ?? "",
               fontWeight: fontWeight ?? FontWeight.w400,
               fontSize: fontSize ?? 14,
-              color: titleColor ?? AppColors.color333333,
+              color: titleColor ?? (isDark ? Colors.white70 : AppColors.color333333),
             ),
             SizedBox(height: 8.h),
           ],
@@ -100,12 +105,16 @@ class CommonTextField extends StatelessWidget {
             maxLength: maxLength,
             onChanged: onChanged,
             inputFormatters: inputFormatters,
-            style: GoogleFonts.roboto(fontSize: 14, color: textColor),
+            style: GoogleFonts.roboto(
+              fontSize: 14,
+              color: textColor ?? theme.textTheme.bodyLarge?.color,
+            ),
             onFieldSubmitted: onSubmitted,
             onTap: onTap,
             validator: validator,
             maxLines: isPassword ? 1 : maxLines,
             decoration: InputDecoration(
+              errorText: errorText,
               errorMaxLines: 2,
               isDense: isDense ?? true,
               filled: true,
@@ -119,28 +128,29 @@ class CommonTextField extends StatelessWidget {
                       child: prefixIcon,
                     )
                   : null,
-              fillColor:
-                  fillColor ??
-                  AppColors.indicatorActive.withValues(alpha: 0.08),
+              fillColor: fillColor ??
+                  (isDark
+                      ? AppColors.darkCardBg
+                      : AppColors.indicatorActive.withValues(alpha: 0.08)),
               counterText: '',
               contentPadding: EdgeInsets.symmetric(
                 horizontal: paddingHorizontal.w,
                 vertical: paddingVertical.h,
               ),
-              border: _buildBorder(),
-              enabledBorder: _buildBorder(),
-              focusedBorder: _buildBorder(),
-              disabledBorder: _buildBorder(),
-              errorBorder: _buildBorder(isError: true),
+              border: _buildBorder(context),
+              enabledBorder: _buildBorder(context),
+              focusedBorder: _buildBorder(context, isFocused: true),
+              disabledBorder: _buildBorder(context),
+              errorBorder: _buildBorder(context, isError: true),
               hintText: hintText,
               labelText: labelText,
               hintStyle: GoogleFonts.roboto(
                 fontSize: 14,
-                color: hintTextColor?.withValues(alpha: 0.6),
+                color: hintTextColor ?? (isDark ? Colors.white38 : AppColors.textSecondaryColor.withValues(alpha: 0.6)),
               ),
               labelStyle: GoogleFonts.roboto(
                 fontSize: 14,
-                color: labelTextColor,
+                color: labelTextColor ?? (isDark ? Colors.white70 : AppColors.textFiledColor),
               ),
               prefix: prefixText != null
                   ? CommonText(
@@ -148,7 +158,7 @@ class CommonTextField extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                     )
                   : null,
-              suffixIcon: isPassword ? _buildPasswordSuffixIcon() : suffixIcon,
+              suffixIcon: isPassword ? _buildPasswordSuffixIcon(context) : suffixIcon,
             ),
           ),
         ],
@@ -156,20 +166,28 @@ class CommonTextField extends StatelessWidget {
     );
   }
 
-  OutlineInputBorder _buildBorder({bool isError = false}) {
+  OutlineInputBorder _buildBorder(BuildContext context, {bool isError = false, bool isFocused = false}) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(borderRadius.r),
       borderSide: BorderSide(
         color: isError
             ? AppColors.red
-            : (borderColor ??
-                  AppColors.indicatorActive.withValues(alpha: 0.16)),
+            : (isFocused
+                ? AppColors.indicatorActive
+                : (borderColor ??
+                    (isDark
+                        ? AppColors.darkCardBorder
+                        : AppColors.indicatorActive.withValues(alpha: 0.16)))),
         width: 1,
       ),
     );
   }
 
-  Widget _buildPasswordSuffixIcon() {
+  Widget _buildPasswordSuffixIcon(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: toggle,
       child: Padding(
@@ -180,7 +198,7 @@ class CommonTextField extends StatelessWidget {
                 ? Icons.visibility_off_outlined
                 : Icons.visibility_outlined,
             size: 20.sp,
-            color: AppColors.textSecondaryColor,
+            color: isDark ? Colors.white38 : AppColors.textSecondaryColor,
           ),
         ),
       ),

@@ -7,6 +7,7 @@ import '../../utils/constants/app_icons.dart';
 import '../../config/route/app_routes.dart';
 import '../controller/profile_controller.dart';
 import '../widget/profile_menu_item.dart';
+import '../../component/other_widgets/common_skeleton.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
@@ -15,10 +16,12 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: isDark ? null : const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
@@ -32,303 +35,332 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CommonText(
-                      text: "Profile",
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    Image.asset(
-                      AppIcons.notification,
-                      height: 42.h,
-                      width: 42.w,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-                Center(
-                  child: CommonText(
-                    text: "Your Account Settings",
-                    fontSize: 14,
-                    color: AppColors.textSecondaryColor7C7C7C,
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(20.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20.r),
-                    border: Border.all(
-                      color: Colors.grey.withValues(alpha: 0.1),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.02),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Column(
+          child: Obx(() {
+            if (controller.isLoading.value) {
+              return _buildSkeleton(context);
+            }
+
+            final data = controller.profileData.value;
+
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        height: 80.h,
-                        width: 80.h,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: AppColors.primaryGradient,
-                        ),
-                        child: Center(
-                          child: CommonText(
-                            text: "JD",
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
-                      CommonText(
-                        text: "John Doe",
-                        fontSize: 20,
+                      const CommonText(
+                        text: "Profile",
+                        fontSize: 24,
                         fontWeight: FontWeight.w600,
                       ),
-                      SizedBox(height: 4.h),
-                      CommonText(
-                        text: "john.doe@example.com",
-                        fontSize: 14,
-                        color: AppColors.textSecondaryColor,
+                      Image.asset(
+                        AppIcons.notification,
+                        height: 42.h,
+                        width: 42.w,
                       ),
-                      SizedBox(height: 16.h),
-                      GestureDetector(
-                        onTap: () => Get.toNamed(AppRoutes.editProfile),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20.w,
-                            vertical: 8.h,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: AppColors.primaryGradient,
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Image.asset(
-                                AppIcons.edit,
-                                color: Colors.white,
-                                height: 18.h,
-                                width: 18.w,
-                              ),
-                              SizedBox(width: 8.w),
-                              CommonText(
-                                text: "Edit Profile",
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ],
-                          ),
+                    ],
+                  ),
+                  SizedBox(height: 20.h),
+                  Center(
+                    child: CommonText(
+                      text: "Your Account Settings",
+                      fontSize: 14,
+                      color: isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C,
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(20.w),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkCardBg : Colors.white,
+                      borderRadius: BorderRadius.circular(20.r),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
+                      ),
+                      boxShadow: isDark ? [] : [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.02),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                // Stats Row
-                Row(
-                  children: [
-                    Expanded(child: _buildStatCard("4", "Active Groups")),
-                    SizedBox(width: 16.w),
-                    Expanded(child: _buildStatCard("\$12.5k", "Total Saved")),
-                  ],
-                ),
-                SizedBox(height: 12.h),
-                _buildSectionTitle("Account"),
-                SizedBox(height: 12.h),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: Colors.grey.withValues(alpha: 0.1),
+                      ],
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 16.h),
-                      _buildProfileMenu(
-                        icon: AppIcons.profile,
-                        iconColor: Colors.blue,
-                        iconBgColor: Colors.blue.withValues(alpha: 0.1),
-                        title: "Edit Profile",
-                        onTap: () => Get.toNamed(AppRoutes.editProfile),
-                      ),
-                      SizedBox(height: 5.h),
-                      const Divider(height: 1, color: Color(0xFFE0E4ED)),
-                      _buildProfileMenu(
-                        icon: AppIcons.kyc,
-                        iconColor: Colors.green,
-                        iconBgColor: Colors.green.withValues(alpha: 0.1),
-                        title: "KYC Verification",
-                        trailingText: "Required",
-                        trailingTextColor: Colors.orange,
-                        onTap: () => Get.toNamed(AppRoutes.kyc),
-                      ),
-                      SizedBox(height: 5.h),
-                      const Divider(height: 1, color: Color(0xFFE0E4ED)),
-                      _buildProfileMenu(
-                        icon: AppIcons.subscriptions,
-                        iconColor: Colors.orange,
-                        iconBgColor: Colors.orange.withValues(alpha: 0.1),
-                        title: "Subscriptions",
-                        trailingText: "Free",
-                        trailingTextColor: Colors.orange,
-                        onTap: () {
-                          Get.toNamed(AppRoutes.subscriptionScreen);
-                        },
-                      ),
-                      const Divider(height: 1, color: Color(0xFFE0E4ED)),
-                      _buildProfileMenu(
-                        icon: AppIcons.payment,
-                        iconColor: Colors.purple,
-                        iconBgColor: Colors.purple.withValues(alpha: 0.1),
-                        title: "Payment Methods",
-                        onTap: () => Get.toNamed(AppRoutes.paymentMethod),
-                      ),
-                      SizedBox(height: 8.h),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                _buildSectionTitle("Preferences"),
-                SizedBox(height: 8.h),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: Colors.grey.withValues(alpha: 0.1),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 8.h),
-                      _buildProfileMenu(
-                        icon: AppIcons.notificationP,
-                        iconColor: Colors.orangeAccent,
-                        iconBgColor: Colors.orangeAccent.withValues(alpha: 0.1),
-                        title: "Notifications",
-                        trailing: Obx(
-                          () => Transform.scale(
-                            scale: 0.8,
-                            child: Switch(
-                              value: controller.isNotificationOn.value,
-                              onChanged: (val) {
-                                controller.toggleNotification(val);
-                              },
-                              activeTrackColor: const Color(0xFF4A7FE0),
-
-                              inactiveTrackColor: Colors.grey.shade300,
-
-                              thumbColor:
-                                  WidgetStateProperty.resolveWith<Color>((
-                                    states,
-                                  ) {
-                                    if (states.contains(WidgetState.selected)) {
-                                      return Colors.white;
-                                    }
-                                    return Colors.white;
-                                  }),
-
-                              trackOutlineColor: WidgetStateProperty.all(
-                                Colors.transparent,
-                              ),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 80.h,
+                          width: 80.h,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: AppColors.primaryGradient,
+                          ),
+                          child: Center(
+                            child: CommonText(
+                              text: (data?['fullName'] ?? "U").substring(0, 1).toUpperCase(),
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                           ),
                         ),
-                        onTap: () {},
-                      ),
-                      const Divider(height: 1, color: Color(0xFFE0E4ED)),
-                      _buildProfileMenu(
-                        icon: AppIcons.passport,
-                        iconColor: Colors.brown.withValues(alpha: 0.5),
-                        iconBgColor: Colors.brown.withValues(alpha: 0.1),
-                        title: "Change Password",
-                        onTap: () => Get.toNamed(AppRoutes.changePassword),
-                      ),
-                      SizedBox(height: 8.h),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                _buildSectionTitle("Support"),
-                SizedBox(height: 8.h),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: Colors.grey.withValues(alpha: 0.1),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.h),
-                    child: _buildProfileMenu(
-                      icon: AppIcons.help,
-                      iconColor: Colors.blueGrey,
-                      iconBgColor: Colors.blueGrey.withValues(alpha: 0.1),
-                      title: "Help & Support",
-                      onTap: () => Get.toNamed(AppRoutes.helpSupport),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 32.h),
-                GestureDetector(
-                  onTap: (){
-                    Get.offAllNamed(AppRoutes.login);
-
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 12.h),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEF4444).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(30.r),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.logout, color: Colors.red, size: 20.sp),
-                        SizedBox(width: 8.w),
+                        SizedBox(height: 12.h),
                         CommonText(
-                          text: "Log Out",
-                          fontSize: 16,
+                          text: data?['fullName'] ?? "User",
+                          fontSize: 20,
                           fontWeight: FontWeight.w600,
-                          color: Colors.red,
+                        ),
+                        SizedBox(height: 4.h),
+                        CommonText(
+                          text: data?['email'] ?? "",
+                          fontSize: 14,
+                          color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
+                        ),
+                        SizedBox(height: 16.h),
+                        GestureDetector(
+                          onTap: () => Get.toNamed(AppRoutes.editProfile),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20.w,
+                              vertical: 8.h,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: AppColors.primaryGradient,
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  AppIcons.edit,
+                                  color: Colors.white,
+                                  height: 18.h,
+                                  width: 18.w,
+                                ),
+                                SizedBox(width: 8.w),
+                                const CommonText(
+                                  text: "Edit Profile",
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                SizedBox(height: 40.h),
-              ],
-            ),
-          ),
+                  SizedBox(height: 20.h),
+                  // Stats Row
+                  Row(
+                    children: [
+                      Expanded(child: _buildStatCard(context, "4", "Active Groups")),
+                      SizedBox(width: 16.w),
+                      Expanded(child: _buildStatCard(context, "\$12.5k", "Total Saved")),
+                    ],
+                  ),
+                  SizedBox(height: 12.h),
+                  _buildSectionTitle(context, "Account"),
+                  SizedBox(height: 12.h),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkCardBg : Colors.white,
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 16.h),
+                        _buildProfileMenu(
+                          icon: AppIcons.profile,
+                          iconColor: Colors.blue,
+                          iconBgColor: Colors.blue.withValues(alpha: 0.1),
+                          title: "Edit Profile",
+                          onTap: () => Get.toNamed(AppRoutes.editProfile),
+                        ),
+                        SizedBox(height: 5.h),
+                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                        _buildProfileMenu(
+                          icon: AppIcons.kyc,
+                          iconColor: Colors.green,
+                          iconBgColor: Colors.green.withValues(alpha: 0.1),
+                          title: "KYC Verification",
+                          trailingText: data?['kycStatus']?.toString().capitalizeFirst ?? "Required",
+                          trailingTextColor: data?['kycStatus'] == 'approved' ? Colors.green : Colors.orange,
+                          onTap: () => Get.toNamed(AppRoutes.kyc),
+                        ),
+                        SizedBox(height: 5.h),
+                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                        _buildProfileMenu(
+                          icon: AppIcons.subscriptions,
+                          iconColor: Colors.orange,
+                          iconBgColor: Colors.orange.withValues(alpha: 0.1),
+                          title: "Subscriptions",
+                          trailingText: "Free",
+                          trailingTextColor: Colors.orange,
+                          onTap: () {
+                            Get.toNamed(AppRoutes.subscriptionScreen);
+                          },
+                        ),
+                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                        _buildProfileMenu(
+                          icon: AppIcons.payment,
+                          iconColor: Colors.purple,
+                          iconBgColor: Colors.purple.withValues(alpha: 0.1),
+                          title: "Payment Methods",
+                          onTap: () => Get.toNamed(AppRoutes.paymentMethod),
+                        ),
+                        SizedBox(height: 8.h),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                  _buildSectionTitle(context, "Preferences"),
+                  SizedBox(height: 8.h),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkCardBg : Colors.white,
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 8.h),
+                        _buildProfileMenu(
+                          icon: AppIcons.notificationP,
+                          iconColor: Colors.orangeAccent,
+                          iconBgColor: Colors.orangeAccent.withValues(alpha: 0.1),
+                          title: "Notifications",
+                          trailing: Obx(
+                            () => Transform.scale(
+                              scale: 0.8,
+                              child: Switch(
+                                value: controller.isNotificationOn.value,
+                                onChanged: (val) {
+                                  controller.toggleNotification(val);
+                                },
+                                activeTrackColor: const Color(0xFF4A7FE0),
+                                inactiveTrackColor: Colors.grey.shade300,
+                                thumbColor: WidgetStateProperty.all(Colors.white),
+                                trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+                              ),
+                            ),
+                          ),
+                          onTap: () {},
+                        ),
+                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                        _buildProfileMenu(
+                          icon: AppIcons.passport,
+                          iconColor: Colors.brown.withValues(alpha: 0.5),
+                          iconBgColor: Colors.brown.withValues(alpha: 0.1),
+                          title: "Change Password",
+                          onTap: () => Get.toNamed(AppRoutes.changePassword),
+                        ),
+                        SizedBox(height: 8.h),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                  _buildSectionTitle(context, "Support"),
+                  SizedBox(height: 8.h),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkCardBg : Colors.white,
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.h),
+                      child: _buildProfileMenu(
+                        icon: AppIcons.help,
+                        iconColor: Colors.blueGrey,
+                        iconBgColor: Colors.blueGrey.withValues(alpha: 0.1),
+                        title: "Help & Support",
+                        onTap: () => Get.toNamed(AppRoutes.helpSupport),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 32.h),
+                  GestureDetector(
+                    onTap: () {
+                      controller.logOut();
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(30.r),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.logout, color: Colors.red, size: 20.sp),
+                          SizedBox(width: 8.w),
+                          const CommonText(
+                            text: "Log Out",
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.red,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 40.h),
+                ],
+              ),
+            );
+          }),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSkeleton(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Column(
+        children: [
+          SizedBox(height: 20.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CommonSkeleton(height: 32.h, width: 100.w),
+              CommonSkeleton(height: 42.r, width: 42.r, borderRadius: 21),
+            ],
+          ),
+          SizedBox(height: 40.h),
+          CommonSkeleton(height: 200.h, width: double.infinity, borderRadius: 20),
+          SizedBox(height: 20.h),
+          Row(
+            children: [
+              Expanded(child: CommonSkeleton(height: 80.h, width: double.infinity, borderRadius: 16)),
+              SizedBox(width: 16.w),
+              Expanded(child: CommonSkeleton(height: 80.h, width: double.infinity, borderRadius: 16)),
+            ],
+          ),
+          SizedBox(height: 24.h),
+          CommonSkeleton(height: 20.h, width: 100.w),
+          SizedBox(height: 12.h),
+          CommonSkeleton(height: 250.h, width: double.infinity, borderRadius: 16),
+          SizedBox(height: 24.h),
+          CommonSkeleton(height: 250.h, width: double.infinity, borderRadius: 16),
+        ],
       ),
     );
   }
@@ -355,13 +387,14 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String value, String label) {
+  Widget _buildStatCard(BuildContext context, String value, String label) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+        border: Border.all(color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -370,19 +403,20 @@ class ProfileScreen extends StatelessWidget {
           CommonText(
             text: label,
             fontSize: 12,
-            color: AppColors.textSecondaryColor,
+            color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return CommonText(
       text: title,
       fontSize: 18,
       fontWeight: FontWeight.w400,
-      color: AppColors.textPrimary,
+      color: isDark ? Colors.white : AppColors.textPrimary,
     );
   }
 }

@@ -29,6 +29,7 @@ import '../../groups/view/review_payment_screen.dart';
 import '../../groups/view/payment_history_screen.dart';
 import '../../auth/screen/otp_screen.dart';
 import '../../auth/screen/forgot_password_otp_screen.dart';
+import '../../home/screen/stripe_web_view_page.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -63,6 +64,7 @@ class AppRoutes {
   static const String makePayment = '/makePayment';
   static const String reviewPayment = '/reviewPayment';
   static const String paymentHistory = '/paymentHistory';
+  static const String stripeWebView = '/stripeWebView';
 
   static const String mmuBylawsScreen = '/mmuBylawsScreen';
 
@@ -75,7 +77,7 @@ class AppRoutes {
     GetPage(name: kyc, page: () => KycScreen()),
     GetPage(name: docSubmitted, page: () => const DocSubmittedScreen()),
     GetPage(name: otp, page: () => const OtpScreen()),
-    GetPage(name: forgotPassword, page: () => const ForgotPasswordScreen()),
+    GetPage(name: forgotPassword, page: () =>  ForgotPasswordScreen()),
     GetPage(name: forgotPasswordOtp, page: () =>  ForgotPasswordOtpScreen()),
     GetPage(name: resetPassword, page: () => const ResetPasswordScreen()),
     GetPage(name: success, page: () => const SuccessScreen()),
@@ -97,5 +99,11 @@ class AppRoutes {
     GetPage(name: reviewPayment, page: () => const ReviewPaymentScreen()),
     GetPage(name: paymentHistory, page: () => const PaymentHistoryScreen()),
     GetPage(name: mmuBylawsScreen, page: () => const MmuBylawsScreen()),
+    GetPage(
+      name: stripeWebView,
+      page: () => StripeWebViewPage(
+        checkoutUrl: Get.arguments as String,
+      ),
+    ),
   ];
 }

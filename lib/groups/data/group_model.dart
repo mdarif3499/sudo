@@ -1,29 +1,51 @@
-import 'package:flutter/material.dart';
-
 class GroupModel {
+  final String? id;
   final String name;
-  final int members;
-  final double progress;
-  final String percentage;
-  final String poolTotal;
-  final String myShare;
-  final String nextDue;
   final String status;
-  final Color progressColor;
-  final List<MemberModel>? membersList;
+  final String visibility;
+  final int membersCount;
+  final dynamic progress;
+  final int poolTotal;
+  final int myShare;
+  final String? nextDue;
+  final int currentCycle;
+  final int totalCycles;
+  final String paymentFrequency;
+  final DateTime? startDate;
 
   GroupModel({
+    this.id,
     required this.name,
-    required this.members,
+    required this.status,
+    required this.visibility,
+    required this.membersCount,
     required this.progress,
-    required this.percentage,
     required this.poolTotal,
     required this.myShare,
-    required this.nextDue,
-    required this.status,
-    required this.progressColor,
-    this.membersList,
+    this.nextDue,
+    required this.currentCycle,
+    required this.totalCycles,
+    required this.paymentFrequency,
+    this.startDate,
   });
+
+  factory GroupModel.fromJson(Map<String, dynamic> json) {
+    return GroupModel(
+      id: json['_id'],
+      name: json['name'] ?? '',
+      status: json['status'] ?? '',
+      visibility: json['visibility'] ?? '',
+      membersCount: json['membersCount'] ?? 0,
+      progress: json['progress'] ?? 0.0,
+      poolTotal: json['poolTotal'] ?? 0,
+      myShare: json['myShare'] ?? 0,
+      nextDue: json['nextDue'],
+      currentCycle: json['currentCycle'] ?? 1,
+      totalCycles: json['totalCycles'] ?? 1,
+      paymentFrequency: json['paymentFrequency'] ?? '',
+      startDate: json['startDate'] != null ? DateTime.parse(json['startDate']) : null,
+    );
+  }
 }
 
 class MemberModel {
@@ -32,7 +54,6 @@ class MemberModel {
   final String status;
   final bool isPaid;
   final String initials;
-  final Color avatarColor;
 
   MemberModel({
     required this.name,
@@ -40,6 +61,5 @@ class MemberModel {
     required this.status,
     required this.isPaid,
     required this.initials,
-    required this.avatarColor,
   });
 }

@@ -13,8 +13,10 @@ class ResetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CommonAppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -23,25 +25,28 @@ class ResetPasswordScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20.h),
-              CommonText(
+              const CommonText(
                 text: "Reset Password",
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimaryColor,
               ),
               SizedBox(height: 8.h),
               CommonText(
                 text: "Create a new password for your account",
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
-                color: AppColors.textSecondaryColor.withValues(alpha: 0.8),
+                color: isDark ? Colors.white70 : AppColors.textSecondaryColor.withValues(alpha: 0.8),
               ),
               SizedBox(height: 40.h),
               CommonTextField(
                 title: "New Password",
                 hintText: "Min. 8 characters",
                 isPassword: true,
-                prefixIcon: const Icon(Icons.lock_outline, size: 20, color: AppColors.textSecondaryColor),
+                prefixIcon: Icon(
+                  Icons.lock_outline, 
+                  size: 20, 
+                  color: isDark ? Colors.white54 : AppColors.textSecondaryColor
+                ),
               ),
 
               SizedBox(height: 20.h),
@@ -50,7 +55,11 @@ class ResetPasswordScreen extends StatelessWidget {
                 title: "Confirm Password",
                 hintText: "Re-enter your password",
                 isPassword: true,
-                prefixIcon: const Icon(Icons.lock_outline, size: 20, color: AppColors.textSecondaryColor),
+                prefixIcon: Icon(
+                  Icons.lock_outline, 
+                  size: 20, 
+                  color: isDark ? Colors.white54 : AppColors.textSecondaryColor
+                ),
               ),
 
               SizedBox(height: 40.h),
