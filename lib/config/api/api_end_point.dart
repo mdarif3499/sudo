@@ -13,4 +13,9 @@ class ApiEndPoint {
   // Stripe Endpoints
   static const stripeAccountStatus = '/stripe/account-status';
   static const stripeConnectAccount = '/stripe/connect-account';
+  static const createGroup = '/group/create';
+  static const getMyGroups = '/group/my-groups';
+  static const getAllGroups = '/group';
+  static const joinGroup = '/group/join/'; 
+  static const startGroup = '/group/start/'; // New Endpoint
 }

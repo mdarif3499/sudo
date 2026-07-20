@@ -164,7 +164,7 @@ class MakePaymentScreen extends StatelessWidget {
           fontSize: 14,
           color: Colors.white.withValues(alpha: 0.7),
         ),
-        const CommonText(
+        CommonText(
           text: value,
           fontSize: 14,
           fontWeight: FontWeight.w500,

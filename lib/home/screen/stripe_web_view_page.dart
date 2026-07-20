@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sudo/config/route/app_routes.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -20,6 +23,7 @@ class _StripeWebViewPageState extends State<StripeWebViewPage> {
   late final WebViewController _controller;
   bool _isLoading = true;
   bool _isControllerInitialized = false;
+  bool _isProcessed = false; // Flag to prevent multiple pops
 
   @override
   void initState() {
@@ -58,16 +62,13 @@ class _StripeWebViewPageState extends State<StripeWebViewPage> {
                 _isLoading = false;
               });
             }
-            
-            // Stripe onboarding success check
-            if (url.contains("success") || url.contains("Approved")) {
-              Utils.successSnackBar( "Stripe account connected successfully.");
-              Get.back();
-            } 
-            // Stripe cancel or failure check
-            else if (url.contains("cancel") || url.contains("failure") || url.contains("reauth")) {
-              Utils.errorSnackBar("Stripe Status", "Connection was incomplete or cancelled.");
-              Get.back();
+            if (url.contains("success")|| url.contains("refresh")) {
+              Utils.successSnackBar("Verification Successful. Please Login.");
+              Get.offAllNamed(AppRoutes.main);
+            } else if (url.contains("cancel") || url.contains("failure")) {
+              Get.offAllNamed(AppRoutes.main);
+              Utils.errorSnackBar(""
+                  "Status", "Verification was cancelled or failed.");
             }
           },
         ),
@@ -87,6 +88,7 @@ class _StripeWebViewPageState extends State<StripeWebViewPage> {
           request.grant();
         },
       );
+
 
       androidController.setMediaPlaybackRequiresUserGesture(false);
 
@@ -118,6 +120,23 @@ class _StripeWebViewPageState extends State<StripeWebViewPage> {
       setState(() {
         _isControllerInitialized = true;
       });
+    }
+  }
+
+  void _handleStripeCallback(String url) {
+    if (_isProcessed) return;
+
+    // Check for success indicators in the URL
+    if (url.contains("status=success") || url.contains("success") || url.contains("refresh")) {
+      _isProcessed = true;
+      Utils.successSnackBar("Stripe account connected successfully.");
+      Get.back(); // Returns to app
+    } 
+    // Check for failure indicators
+    else if (url.contains("status=cancel") || url.contains("status=failure") || url.contains("reauth")) {
+      _isProcessed = true;
+      Utils.errorSnackBar("Stripe Status", "Connection was incomplete or cancelled.");
+      Get.back(); // Returns to app
     }
   }
 

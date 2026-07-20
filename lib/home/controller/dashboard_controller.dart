@@ -8,8 +8,10 @@ import '../../config/route/app_routes.dart';
 class DashboardController extends GetxController {
   final DioApiClient _apiClient = Get.find<DioApiClient>();
 
-  var stripeConnected = true.obs;
-  var detailsSubmitted = true.obs;
+  var stripeConnected = false.obs;
+  var detailsSubmitted = false.obs;
+  var chargesEnabled = false.obs;
+  var payoutsEnabled = false.obs;
   var isLoading = false.obs;
 
   @override
@@ -26,10 +28,15 @@ class DashboardController extends GetxController {
         if (responseData != null) {
           stripeConnected.value = responseData['stripeConnected'] ?? false;
           detailsSubmitted.value = responseData['detailsSubmitted'] ?? false;
+          chargesEnabled.value = responseData['chargesEnabled'] ?? false;
+          payoutsEnabled.value = responseData['payoutsEnabled'] ?? false;
 
           debugPrint("Stripe Connection Status: ${stripeConnected.value}");
 
-          if (!stripeConnected.value&&!detailsSubmitted.value) {
+          if (!stripeConnected.value ||
+              !detailsSubmitted.value ||
+              !payoutsEnabled.value ||
+              !chargesEnabled.value) {
             showStripeConnectPopup();
           }
         }
@@ -46,7 +53,8 @@ class DashboardController extends GetxController {
       PopScope(
         canPop: false,
         child: Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           elevation: 10,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -60,37 +68,49 @@ class DashboardController extends GetxController {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.account_balance_wallet_outlined, size: 48, color: Colors.blue),
+                  child: const Icon(Icons.account_balance_wallet_outlined,
+                      size: 48, color: Colors.blue),
                 ),
                 const SizedBox(height: 24),
                 const Text(
                   "Connect Your Stripe",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 const Text(
                   "You must connect your Stripe account to receive payments. This is required for your account to remain active.",
-                  style: TextStyle(fontSize: 14, color: Colors.black54, height: 1.5),
+                  style: TextStyle(
+                      fontSize: 14, color: Colors.black54, height: 1.5),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
                 Obx(() => ElevatedButton(
-                  onPressed: isLoading.value ? null : () => connectStripe(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    elevation: 0,
-                  ),
-                  child: isLoading.value 
-                    ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Text("Connect Now", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                )),
+                      onPressed: isLoading.value ? null : () => connectStripe(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 56),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
+                        elevation: 0,
+                      ),
+                      child: isLoading.value
+                          ? const SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                  color: Colors.white, strokeWidth: 2))
+                          : const Text("Connect Now",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                    )),
               ],
             ),
           ),
@@ -115,7 +135,7 @@ class DashboardController extends GetxController {
           Utils.errorSnackBar("Error", "Could not generate onboarding link.");
         }
       } else {
-         Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar("Error", response.message);
       }
     } catch (e) {
       Utils.errorSnackBar("Error", "Something went wrong. Please try again.");

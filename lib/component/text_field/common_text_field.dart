@@ -40,6 +40,7 @@ class CommonTextField extends StatelessWidget {
     this.fontWeight,
     this.title,
     this.readOnly,
+    this.errorText,
   });
 
   final String? hintText;
@@ -74,6 +75,7 @@ class CommonTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final bool? readOnly;
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +114,7 @@ class CommonTextField extends StatelessWidget {
             validator: validator,
             maxLines: isPassword ? 1 : maxLines,
             decoration: InputDecoration(
+              errorText: errorText,
               errorMaxLines: 2,
               isDense: isDense ?? true,
               filled: true,

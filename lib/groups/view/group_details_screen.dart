@@ -6,32 +6,35 @@ import '../../component/button/common_button.dart';
 import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_string.dart';
-import '../controller/groups_controller.dart';
-import '../data/group_model.dart';
+import '../controller/group_details_controller.dart';
+import '../data/group_details_model.dart';
+import 'package:intl/intl.dart';
+import '../../component/other_widgets/common_skeleton.dart';
 
 class GroupDetailsScreen extends StatelessWidget {
-  final int groupIndex;
-
-  const GroupDetailsScreen({super.key, this.groupIndex = 0});
+  const GroupDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final GroupsController controller = Get.put(GroupsController());
+    final GroupDetailsController controller = Get.put(GroupDetailsController());
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Obx(() {
-          if (controller.groupsList.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+          if (controller.isLoading.value) {
+            return _buildSkeleton(context);
           }
 
-          final group = controller.groupsList[groupIndex];
+          final details = controller.groupDetails.value;
+          if (details == null || details.group == null) {
+            return const Center(child: CommonText(text: "No details found"));
+          }
 
           return Column(
             children: [
-              _buildAppBar(context),
+              _buildAppBar(context, controller),
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -40,11 +43,11 @@ class GroupDetailsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 15.h),
-                      _buildSavingsCard(group),
+                      _buildSavingsCard(details),
                       SizedBox(height: 20.h),
                       _buildActionButtons(context),
                       SizedBox(height: 15.h),
-                      _buildCurrentReceiverCard(context),
+                      _buildCurrentReceiverCard(context, details),
                       SizedBox(height: 25.h),
                       CommonText(
                         text: AppString.members,
@@ -53,7 +56,7 @@ class GroupDetailsScreen extends StatelessWidget {
                         color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
                       ),
                       SizedBox(height: 12.h),
-                      _buildMembersList(context, group),
+                      _buildMembersList(context, details),
                       SizedBox(height: 20.h),
                       CommonText(
                         text: AppString.recentContributions,
@@ -64,7 +67,7 @@ class GroupDetailsScreen extends StatelessWidget {
                       SizedBox(height: 12.h),
                       _buildRecentContributions(context),
                       SizedBox(height: 20.h),
-                      _buildNextContributionCard(context, group),
+                      _buildNextContributionCard(context, details),
                       SizedBox(height: 20.h),
                     ],
                   ),
@@ -77,49 +80,124 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
+  Widget _buildSkeleton(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+          child: Row(
+            children: [
+              CommonSkeleton(height: 40.r, width: 40.r, borderRadius: 20),
+              SizedBox(width: 15.w),
+              CommonSkeleton(height: 24.h, width: 150.w),
+            ],
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 15.h),
+                CommonSkeleton(height: 200.h, width: double.infinity, borderRadius: 24),
+                SizedBox(height: 20.h),
+                Row(
+                  children: [
+                    Expanded(child: CommonSkeleton(height: 52.h, width: double.infinity, borderRadius: 14)),
+                    SizedBox(width: 15.w),
+                    Expanded(child: CommonSkeleton(height: 52.h, width: double.infinity, borderRadius: 14)),
+                  ],
+                ),
+                SizedBox(height: 15.h),
+                CommonSkeleton(height: 60.h, width: double.infinity, borderRadius: 8),
+                SizedBox(height: 25.h),
+                CommonSkeleton(height: 20.h, width: 100.w),
+                SizedBox(height: 12.h),
+                CommonSkeleton(height: 150.h, width: double.infinity, borderRadius: 20),
+                SizedBox(height: 20.h),
+                CommonSkeleton(height: 20.h, width: 150.w),
+                SizedBox(height: 12.h),
+                CommonSkeleton(height: 80.h, width: double.infinity, borderRadius: 16),
+                SizedBox(height: 20.h),
+                CommonSkeleton(height: 120.h, width: double.infinity, borderRadius: 24),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context, GroupDetailsController controller) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final group = controller.groupDetails.value?.group;
+    
+    // Logic: Current User is Admin AND Status is Pending
+    bool showStartButton = controller.isUserAdmin() && group?.status?.toLowerCase() == "pending";
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              padding: EdgeInsets.all(10.r),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: isDark ? Colors.white12 : const Color(0xFFE0E0E0)),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => Get.back(),
+                child: Container(
+                  padding: EdgeInsets.all(10.r),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: isDark ? Colors.white12 : const Color(0xFFE0E0E0)),
+                  ),
+                  child: Icon(
+                    Icons.arrow_back,
+                    size: 20.sp,
+                    color: isDark ? Colors.white : AppColors.black,
+                  ),
+                ),
               ),
-              child: Icon(
-                Icons.arrow_back,
-                size: 20.sp,
-                color: isDark ? Colors.white : AppColors.black,
+              SizedBox(width: 15.w),
+              const CommonText(
+                text: AppString.groupDetails,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
               ),
-            ),
+            ],
           ),
-          SizedBox(width: 15.w),
-          const CommonText(
-            text: AppString.groupDetails,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+          if (showStartButton)
+            Obx(() => CommonButton(
+              titleText: "Start Group",
+              buttonWidth: 110.w,
+              buttonHeight: 38.h,
+              buttonRadius: 10,
+              isLoading: controller.isStarting.value,
+              gradient: AppColors.primaryGradient,
+              onTap: () => controller.startGroup(group!.id!),
+            )),
         ],
       ),
     );
   }
 
-  Widget _buildSavingsCard(GroupModel group) {
+  Widget _buildSavingsCard(GroupDetailsModel details) {
+    final group = details.group!;
+    
+    double progressValue = 0.0;
+    if (details.progress is int) {
+      progressValue = (details.progress as int).toDouble() / 100;
+    } else if (details.progress is double) {
+      progressValue = (details.progress as double) / 100;
+    }
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(24.r),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF00ADEF), Color(0xFF3B44D1)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppColors.primaryGradient,
         borderRadius: BorderRadius.circular(24.r),
         boxShadow: [
           BoxShadow(
@@ -133,7 +211,7 @@ class GroupDetailsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CommonText(
-            text: group.name,
+            text: group.name ?? '',
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -144,20 +222,20 @@ class GroupDetailsScreen extends StatelessWidget {
               Icon(Icons.people_outline, color: Colors.white70, size: 18.sp),
               SizedBox(width: 6.w),
               CommonText(
-                text: "${group.members} Members",
+                text: "${group.members?.length ?? 0} Members",
                 fontSize: 14,
                 color: Colors.white70,
               ),
             ],
           ),
           SizedBox(height: 25.h),
-          CommonText(
+          const CommonText(
             text: AppString.totalPool,
             fontSize: 14,
             color: Colors.white70,
           ),
           CommonText(
-            text: group.poolTotal,
+            text: "\$${group.targetPoolAmount}",
             fontSize: 32,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -177,7 +255,7 @@ class GroupDetailsScreen extends StatelessWidget {
                 builder: (context, constraints) {
                   return Container(
                     height: 10.h,
-                    width: constraints.maxWidth * group.progress,
+                    width: constraints.maxWidth * progressValue,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10.r),
@@ -192,12 +270,12 @@ class GroupDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CommonText(
-                text: group.percentage,
+                text: "${(progressValue * 100).toInt()}%",
                 fontSize: 14,
                 color: Colors.white,
               ),
               CommonText(
-                text: "${group.myShare} / ${group.poolTotal}",
+                text: "\$${group.contributionAmount} / \$${group.targetPoolAmount}",
                 fontSize: 14,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -218,9 +296,7 @@ class GroupDetailsScreen extends StatelessWidget {
             titleText: AppString.invite,
             buttonHeight: 52.h,
             buttonRadius: 14,
-            gradient: const LinearGradient(
-              colors: [Color(0xFF00ADEF), Color(0xFF3B44D1)],
-            ),
+            gradient: AppColors.primaryGradient,
             prefixIcon: Icon(
               Icons.person_add_alt_1_outlined,
               color: Colors.white,
@@ -252,8 +328,17 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCurrentReceiverCard(BuildContext context) {
+  Widget _buildCurrentReceiverCard(BuildContext context, GroupDetailsModel details) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    String receiverName = "Not Assigned";
+    if (details.currentReceiver != null) {
+       if (details.currentReceiver is Map) {
+         receiverName = details.currentReceiver['fullName'] ?? "N/A";
+       } else {
+         receiverName = details.currentReceiver.toString();
+       }
+    }
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -274,20 +359,21 @@ class GroupDetailsScreen extends StatelessWidget {
             fontSize: 12,
             color: isDark ? Colors.white38 : const Color(0xFF828282),
           ),
-          const CommonText(
-            text: "Emeka Eze",
+          CommonText(
+            text: receiverName,
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF06D6A0),
+            color: const Color(0xFF06D6A0),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMembersList(BuildContext context, GroupModel group) {
+  Widget _buildMembersList(BuildContext context, GroupDetailsModel details) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final members = group.membersList ?? [];
+    final membersCount = details.group?.members?.length ?? 0;
+    
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCardBg : Colors.white,
@@ -301,25 +387,26 @@ class GroupDetailsScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: ListView.builder(
-        shrinkWrap: true,
-        padding: EdgeInsets.zero,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: members.length,
-        itemBuilder: (context, index) {
-          final member = members[index];
-          return _buildMemberItem(
-            context,
-            member.name,
-            member.amount,
-            member.status,
-            member.isPaid,
-            member.initials,
-            member.avatarColor,
-            isLast: index == members.length - 1,
-          );
-        },
-      ),
+      child: membersCount == 0 
+        ? Padding(
+            padding: EdgeInsets.all(20.r),
+            child: const Center(child: CommonText(text: "No members yet")),
+          )
+        : Column(
+            children: [
+              if (details.group?.admin != null)
+                _buildMemberItem(
+                  context,
+                  details.group!.admin!.fullName ?? 'Admin',
+                  "Admin",
+                  "Active",
+                  true,
+                  (details.group!.admin!.fullName ?? 'A').substring(0, 1).toUpperCase(),
+                  const Color(0xFFE3F2FD),
+                  isLast: membersCount == 1,
+                ),
+            ],
+          ),
     );
   }
 
@@ -409,11 +496,7 @@ class GroupDetailsScreen extends StatelessWidget {
   Widget _buildRecentContributions(BuildContext context) {
     return Column(
       children: [
-        _buildContributionItem(context, "John Doe", "Jun 1, 2026", "\$200"),
-        SizedBox(height: 12.h),
-        _buildContributionItem(context, "Jane Smith", "Jun 1, 2026", "\$200"),
-        SizedBox(height: 12.h),
-        _buildContributionItem(context, "All Members", "May 1, 2026", "\$800"),
+        _buildContributionItem(context, "Admin", "N/A", "N/A"),
       ],
     );
   }
@@ -479,8 +562,15 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNextContributionCard(BuildContext context, GroupModel group) {
+  Widget _buildNextContributionCard(BuildContext context, GroupDetailsModel details) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final group = details.group!;
+    
+    String nextDate = "N/A";
+    if (group.startDate != null) {
+      nextDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(group.startDate!));
+    }
+
     return Container(
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
@@ -530,40 +620,59 @@ class GroupDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CommonText(
+                    const CommonText(
                       text: AppString.nextContribution,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: isDark ? Colors.white : AppColors.primaryColor,
                     ),
-                    SizedBox(height: 2.h),
                     CommonText(
-                      text: "Due by ${group.nextDue}",
+                      text: "Cycle ${details.currentCycle ?? 1}",
                       fontSize: 13,
-                      color: isDark ? Colors.white38 : const Color(0xFF828282),
+                      color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
                     ),
                   ],
                 ),
               ),
+              CommonText(
+                text: "\$${group.contributionAmount}",
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ],
           ),
-          SizedBox(height: 24.h),
-          CommonButton(
-            titleText: "Pay ${group.myShare}",
-            buttonHeight: 54.h,
-            gradient: const LinearGradient(
-              colors: [Color(0xFF00ADEF), Color(0xFF3B44D1)],
-            ),
-            onTap: () {
-              Get.toNamed(
-                AppRoutes.makePayment,
-                arguments: {
-                  'amount': group.myShare,
-                  'groupName': group.name,
-                  'dueDate': group.nextDue,
-                },
-              );
-            },
+          SizedBox(height: 20.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CommonText(
+                text: "Due: $nextDate",
+                fontSize: 14,
+                color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
+              ),
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoutes.makePayment),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient,
+                    borderRadius: BorderRadius.circular(12.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withValues(alpha: 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const CommonText(
+                    text: "Pay Now",
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

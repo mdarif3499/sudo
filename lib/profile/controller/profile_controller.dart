@@ -3,32 +3,53 @@ import 'package:get/get.dart';
 import '../../../config/route/app_routes.dart';
 import '../../../services/storage/storage_services.dart';
 import '../../../utils/log/app_utils.dart';
+import '../../../services/api/api_service.dart';
+import '../../../config/api/api_end_point.dart';
+import '../../../services/storage/storage_keys.dart';
 
 class ProfileController extends GetxController {
-  // নোটিফিকেশন স্টেট ফিরিয়ে আনা হলো
+  final DioApiClient _apiClient = DioApiClient();
+  
   final isNotificationOn = true.obs;
+  final isLoading = false.obs;
+  final profileData = Rxn<Map<String, dynamic>>();
 
   @override
   void onInit() {
     super.onInit();
+    fetchProfile();
   }
 
-  // নোটিফিকেশন টগল মেথড ফিরিয়ে আনা হলো
+  Future<void> fetchProfile() async {
+    isLoading.value = true;
+    try {
+      final response = await _apiClient.get(ApiEndPoint.getProfile);
+      if (response.statusCode == 200) {
+        profileData.value = response.data['data'];
+        
+        // Save userId to LocalStorage
+        if (profileData.value != null && profileData.value!['_id'] != null) {
+          await LocalStorage.setString(LocalStorageKeys.userId, profileData.value!['_id']);
+          debugPrint("===> Saved UserId: ${profileData.value!['_id']}");
+        }
+      } else {
+        Utils.errorSnackBar("Error", response.message);
+      }
+    } catch (e) {
+      debugPrint("===> Fetch Profile Error: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   void toggleNotification(bool value) {
     isNotificationOn.value = value;
-    // এখানে চাইলে ভবিষ্যতে এপিআই কল করে সার্ভারে সেভ করতে পারেন
   }
 
-  /// প্রফেশনাল লগআউট মেথড
   Future<void> logOut() async {
     try {
-      // ১. সব লোকাল ডাটা ক্লিয়ার করা (Token, UserInfo, etc.)
       await LocalStorage.removeAllPrefData();
-      
-      // ২. সাকসেস মেসেজ দেখানো
       Utils.successSnackBar("Logged out successfully");
-      
-      // ৩. লগইন স্ক্রিনে পাঠিয়ে দেয়া এবং ব্যাক স্ট্যাক ক্লিয়ার করা
       Get.offAllNamed(AppRoutes.login);
     } catch (e) {
       debugPrint("===> Logout Error: $e");

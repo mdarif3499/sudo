@@ -7,6 +7,8 @@ import '../../component/text_field/common_text_field.dart';
 import '../../component/button/common_button.dart';
 import '../../config/route/app_routes.dart';
 import '../controller/discover_controller.dart';
+import '../data/discover_group_model.dart';
+import '../../component/other_widgets/common_skeleton.dart';
 
 class DiscoverScreen extends StatelessWidget {
   DiscoverScreen({super.key});
@@ -24,73 +26,144 @@ class DiscoverScreen extends StatelessWidget {
           children: [
             _buildHeader(context),
             Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20.h),
-                    Center(
-                      child: CommonText(
-                        text: "Search your favourite groups",
-                        fontSize: 16,
-                        color: isDark ? Colors.white38 : Colors.grey,
+              child: RefreshIndicator(
+                onRefresh: () => controller.fetchAllGroups(),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
+                      Center(
+                        child: CommonText(
+                          text: "Search your favourite groups",
+                          fontSize: 16,
+                          color: isDark ? Colors.white38 : Colors.grey,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 12.h),
-                    CommonTextField(
-                      controller: controller.searchController,
-                      onChanged: (value) => controller.filterGroups(value),
-                      hintText: "Search groups...",
-                      prefixIcon: Icon(Icons.search, color: isDark ? Colors.white38 : Colors.grey),
-                      borderRadius: 16,
-                    ),
-                    SizedBox(height: 24.h),
-                    const CommonText(
-                      text: "All Public Circles",
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    SizedBox(height: 16.h),
-                    Obx(() {
-                      if (controller.filteredGroups.isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 40.h),
-                            child: CommonText(
-                              text: "No groups found",
-                              fontSize: 14,
-                              color: isDark ? Colors.white38 : Colors.grey,
-                            ),
-                          ),
-                        );
-                      }
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.filteredGroups.length,
-                        itemBuilder: (context, index) {
-                          final group = controller.filteredGroups[index];
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 12.h),
-                            child: _buildGroupCard(
-                              context,
-                              title: group.title,
-                              members: group.members,
-                              frequency: group.frequency,
-                              target: group.target,
-                              perMember: group.perMember,
-                              iconColor: isDark ? group.iconColor.withValues(alpha: 0.1) : group.iconColor,
-                              icon: group.icon,
+                      SizedBox(height: 12.h),
+                      CommonTextField(
+                        controller: controller.searchController,
+                        onChanged: (value) => controller.filterGroups(value),
+                        hintText: "Search groups...",
+                        prefixIcon: Icon(Icons.search, color: isDark ? Colors.white38 : Colors.grey),
+                        borderRadius: 16,
+                      ),
+                      SizedBox(height: 24.h),
+                      const CommonText(
+                        text: "All Public Circles",
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      SizedBox(height: 16.h),
+                      Obx(() {
+                        if (controller.isLoading.value) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: 4,
+                            itemBuilder: (context, index) => _buildSkeletonCard(context),
+                          );
+                        }
+
+                        if (controller.filteredGroups.isEmpty) {
+                          return Center(
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 40.h),
+                              child: CommonText(
+                                text: "No groups found",
+                                fontSize: 14,
+                                color: isDark ? Colors.white38 : Colors.grey,
+                              ),
                             ),
                           );
-                        },
-                      );
-                    }),
-                    SizedBox(height: 20.h),
-                  ],
+                        }
+                        
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: controller.filteredGroups.length,
+                          itemBuilder: (context, index) {
+                            final group = controller.filteredGroups[index];
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: 12.h),
+                              child: GestureDetector(
+                                onTap: () => Get.toNamed(AppRoutes.groupDetails, arguments: group.id),
+                                child: _buildGroupCard(context, group: group),
+                              ),
+                            );
+                          },
+                        );
+                      }),
+                      SizedBox(height: 20.h),
+                    ],
+                  ),
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkeletonCard(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: Container(
+        padding: EdgeInsets.all(16.r),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkCardBg : Colors.white,
+          borderRadius: BorderRadius.circular(16.r),
+          border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                CommonSkeleton(height: 44.r, width: 44.r, borderRadius: 12),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CommonSkeleton(height: 16.h, width: 150.w),
+                      SizedBox(height: 8.h),
+                      CommonSkeleton(height: 12.h, width: 100.w),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.h),
+            Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFF2F2F7)),
+            SizedBox(height: 16.h),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CommonSkeleton(height: 12.h, width: 40.w),
+                      SizedBox(height: 4.h),
+                      CommonSkeleton(height: 16.h, width: 60.w),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CommonSkeleton(height: 12.h, width: 60.w),
+                      SizedBox(height: 4.h),
+                      CommonSkeleton(height: 16.h, width: 60.w),
+                    ],
+                  ),
+                ),
+                CommonSkeleton(height: 36.h, width: 70.w, borderRadius: 8),
+              ],
             ),
           ],
         ),
@@ -154,16 +227,7 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGroupCard(
-    BuildContext context, {
-    required String title,
-    required String members,
-    required String frequency,
-    required String target,
-    required String perMember,
-    required Color iconColor,
-    required IconData icon,
-  }) {
+  Widget _buildGroupCard(BuildContext context, {required DiscoverGroupModel group}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.all(16.r),
@@ -186,7 +250,7 @@ class DiscoverScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(10.r),
                 decoration: BoxDecoration(
-                  color: iconColor,
+                  color: const Color(0xFFE8F1FF).withValues(alpha: isDark ? 0.1 : 1),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: const Icon(Icons.group, color: Color(0xFF00ADEF), size: 24),
@@ -197,7 +261,7 @@ class DiscoverScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CommonText(
-                      text: title,
+                      text: group.name ?? "N/A",
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -208,7 +272,7 @@ class DiscoverScreen extends StatelessWidget {
                             color: isDark ? Colors.white38 : Colors.grey, size: 14.sp),
                         SizedBox(width: 4.w),
                         CommonText(
-                          text: "$members  •  $frequency",
+                          text: "${group.members?.length ?? 0} members  •  ${group.paymentFrequency?.capitalizeFirst ?? "N/A"}",
                           fontSize: 12,
                           color: isDark ? Colors.white38 : Colors.grey,
                         ),
@@ -232,7 +296,7 @@ class DiscoverScreen extends StatelessWidget {
                         text: "Target", fontSize: 12, color: isDark ? Colors.white38 : Colors.grey),
                     SizedBox(height: 4.h),
                     CommonText(
-                      text: target,
+                      text: "\$${group.targetPoolAmount}",
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -247,7 +311,7 @@ class DiscoverScreen extends StatelessWidget {
                         text: "Per Member", fontSize: 12, color: isDark ? Colors.white38 : Colors.grey),
                     SizedBox(height: 4.h),
                     CommonText(
-                      text: perMember,
+                      text: "\$${group.contributionAmount}",
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -261,9 +325,41 @@ class DiscoverScreen extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 buttonRadius: 8,
                 gradient: AppColors.primaryGradient,
-                onTap: () {},
+                onTap: () => _showJoinConfirmation(context, group),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showJoinConfirmation(BuildContext context, DiscoverGroupModel group) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        title: const CommonText(text: "Join Group", fontSize: 18, fontWeight: FontWeight.bold),
+        content: CommonText(
+          text: "Are you sure you want to join '${group.name}'?",
+          fontSize: 14,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const CommonText(text: "Cancel", color: Colors.grey),
+          ),
+          Obx(() => controller.isJoining.value 
+            ? const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+              )
+            : TextButton(
+                onPressed: () async {
+                  await controller.joinGroup(group.id!);
+                  Get.back(); // Close dialog
+                },
+                child: const CommonText(text: "Join Now", color: Colors.blue, fontWeight: FontWeight.bold),
+              ),
           ),
         ],
       ),
