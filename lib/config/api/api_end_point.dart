@@ -17,5 +17,6 @@ class ApiEndPoint {
   static const getMyGroups = '/group/my-groups';
   static const getAllGroups = '/group';
   static const joinGroup = '/group/join/'; 
-  static const startGroup = '/group/start/'; // New Endpoint
+  static const startGroup = '/group/start/';
+  static const groupPeriodHistory = '/group/period-history/';
 }

@@ -34,7 +34,7 @@ class GroupDetailsScreen extends StatelessWidget {
 
           return Column(
             children: [
-              _buildAppBar(context, controller),
+              _buildAppBar(context),
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -45,29 +45,23 @@ class GroupDetailsScreen extends StatelessWidget {
                       SizedBox(height: 15.h),
                       _buildSavingsCard(details),
                       SizedBox(height: 20.h),
-                      _buildActionButtons(context),
+                      _buildActionButtons(context, controller),
                       SizedBox(height: 15.h),
-                      _buildCurrentReceiverCard(context, details),
+                      
+                      // Replaced Current Receiver with Cycle Info Card
+                      _buildCycleInfoCard(context, controller),
+                      
                       SizedBox(height: 25.h),
-                      CommonText(
-                        text: AppString.members,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
-                      ),
+                      
+                      _buildPeriodHistoryHeader(context, controller),
                       SizedBox(height: 12.h),
-                      _buildMembersList(context, details),
+                      _buildPeriodHistoryList(context, controller),
+                      
                       SizedBox(height: 20.h),
-                      CommonText(
-                        text: AppString.recentContributions,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
-                      ),
-                      SizedBox(height: 12.h),
-                      _buildRecentContributions(context),
-                      SizedBox(height: 20.h),
-                      _buildNextContributionCard(context, details),
+                      
+                      // Updated Pay Now logic to match period and cycle
+                      _buildConditionalPaySection(context, controller, details),
+                      
                       SizedBox(height: 20.h),
                     ],
                   ),
@@ -76,6 +70,330 @@ class GroupDetailsScreen extends StatelessWidget {
             ],
           );
         }),
+      ),
+    );
+  }
+
+  Widget _buildCycleInfoCard(BuildContext context, GroupDetailsController controller) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Obx(() {
+      final history = controller.periodHistory.value;
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          color: const Color(0xFF06D6A0).withValues(alpha: isDark ? 0.1 : 0.07),
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            color: const Color(0xFF06D6A0).withValues(alpha: 0.20),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CommonText(
+              text: "Cycle Number",
+              fontSize: 12,
+              color: isDark ? Colors.white38 : const Color(0xFF828282),
+            ),
+            CommonText(
+              text: "Cycle ${history?.cycleNumber ?? 1}",
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF06D6A0),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildConditionalPaySection(BuildContext context, GroupDetailsController controller, GroupDetailsModel details) {
+    // Current group state
+    final currentPeriod = details.currentPeriod ?? 0;
+    final currentCycle = details.currentCycle ?? 0;
+    
+    // History state currently viewed
+    final selectedPeriod = controller.periodHistory.value?.periodNumber ?? 0;
+    final selectedCycle = controller.periodHistory.value?.cycleNumber ?? 0;
+    
+    // Hiding logic:
+    // 1. If looking at a future period (selected > current) -> Hide
+    // 2. If same period but future cycle (selectedCycle > currentCycle) -> Hide
+    // 3. If User is the receiver in this period -> Hide
+    
+    bool isFuturePeriod = selectedPeriod > currentPeriod;
+    bool isFutureCycle = (selectedPeriod == currentPeriod) && (selectedCycle > currentCycle);
+    
+    bool canPay = details.group?.status?.toLowerCase() == "active" && 
+                  !controller.isCurrentUserReceiver() && 
+                  !isFuturePeriod && 
+                  !isFutureCycle;
+
+    if (canPay) {
+      return _buildNextContributionCard(context, details);
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Get.back(),
+            child: Container(
+              padding: EdgeInsets.all(10.r),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: isDark ? Colors.white12 : const Color(0xFFE0E0E0)),
+              ),
+              child: Icon(
+                Icons.arrow_back,
+                size: 20.sp,
+                color: isDark ? Colors.white : AppColors.black,
+              ),
+            ),
+          ),
+          SizedBox(width: 15.w),
+          const CommonText(
+            text: AppString.groupDetails,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context, GroupDetailsController controller) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final group = controller.groupDetails.value?.group;
+    final status = group?.status?.toLowerCase() ?? "";
+    final isAdmin = controller.isUserAdmin();
+    
+    final bool isFull = (group?.members?.length ?? 0) >= (group?.targetedMembers ?? 0);
+
+    return Row(
+      children: [
+        if (status == "pending") ...[
+          if (isFull && isAdmin)
+            Expanded(
+              child: Obx(() => CommonButton(
+                    titleText: "Start Group",
+                    buttonHeight: 52.h,
+                    buttonRadius: 14,
+                    isLoading: controller.isStarting.value,
+                    gradient: AppColors.primaryGradient,
+                    prefixIcon: Icon(Icons.play_arrow_outlined, color: Colors.white, size: 20.sp),
+                    onTap: () => controller.startGroup(group!.id!),
+                  )),
+            )
+          else if (!isFull)
+            Expanded(
+              child: CommonButton(
+                titleText: AppString.invite,
+                buttonHeight: 52.h,
+                buttonRadius: 14,
+                gradient: AppColors.primaryGradient,
+                prefixIcon: Icon(Icons.person_add_alt_1_outlined, color: Colors.white, size: 20.sp),
+                onTap: () => Get.toNamed(AppRoutes.inviteMembers),
+              ),
+            ),
+          
+          if ((isFull && isAdmin) || !isFull) SizedBox(width: 15.w),
+        ],
+
+        Expanded(
+          child: CommonButton(
+            titleText: AppString.chat,
+            titleColor: isDark ? Colors.white : AppColors.black,
+            buttonColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+            borderColor: isDark ? AppColors.darkCardBorder : const Color(0xFFE0E0E0),
+            buttonHeight: 52.h,
+            buttonRadius: 14,
+            prefixIcon: Icon(
+              Icons.chat_bubble_outline,
+              color: isDark ? Colors.white : AppColors.black,
+              size: 20.sp,
+            ),
+            onTap: () => Get.toNamed(AppRoutes.chat),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPeriodHistoryHeader(BuildContext context, GroupDetailsController controller) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CommonText(
+          text: "Period History",
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.blue.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () => controller.loadPreviousPeriod(),
+                child: Icon(Icons.chevron_left, size: 24.sp, color: Colors.blue),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: Obx(() => CommonText(
+                  text: "Period ${controller.periodHistory.value?.periodNumber ?? 1}",
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                )),
+              ),
+              GestureDetector(
+                onTap: () => controller.loadNextPeriod(),
+                child: Icon(Icons.chevron_right, size: 24.sp, color: Colors.blue),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPeriodHistoryList(BuildContext context, GroupDetailsController controller) {
+    return Obx(() {
+      if (controller.isHistoryLoading.value) {
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.all(20.r),
+            child: const CircularProgressIndicator(strokeWidth: 2),
+          ),
+        );
+      }
+
+      final history = controller.periodHistory.value;
+      if (history == null || history.members == null || history.members!.isEmpty) {
+        return const Center(child: CommonText(text: "No history found for this period"));
+      }
+
+      return Column(
+        children: history.members!.map((memberData) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: 12.h),
+            child: _buildContributionItem(
+              context,
+              memberData.member?.fullName ?? "Unknown",
+              memberData.status ?? "Pending",
+              "\$${memberData.amount ?? 0}",
+              memberData.paymentDate,
+            ),
+          );
+        }).toList(),
+      );
+    });
+  }
+
+  Widget _buildContributionItem(BuildContext context, String name, String status, String amount, String? date) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    Color statusColor;
+    IconData statusIcon;
+    
+    switch (status.toLowerCase()) {
+      case 'paid':
+        statusColor = const Color(0xFF27AE60);
+        statusIcon = Icons.check_circle_outline_rounded;
+        break;
+      case 'receiver':
+        statusColor = Colors.blue;
+        statusIcon = Icons.account_balance_wallet_outlined;
+        break;
+      default:
+        statusColor = Colors.orange;
+        statusIcon = Icons.access_time;
+    }
+
+    String formattedDate = "Pending";
+    if (date != null) {
+      formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(date));
+    } else if (status.toLowerCase() == 'receiver') {
+      formattedDate = "Beneficiary";
+    }
+
+    return Container(
+      padding: EdgeInsets.all(18.r),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkCardBg : Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8.r),
+            decoration: BoxDecoration(
+              color: statusColor.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(statusIcon, color: statusColor, size: 18.sp),
+          ),
+          SizedBox(width: 15.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CommonText(
+                  text: name,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+                SizedBox(height: 2.h),
+                CommonText(
+                  text: formattedDate,
+                  fontSize: 12,
+                  color: isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C,
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              CommonText(
+                text: amount,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : AppColors.primaryColor,
+              ),
+              CommonText(
+                text: status.capitalizeFirst ?? '',
+                fontSize: 11,
+                color: statusColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -130,62 +448,8 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppBar(BuildContext context, GroupDetailsController controller) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final group = controller.groupDetails.value?.group;
-    
-    // Logic: Current User is Admin AND Status is Pending
-    bool showStartButton = controller.isUserAdmin() && group?.status?.toLowerCase() == "pending";
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () => Get.back(),
-                child: Container(
-                  padding: EdgeInsets.all(10.r),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: isDark ? Colors.white12 : const Color(0xFFE0E0E0)),
-                  ),
-                  child: Icon(
-                    Icons.arrow_back,
-                    size: 20.sp,
-                    color: isDark ? Colors.white : AppColors.black,
-                  ),
-                ),
-              ),
-              SizedBox(width: 15.w),
-              const CommonText(
-                text: AppString.groupDetails,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ],
-          ),
-          if (showStartButton)
-            Obx(() => CommonButton(
-              titleText: "Start Group",
-              buttonWidth: 110.w,
-              buttonHeight: 38.h,
-              buttonRadius: 10,
-              isLoading: controller.isStarting.value,
-              gradient: AppColors.primaryGradient,
-              onTap: () => controller.startGroup(group!.id!),
-            )),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSavingsCard(GroupDetailsModel details) {
     final group = details.group!;
-    
     double progressValue = 0.0;
     if (details.progress is int) {
       progressValue = (details.progress as int).toDouble() / 100;
@@ -281,89 +545,6 @@ class GroupDetailsScreen extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Row(
-      children: [
-        Expanded(
-          child: CommonButton(
-            titleText: AppString.invite,
-            buttonHeight: 52.h,
-            buttonRadius: 14,
-            gradient: AppColors.primaryGradient,
-            prefixIcon: Icon(
-              Icons.person_add_alt_1_outlined,
-              color: Colors.white,
-              size: 20.sp,
-            ),
-            onTap: () => Get.toNamed(AppRoutes.inviteMembers),
-          ),
-        ),
-        SizedBox(width: 15.w),
-        Expanded(
-          child: CommonButton(
-            titleText: AppString.chat,
-            titleColor: isDark ? Colors.white : AppColors.black,
-            buttonColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
-            borderColor: isDark ? AppColors.darkCardBorder : const Color(0xFFE0E0E0),
-            buttonHeight: 52.h,
-            buttonRadius: 14,
-            prefixIcon: Icon(
-              Icons.chat_bubble_outline,
-              color: isDark ? Colors.white : AppColors.black,
-              size: 20.sp,
-            ),
-            onTap: () {
-              Get.toNamed(AppRoutes.chat);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCurrentReceiverCard(BuildContext context, GroupDetailsModel details) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    String receiverName = "Not Assigned";
-    if (details.currentReceiver != null) {
-       if (details.currentReceiver is Map) {
-         receiverName = details.currentReceiver['fullName'] ?? "N/A";
-       } else {
-         receiverName = details.currentReceiver.toString();
-       }
-    }
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: const Color(0xFF06D6A0).withValues(alpha: isDark ? 0.1 : 0.07),
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(
-          color: const Color(0xFF06D6A0).withValues(alpha: 0.20),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CommonText(
-            text: "Current Receiver",
-            fontSize: 12,
-            color: isDark ? Colors.white38 : const Color(0xFF828282),
-          ),
-          CommonText(
-            text: receiverName,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xFF06D6A0),
           ),
         ],
       ),
@@ -493,79 +674,9 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentContributions(BuildContext context) {
-    return Column(
-      children: [
-        _buildContributionItem(context, "Admin", "N/A", "N/A"),
-      ],
-    );
-  }
-
-  Widget _buildContributionItem(BuildContext context, String name, String date, String amount) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      padding: EdgeInsets.all(18.r),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkCardBg : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(8.r),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.white.withValues(alpha: 0.05) : AppColors.white,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.check_circle_outline_rounded,
-              color: isDark ? Colors.white : AppColors.black,
-              size: 18.sp,
-            ),
-          ),
-          SizedBox(width: 15.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CommonText(
-                  text: name,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: isDark ? Colors.white : AppColors.black,
-                ),
-                SizedBox(height: 2.h),
-                CommonText(
-                  text: date,
-                  fontSize: 12,
-                  color: isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C,
-                ),
-              ],
-            ),
-          ),
-          CommonText(
-            text: amount,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: isDark ? Colors.white : AppColors.primaryColor,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildNextContributionCard(BuildContext context, GroupDetailsModel details) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final group = details.group!;
-    
     String nextDate = "N/A";
     if (group.startDate != null) {
       nextDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(group.startDate!));
@@ -589,12 +700,6 @@ class GroupDetailsScreen extends StatelessWidget {
             spreadRadius: 1,
             blurRadius: 0,
             offset: const Offset(0, 0),
-          ),
-          BoxShadow(
-            color: const Color(0xFF000000).withValues(alpha: 0.18),
-            spreadRadius: 0,
-            blurRadius: 80,
-            offset: const Offset(0, 40),
           ),
         ],
       ),
@@ -650,7 +755,7 @@ class GroupDetailsScreen extends StatelessWidget {
                 color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
               ),
               GestureDetector(
-                onTap: () => Get.toNamed(AppRoutes.makePayment),
+                onTap: () => Get.toNamed(AppRoutes.makePayment, arguments: group.id),
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                   decoration: BoxDecoration(
