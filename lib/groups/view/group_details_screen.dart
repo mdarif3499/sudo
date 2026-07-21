@@ -48,7 +48,7 @@ class GroupDetailsScreen extends StatelessWidget {
                       _buildActionButtons(context, controller),
                       SizedBox(height: 15.h),
                       
-                      // Replaced Current Receiver with Cycle Info Card
+                      // Cycle Number Info instead of Current Receiver
                       _buildCycleInfoCard(context, controller),
                       
                       SizedBox(height: 25.h),
@@ -59,7 +59,7 @@ class GroupDetailsScreen extends StatelessWidget {
                       
                       SizedBox(height: 20.h),
                       
-                      // Updated Pay Now logic to match period and cycle
+                      // Strict matching logic for Pay Now section
                       _buildConditionalPaySection(context, controller, details),
                       
                       SizedBox(height: 20.h),
@@ -119,18 +119,16 @@ class GroupDetailsScreen extends StatelessWidget {
     final selectedPeriod = controller.periodHistory.value?.periodNumber ?? 0;
     final selectedCycle = controller.periodHistory.value?.cycleNumber ?? 0;
     
-    // Hiding logic:
-    // 1. If looking at a future period (selected > current) -> Hide
-    // 2. If same period but future cycle (selectedCycle > currentCycle) -> Hide
-    // 3. If User is the receiver in this period -> Hide
+    // Strict match logic: Show ONLY if it matches the current active period and cycle
+    bool isMatch = (selectedPeriod == currentPeriod) && (selectedCycle == currentCycle);
     
-    bool isFuturePeriod = selectedPeriod > currentPeriod;
-    bool isFutureCycle = (selectedPeriod == currentPeriod) && (selectedCycle > currentCycle);
+    // Also hide if period number is greater than current (Future)
+    bool isFuture = (selectedPeriod > currentPeriod) || (selectedPeriod == currentPeriod && selectedCycle > currentCycle);
     
     bool canPay = details.group?.status?.toLowerCase() == "active" && 
                   !controller.isCurrentUserReceiver() && 
-                  !isFuturePeriod && 
-                  !isFutureCycle;
+                  isMatch && 
+                  !isFuture;
 
     if (canPay) {
       return _buildNextContributionCard(context, details);
@@ -176,7 +174,6 @@ class GroupDetailsScreen extends StatelessWidget {
     final group = controller.groupDetails.value?.group;
     final status = group?.status?.toLowerCase() ?? "";
     final isAdmin = controller.isUserAdmin();
-    
     final bool isFull = (group?.members?.length ?? 0) >= (group?.targetedMembers ?? 0);
 
     return Row(
@@ -307,7 +304,6 @@ class GroupDetailsScreen extends StatelessWidget {
 
   Widget _buildContributionItem(BuildContext context, String name, String status, String amount, String? date) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     Color statusColor;
     IconData statusIcon;
     
@@ -408,7 +404,9 @@ class GroupDetailsScreen extends StatelessWidget {
             children: [
               CommonSkeleton(height: 40.r, width: 40.r, borderRadius: 20),
               SizedBox(width: 15.w),
-              CommonSkeleton(height: 24.h, width: 150.w),],),
+              CommonSkeleton(height: 24.h, width: 150.w),
+            ],
+          ),
         ),
         Expanded(
           child: SingleChildScrollView(
@@ -753,7 +751,15 @@ class GroupDetailsScreen extends StatelessWidget {
                 color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
               ),
               GestureDetector(
-                onTap: () => Get.toNamed(AppRoutes.makePayment, arguments: group.id),
+                onTap: () => Get.toNamed(
+                  AppRoutes.makePayment,
+                  arguments: {
+                    "id": group.id,
+                    "amount": "${group.contributionAmount}",
+                    "groupName": group.name ?? "N/A",
+                    "dueDate": nextDate,
+                  },
+                ),
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                   decoration: BoxDecoration(
