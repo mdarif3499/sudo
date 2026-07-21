@@ -408,9 +408,7 @@ class GroupDetailsScreen extends StatelessWidget {
             children: [
               CommonSkeleton(height: 40.r, width: 40.r, borderRadius: 20),
               SizedBox(width: 15.w),
-              CommonSkeleton(height: 24.h, width: 150.w),
-            ],
-          ),
+              CommonSkeleton(height: 24.h, width: 150.w),],),
         ),
         Expanded(
           child: SingleChildScrollView(
