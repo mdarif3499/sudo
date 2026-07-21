@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sudo/config/route/app_routes.dart';
 import '../../config/api/api_end_point.dart';
 import '../../services/api/api_service.dart';
 import '../../utils/log/app_utils.dart';
