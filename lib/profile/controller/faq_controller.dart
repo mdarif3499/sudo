@@ -1,41 +1,42 @@
 import 'package:get/get.dart';
+import 'package:sudo/services/api/api_service.dart';
+import '../../config/api/api_end_point.dart';
+import '../data/faq_model.dart';
+import 'package:flutter/material.dart';
 
 class FaqController extends GetxController {
-  // প্রতিটি আইটেমের জন্য আলাদা আলাদা স্টেট রাখার জন্য RxList ব্যবহার করছি
+  final DioApiClient _apiClient = Get.find<DioApiClient>();
+  
   var expandedIndex = (-1).obs; 
+  var isLoading = false.obs;
+  var faqs = <FaqModel>[].obs;
 
-  final List<Map<String, String>> faqs = [
-    {
-      "question": "How Share Charge works?",
-      "answer": "Share Charge allows users to share their charging stations with others. You can list your station, set a price, and manage bookings through the app safely and efficiently."
-    },
-    {
-      "question": "How Share Charge works?",
-      "answer": "Share Charge allows users to share their charging stations with others. You can list your station, set a price, and manage bookings through the app safely and efficiently."
-    },
-    {
-      "question": "How Share Charge works?",
-      "answer": "Share Charge allows users to share their charging stations with others. You can list your station, set a price, and manage bookings through the app safely and efficiently."
-    },
-    {
-      "question": "How Share Charge works?",
-      "answer": "Share Charge allows users to share their charging stations with others. You can list your station, set a price, and manage bookings through the app safely and efficiently."
-    },
-    {
-      "question": "How Share Charge works?",
-      "answer": "Share Charge allows users to share their charging stations with others. You can list your station, set a price, and manage bookings through the app safely and efficiently."
-    },
-    {
-      "question": "How Share Charge works?",
-      "answer": "Share Charge allows users to share their charging stations with others. You can list your station, set a price, and manage bookings through the app safely and efficiently."
-    },
-  ];
+  @override
+  void onInit() {
+    super.onInit();
+    fetchFaqs();
+  }
+
+  Future<void> fetchFaqs() async {
+    isLoading.value = true;
+    try {
+      final response = await _apiClient.get(ApiEndPoint.faqAll);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data['data'];
+        faqs.value = data.map((json) => FaqModel.fromJson(json)).toList();
+      }
+    } catch (e) {
+      debugPrint("Error fetching FAQs: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   void toggleExpansion(int index) {
     if (expandedIndex.value == index) {
-      expandedIndex.value = -1; // যদি একই ইনডেক্সে ক্লিক করা হয় তবে বন্ধ হবে
+      expandedIndex.value = -1; 
     } else {
-      expandedIndex.value = index; // নতুন ইনডেক্স ওপেন হবে
+      expandedIndex.value = index; 
     }
   }
 }

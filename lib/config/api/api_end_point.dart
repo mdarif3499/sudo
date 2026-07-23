@@ -29,4 +29,7 @@ class ApiEndPoint {
   static const groupMessage = '/group-message/';
   static const contributionHistory = '/contribution/history';
   static const contributionOutstanding = '/contribution/outstanding';
+  static const faqAll = '/public/faq/all';
+  static const privacyPolicy = '/public/privacy-policy';
+  static const termsAndCondition = '/public/terms-and-condition';
 }

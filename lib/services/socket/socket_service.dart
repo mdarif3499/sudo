@@ -55,8 +55,11 @@ class SocketService {
       _socket!.onConnectError((e) => appLog('❌ Socket: Connect Error $e'));
       _socket!.onError((e) => appLog('❌ Socket: Error $e'));
     } else {
+
+
       appLog('🔌 Socket: Attempting to reconnect existing instance...');
       _socket!.connect();
+
     }
   }
 

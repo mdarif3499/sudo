@@ -168,13 +168,24 @@ class ProfileScreen extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(child: _buildStatCard(context, "4", "Active Groups")),
+                        Expanded(
+                          child: _buildStatCard(
+                            context, 
+                            controller.dashboardData.value?.activeGroups?.toString() ?? "0", 
+                            "Active Groups"
+                          )
+                        ),
                         SizedBox(width: 16.w),
-                        Expanded(child: _buildStatCard(context, "\$12.5k", "Total Saved")),
+                        Expanded(
+                          child: _buildStatCard(
+                            context, 
+                            _formatAmount(controller.dashboardData.value?.totalSavings), 
+                            "Total Saved"
+                          )
+                        ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 12.h),
                   _buildSectionTitle(context, "Account"),
                   SizedBox(height: 12.h),
                   Container(
@@ -205,7 +216,7 @@ class ProfileScreen extends StatelessWidget {
                           title: "KYC Verification",
                           trailingText: data?['kycStatus']?.toString().capitalizeFirst ?? "Required",
                           trailingTextColor: data?['kycStatus'] == 'approved' ? Colors.green : Colors.orange,
-                          onTap: () => Get.toNamed(AppRoutes.kyc),
+                          onTap: () {},
                         ),
                         SizedBox(height: 5.h),
                         Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
@@ -232,55 +243,55 @@ class ProfileScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24.h),
-                  _buildSectionTitle(context, "Preferences"),
-                  SizedBox(height: 8.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkCardBg : Colors.white,
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
-                        color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 8.h),
-                        _buildProfileMenu(
-                          icon: AppIcons.notificationP,
-                          iconColor: Colors.orangeAccent,
-                          iconBgColor: Colors.orangeAccent.withValues(alpha: 0.1),
-                          title: "Notifications",
-                          trailing: Obx(
-                            () => Transform.scale(
-                              scale: 0.8,
-                              child: Switch(
-                                value: controller.isNotificationOn.value,
-                                onChanged: (val) {
-                                  controller.toggleNotification(val);
-                                },
-                                activeTrackColor: const Color(0xFF4A7FE0),
-                                inactiveTrackColor: Colors.grey.shade300,
-                                thumbColor: WidgetStateProperty.all(Colors.white),
-                                trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
-                              ),
-                            ),
-                          ),
-                          onTap: () {},
-                        ),
-                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
-                        _buildProfileMenu(
-                          icon: AppIcons.passport,
-                          iconColor: Colors.brown.withValues(alpha: 0.5),
-                          iconBgColor: Colors.brown.withValues(alpha: 0.1),
-                          title: "Change Password",
-                          onTap: () => Get.toNamed(AppRoutes.changePassword),
-                        ),
-                        SizedBox(height: 8.h),
-                      ],
-                    ),
-                  ),
+                  // SizedBox(height: 24.h),
+                  // _buildSectionTitle(context, "Preferences"),
+                  // SizedBox(height: 8.h),
+                  // Container(
+                  //   padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  //   decoration: BoxDecoration(
+                  //     color: isDark ? AppColors.darkCardBg : Colors.white,
+                  //     borderRadius: BorderRadius.circular(16.r),
+                  //     border: Border.all(
+                  //       color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
+                  //     ),
+                  //   ),
+                  //   child: Column(
+                  //     children: [
+                  //       SizedBox(height: 8.h),
+                  //       _buildProfileMenu(
+                  //         icon: AppIcons.notificationP,
+                  //         iconColor: Colors.orangeAccent,
+                  //         iconBgColor: Colors.orangeAccent.withValues(alpha: 0.1),
+                  //         title: "Notifications",
+                  //         trailing: Obx(
+                  //           () => Transform.scale(
+                  //             scale: 0.8,
+                  //             child: Switch(
+                  //               value: controller.isNotificationOn.value,
+                  //               onChanged: (val) {
+                  //                 controller.toggleNotification(val);
+                  //               },
+                  //               activeTrackColor: const Color(0xFF4A7FE0),
+                  //               inactiveTrackColor: Colors.grey.shade300,
+                  //               thumbColor: WidgetStateProperty.all(Colors.white),
+                  //               trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //         onTap: () {},
+                  //       ),
+                  //       Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                  //       _buildProfileMenu(
+                  //         icon: AppIcons.passport,
+                  //         iconColor: Colors.brown.withValues(alpha: 0.5),
+                  //         iconBgColor: Colors.brown.withValues(alpha: 0.1),
+                  //         title: "Change Password",
+                  //         onTap: () => Get.toNamed(AppRoutes.changePassword),
+                  //       ),
+                  //       SizedBox(height: 8.h),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(height: 24.h),
                   _buildSectionTitle(context, "Support"),
                   SizedBox(height: 8.h),
@@ -435,5 +446,17 @@ class ProfileScreen extends StatelessWidget {
       fontWeight: FontWeight.w400,
       color: isDark ? Colors.white : AppColors.textPrimary,
     );
+  }
+
+  String _formatAmount(num? amount) {
+    if (amount == null) return "\$0";
+    if (amount >= 1000) {
+      double kAmount = amount / 1000;
+      if (kAmount == kAmount.toInt()) {
+        return "\$${kAmount.toInt()}k";
+      }
+      return "\$${kAmount.toStringAsFixed(1)}k";
+    }
+    return "\$${amount.toString()}";
   }
 }
