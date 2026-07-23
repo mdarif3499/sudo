@@ -26,7 +26,6 @@ class ChatScreen extends StatelessWidget {
                   if (controller.isLoading.value) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  
                   if (controller.messages.isEmpty) {
                     return Center(
                       child: CommonText(
