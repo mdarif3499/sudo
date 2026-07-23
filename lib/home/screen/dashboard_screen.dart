@@ -8,17 +8,18 @@ import '../../utils/constants/app_icons.dart';
 import '../../utils/constants/app_images.dart';
 import '../../component/text/common_text.dart';
 import '../controller/dashboard_controller.dart';
+import '../controller/invitation_controller.dart';
 import '../../profile/controller/profile_controller.dart';
 import '../../component/other_widgets/common_skeleton.dart';
 
 class DashboardScreen extends StatelessWidget {
-  DashboardScreen({super.key});
-
-  final DashboardController controller = Get.put(DashboardController());
-  final ProfileController profileController = Get.put(ProfileController());
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final DashboardController controller = Get.put(DashboardController());
+    final ProfileController profileController = Get.put(ProfileController());
+    final InvitationController invitationController = Get.put(InvitationController());
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -46,25 +47,29 @@ class DashboardScreen extends StatelessWidget {
                         Image.asset(AppImages.splash, height: 32.h),
                         SizedBox(width: 6.w),
                         Image.asset(
-                          AppImages.sudo, 
+                          AppImages.sudo,
                           height: 16.h,
                           color: isDark ? Colors.white : null,
                         ),
                       ],
                     ),
-                    GestureDetector(
-                      onTap: () => Get.toNamed(AppRoutes.notification),
-                      child: Image.asset(
-                        AppIcons.notification,
-                        height: 47.h,
-                        width: 47.w,
-                      ),
+                    Row(
+                      children: [
+                        if (invitationController.pendingInvitations.isNotEmpty) SizedBox(width: 12.w),
+                        GestureDetector(
+                          onTap: () => Get.toNamed(AppRoutes.notification),
+                          child: Image.asset(
+                            AppIcons.notification,
+                            height: 47.h,
+                            width: 47.w,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
                 SizedBox(height: 25.h),
 
-                // Welcome and New Group Button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -108,12 +113,76 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 10.h),
 
+                // Pending Invitation Prompt Card
+                Obx(() {
+                  if (invitationController.pendingInvitations.isNotEmpty) {
+                    return Container(
+                      margin: EdgeInsets.only(bottom: 20.h),
+                      padding: EdgeInsets.all(16.r),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00ADEF).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(color: const Color(0xFF00ADEF).withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(10.r),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF00ADEF),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.mail_outline, color: Colors.white, size: 20.sp),
+                          ),
+                          SizedBox(width: 15.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CommonText(
+                                  text: "Pending Invitations (${invitationController.pendingInvitations.length})",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                CommonText(
+                                  text: "You have received ${invitationController.pendingInvitations.length} new group invitations",
+                                  fontSize: 13,
+                                  color: isDark ? Colors.white70 : Colors.black54,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => Get.toNamed(AppRoutes.invitations),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF00ADEF),
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                              child: const CommonText(
+                                text: "View",
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }),
+
                 // Total Contribution Card
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(20.r),
                   decoration: BoxDecoration(
-                    gradient: isDark 
+                    gradient: isDark
                       ? LinearGradient(
                           colors: [
                             AppColors.darkCardBg,

@@ -5,7 +5,7 @@ class AppImages {
 
   static const String noData = '$baseurl/noData.png';
   static const String noImage = '$baseurl/noImage.png';
-  static const String profile = '$baseurl/profile.png';
+  static const String profile = 'assets/icons/profile.png';
 
   //Added by arif
   static const String signIn = '$baseurl/sign_in.png';

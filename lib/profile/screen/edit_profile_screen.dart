@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../component/button/common_button.dart';
 import '../../component/common_appbar/common_appbar.dart';
+import '../../component/image/common_image.dart';
 import '../../component/text/common_text.dart';
 import '../../component/text_field/common_text_field.dart';
 import '../../utils/constants/app_colors.dart';
@@ -67,11 +68,11 @@ class EditProfileScreen extends StatelessWidget {
                   controller: controller.emailController,
                   title: "Email Address",
                   hintText: "john@example.com",
+                  readOnly: true,
                   prefixIcon: const Icon(Icons.email_outlined,
                       size: 20, color: AppColors.textSecondaryColor),
                   keyboardType: TextInputType.emailAddress,
                 ),
-                SizedBox(height: 16.h),
                 CommonTextField(
                   controller: controller.phoneController,
                   title: "Phone Number",
@@ -90,11 +91,12 @@ class EditProfileScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 40.h),
                 // Buttons
-                CommonButton(
+                Obx(() => CommonButton(
                   titleText: "Save Changes",
+                  isLoading: controller.isLoading.value,
                   gradient: AppColors.primaryGradient,
                   onTap: () => controller.saveChanges(),
-                ),
+                )),
                 SizedBox(height: 12.h),
                 CommonButton(
                   titleText: "Cancel",
@@ -132,7 +134,7 @@ class EditProfileScreen extends StatelessWidget {
                   width: 100.h,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: controller.selectedImagePath.isEmpty ? AppColors.primaryGradient : null,
+                    gradient: (controller.selectedImagePath.isEmpty && controller.imageUrl == null) ? AppColors.primaryGradient : null,
                     image: controller.selectedImagePath.isNotEmpty
                         ? DecorationImage(
                             image: FileImage(File(controller.selectedImagePath.value)),
@@ -141,14 +143,24 @@ class EditProfileScreen extends StatelessWidget {
                         : null,
                   ),
                   child: controller.selectedImagePath.isEmpty
-                      ? Center(
-                          child: CommonText(
-                            text: "JD",
-                            fontSize: 32,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        )
+                      ? controller.imageUrl != null
+                          ? CommonImage(
+                              imageSrc: controller.imageUrl!,
+                              borderRadius: 50,
+                              height: 100,
+                              width: 100,
+                              fill: BoxFit.cover,
+                            )
+                          : Center(
+                              child: CommonText(
+                                text: controller.fullNameController.text.isNotEmpty 
+                                    ? controller.fullNameController.text.substring(0, 1).toUpperCase()
+                                    : "U",
+                                fontSize: 32,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            )
                       : null,
                 )),
                 Positioned(

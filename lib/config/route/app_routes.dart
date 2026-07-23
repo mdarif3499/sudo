@@ -30,6 +30,7 @@ import '../../groups/view/payment_history_screen.dart';
 import '../../auth/screen/otp_screen.dart';
 import '../../auth/screen/forgot_password_otp_screen.dart';
 import '../../home/screen/stripe_web_view_page.dart';
+import '../../home/screen/invitation_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -65,6 +66,7 @@ class AppRoutes {
   static const String reviewPayment = '/reviewPayment';
   static const String paymentHistory = '/paymentHistory';
   static const String stripeWebView = '/stripeWebView';
+  static const String invitations = '/invitations';
 
   static const String mmuBylawsScreen = '/mmuBylawsScreen';
 
@@ -105,5 +107,6 @@ class AppRoutes {
         checkoutUrl: Get.arguments as String,
       ),
     ),
+    GetPage(name: invitations, page: () => const InvitationScreen()),
   ];
 }

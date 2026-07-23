@@ -1,0 +1,6 @@
+- `[x]` Add `updateProfile` endpoint to `ApiEndPoint`
+- `[x]` Update `ProfileScreen` to pass data to `EditProfileScreen`
+- `[x]` Implement data initialization and `saveChanges` in `EditProfileController`
+- `[x]` Update `EditProfileScreen` UI for network images and loading state
+- `[x]` Verify the implementation
+- `[x]` Explicitly navigate to Profile tab on success
