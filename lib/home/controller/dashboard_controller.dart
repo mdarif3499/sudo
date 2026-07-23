@@ -4,6 +4,8 @@ import '../../services/api/api_service.dart';
 import '../../config/api/api_end_point.dart';
 import '../../utils/log/app_utils.dart';
 import '../../config/route/app_routes.dart';
+import '../data/dashboard_summary_model.dart';
+import '../data/outstanding_contribution_model.dart';
 
 class DashboardController extends GetxController {
   final DioApiClient _apiClient = Get.find<DioApiClient>();
@@ -13,11 +15,48 @@ class DashboardController extends GetxController {
   var chargesEnabled = false.obs;
   var payoutsEnabled = false.obs;
   var isLoading = false.obs;
+  var isDashboardLoading = false.obs;
+  var isOutstandingLoading = false.obs;
+  
+  var dashboardData = Rxn<DashboardSummaryModel>();
+  var outstandingData = Rxn<OutstandingContributionResponse>();
 
   @override
   void onReady() {
     super.onReady();
     checkStripeStatus();
+    fetchDashboardSummary();
+    fetchOutstandingContributions();
+  }
+
+  Future<void> fetchDashboardSummary() async {
+    isDashboardLoading.value = true;
+    try {
+      final response = await _apiClient.get(ApiEndPoint.dashboardSummary);
+      if (response.statusCode == 200) {
+        dashboardData.value = DashboardSummaryModel.fromJson(response.data['data']);
+      } else {
+        Utils.errorSnackBar("Error", response.message);
+      }
+    } catch (e) {
+      debugPrint("Error fetching dashboard summary: $e");
+    } finally {
+      isDashboardLoading.value = false;
+    }
+  }
+
+  Future<void> fetchOutstandingContributions() async {
+    isOutstandingLoading.value = true;
+    try {
+      final response = await _apiClient.get(ApiEndPoint.contributionOutstanding);
+      if (response.statusCode == 200) {
+        outstandingData.value = OutstandingContributionResponse.fromJson(response.data['data']);
+      }
+    } catch (e) {
+      debugPrint("Error fetching outstanding contributions: $e");
+    } finally {
+      isOutstandingLoading.value = false;
+    }
   }
 
   Future<void> checkStripeStatus() async {

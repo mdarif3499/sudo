@@ -164,12 +164,15 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 20.h),
                   // Stats Row
-                  Row(
-                    children: [
-                      Expanded(child: _buildStatCard(context, "4", "Active Groups")),
-                      SizedBox(width: 16.w),
-                      Expanded(child: _buildStatCard(context, "\$12.5k", "Total Saved")),
-                    ],
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(child: _buildStatCard(context, "4", "Active Groups")),
+                        SizedBox(width: 16.w),
+                        Expanded(child: _buildStatCard(context, "\$12.5k", "Total Saved")),
+                      ],
+                    ),
                   ),
                   SizedBox(height: 12.h),
                   _buildSectionTitle(context, "Account"),
@@ -406,11 +409,17 @@ class ProfileScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          CommonText(text: value, fontSize: 20, fontWeight: FontWeight.w600),
+          CommonText(
+            text: value,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            textAlign: TextAlign.center,
+          ),
           SizedBox(height: 4.h),
           CommonText(
             text: label,
             fontSize: 12,
+            textAlign: TextAlign.center,
             color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
           ),
         ],

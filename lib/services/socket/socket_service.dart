@@ -7,27 +7,35 @@ class SocketService {
   SocketService._();
 
   static io.Socket? _socket;
-  
+
   static final Map<String, List<void Function(dynamic)>> _handlers = {};
 
   static bool get isConnected => _socket?.connected ?? false;
 
-
-  static void connect() {
+  static void connect({String? url, bool forceNew = false}) {
     final token = LocalStorage.token;
     if (token.isEmpty) {
       appLog('⚠️ Socket: Token empty, skipping connection.');
       return;
     }
 
+    final targetUrl = url ?? ApiEndPoint.chatUrl;
 
+    if (_socket != null && _socket!.connected && !forceNew) {
+      appLog('🔌 Socket: Already connected to ${_socket?.io.uri}');
+      return;
+    }
 
-    if (_socket != null && _socket!.connected) return;
+    if (_socket != null && forceNew) {
+      appLog('🔌 Socket: Forcefully disconnecting existing instance for new connection...');
+      _socket!.dispose();
+      _socket = null;
+    }
 
     if (_socket == null) {
-      appLog('🔌 Socket: Initializing new connection to ${ApiEndPoint.socketUrl}');
+      appLog('🔌 Socket: Initializing connection to $targetUrl');
       _socket = io.io(
-        ApiEndPoint.socketUrl,
+        targetUrl,
         io.OptionBuilder()
             .setTransports(['websocket'])
             .setAuth({'token': token})
@@ -39,25 +47,17 @@ class SocketService {
       );
 
       _socket!.onConnect((_) {
-        appLog('✅ Socket: Connected');
-        
-        final currentToken = LocalStorage.token;
-        if (currentToken.isNotEmpty) {
-          _socket!.emit('authenticate', currentToken);
-          appLog('🔑 Socket: Authenticated with token');
-        }
-
+        appLog('✅ Socket: Connected to $targetUrl');
         _reRegisterListeners();
       });
-      _socket!.onDisconnect((_) => appLog('⚠️ Socket: Disconnected'));
+
+      _socket!.onDisconnect((_) => appLog('⚠️ Socket: Disconnected from $targetUrl'));
       _socket!.onConnectError((e) => appLog('❌ Socket: Connect Error $e'));
+      _socket!.onError((e) => appLog('❌ Socket: Error $e'));
     } else {
       appLog('🔌 Socket: Attempting to reconnect existing instance...');
       _socket!.connect();
     }
-
-
-
   }
 
   static void _reRegisterListeners() {
@@ -66,7 +66,7 @@ class SocketService {
       _socket!.off(event);
       _socket!.on(event, (data) {
         appLog('📩 Socket: Event triggered [$event]');
-        final currentHandlers = List<void Function(dynamic)>.from(_handlers[event]!);
+        final currentHandlers = List<void Function(dynamic)>.from(handlers);
         for (var h in currentHandlers) {
           h(data);
         }
@@ -76,29 +76,47 @@ class SocketService {
 
   static void on(String event, void Function(dynamic data) handler) {
     if (!_handlers.containsKey(event)) {
-
       _handlers[event] = [];
-      
-      if (_socket == null) connect();
-      
-      _socket?.on(event, (data) {
+    }
+
+    if (!_handlers[event]!.contains(handler)) {
+      _handlers[event]!.add(handler);
+    }
+
+    if (_socket == null) {
+      connect();
+    }
+
+    if (_socket != null) {
+      _socket!.off(event); 
+      _socket!.on(event, (data) {
         appLog('📩 Socket: Received data for [$event]');
         final currentHandlers = List<void Function(dynamic)>.from(_handlers[event]!);
         for (var h in currentHandlers) {
           h(data);
         }
       });
+      appLog('👂 Socket: Listen started for [$event]');
     }
-
-    if (!_handlers[event]!.contains(handler)) {
-      _handlers[event]!.add(handler);
-    }
-    appLog('👂 Socket: Registered listener for [$event]');
   }
 
   static void emit(String event, dynamic data) {
-    if (_socket == null) connect();
+    if (_socket == null) {
+      connect();
+    }
+    
     _socket?.emit(event, data);
+    appLog('📤 Socket: Emitted event [$event] with data: $data');
+  }
+
+  static void off(String event, void Function(dynamic data) handler) {
+    if (_handlers.containsKey(event)) {
+      _handlers[event]!.remove(handler);
+      if (_handlers[event]!.isEmpty) {
+        _handlers.remove(event);
+        _socket?.off(event);
+      }
+    }
   }
 
   static void disconnect() {
@@ -107,5 +125,4 @@ class SocketService {
     _handlers.clear();
     appLog('🔌 Socket: Manually disconnected and cleared');
   }
-
 }

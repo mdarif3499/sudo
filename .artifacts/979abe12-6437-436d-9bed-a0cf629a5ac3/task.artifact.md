@@ -1,6 +1,5 @@
-- `[x]` Add `updateProfile` endpoint to `ApiEndPoint`
-- `[x]` Update `ProfileScreen` to pass data to `EditProfileScreen`
-- `[x]` Implement data initialization and `saveChanges` in `EditProfileController`
-- `[x]` Update `EditProfileScreen` UI for network images and loading state
-- `[x]` Verify the implementation
-- `[x]` Explicitly navigate to Profile tab on success
+- `[x]` Update `ApiEndPoint.socketUrl` to include `/chat`
+- `[x]` Update `main.dart` to connect socket on startup
+- `[x]` Update `SocketService` for better namespace/reconnection handling
+- `[x]` Update `ChatController` to join group and listen for `new-group-message`
+- `[x]` Verify real-time message receiving

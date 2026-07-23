@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 
 class ChatMessage {
   final String? id;
+  final String? groupId;
   final String? senderName;
   final String? senderImage;
   final String? senderId;
@@ -11,6 +12,7 @@ class ChatMessage {
 
   ChatMessage({
     this.id,
+    this.groupId,
     this.senderName,
     this.senderImage,
     this.senderId,
@@ -21,6 +23,7 @@ class ChatMessage {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json, String currentUserId) {
     final sender = json['senderId'];
+    final gId = json['groupId'] ?? (json['group'] is Map ? json['group']['_id'] : json['group']);
     String name = "Unknown";
     String? image;
     String? sId;
@@ -39,6 +42,7 @@ class ChatMessage {
 
     return ChatMessage(
       id: json['_id'],
+      groupId: gId,
       senderName: name,
       senderImage: image,
       senderId: sId,

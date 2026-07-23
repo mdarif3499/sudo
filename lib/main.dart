@@ -5,12 +5,14 @@ import 'config/dependency/dependency_injection.dart';
 import 'config/route/app_routes.dart';
 import 'services/storage/storage_services.dart';
 import 'services/theme/theme_controller.dart';
+import 'services/socket/socket_service.dart';
 import 'utils/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await LocalStorage.init();
+  SocketService.connect();
 
   runApp(const MyApp());
 }

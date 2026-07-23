@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
+import '../controller/payment_history_controller.dart';
+import '../data/payment_history_model.dart';
+import '../../component/other_widgets/common_skeleton.dart';
 
 class PaymentHistoryScreen extends StatelessWidget {
   const PaymentHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(PaymentHistoryController());
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -16,20 +22,75 @@ class PaymentHistoryScreen extends StatelessWidget {
           children: [
             _buildAppBar(),
             Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Column(
-                  children: [
-                    SizedBox(height: 20.h),
-                    _buildSummaryCards(),
-                    SizedBox(height: 24.h),
-                    _buildTransactionList(),
-                  ],
-                ),
-              ),
+              child: Obx(() {
+                if (controller.isLoading.value && controller.historyList.isEmpty) {
+                  return _buildSkeleton();
+                }
+
+                return RefreshIndicator(
+                  onRefresh: () => controller.fetchPaymentHistory(),
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 20.h),
+                        _buildSummaryCards(controller),
+                        SizedBox(height: 24.h),
+                        if (controller.historyList.isEmpty)
+                          _buildEmptyState()
+                        else
+                          _buildTransactionList(controller),
+                        SizedBox(height: 20.h),
+                      ],
+                    ),
+                  ),
+                );
+              }),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Column(
+      children: [
+        SizedBox(height: 60.h),
+        Icon(Icons.history, size: 64.sp, color: Colors.grey.shade300),
+        SizedBox(height: 16.h),
+        const CommonText(
+          text: "No payment history found",
+          color: Colors.grey,
+          fontSize: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Column(
+        children: [
+          SizedBox(height: 20.h),
+          Row(
+            children: [
+              Expanded(child: CommonSkeleton(height: 100.h, width: double.infinity, borderRadius: 12)),
+              SizedBox(width: 15.w),
+              Expanded(child: CommonSkeleton(height: 100.h, width: double.infinity, borderRadius: 12)),
+            ],
+          ),
+          SizedBox(height: 24.h),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 5,
+            separatorBuilder: (context, index) => SizedBox(height: 16.h),
+            itemBuilder: (context, index) => CommonSkeleton(height: 120.h, width: double.infinity, borderRadius: 16),
+          ),
+        ],
       ),
     );
   }
@@ -66,13 +127,13 @@ class PaymentHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCards() {
+  Widget _buildSummaryCards(PaymentHistoryController controller) {
     return Row(
       children: [
         Expanded(
           child: _buildSummaryCard(
             label: "Total Paid",
-            amount: "\$1,000",
+            amount: "\$${controller.totalPaid.value.toStringAsFixed(0)}",
             backgroundColor: const Color(0xFFE8F9F5),
           ),
         ),
@@ -80,7 +141,7 @@ class PaymentHistoryScreen extends StatelessWidget {
         Expanded(
           child: _buildSummaryCard(
             label: "This Month",
-            amount: "\$650",
+            amount: "\$${controller.thisMonthPaid.value.toStringAsFixed(0)}",
             backgroundColor: const Color(0xFFF1F8FF),
           ),
         ),
@@ -118,56 +179,26 @@ class PaymentHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionList() {
-    final transactions = [
-      {
-        "title": "Family Savings",
-        "date": "Jun 7, 2026",
-        "amount": "\$200",
-        "status": "completed",
-        "id": "TXN-2026-0607-001",
-        "isCompleted": true,
-      },
-      {
-        "title": "Friends Circle",
-        "date": "Jun 5, 2026",
-        "amount": "\$150",
-        "status": "completed",
-        "id": "TXN-2026-0605-002",
-        "isCompleted": true,
-      },
-      {
-        "title": "Wedding Fund",
-        "date": "Jun 1, 2026",
-        "amount": "\$300",
-        "status": "completed",
-        "id": "TXN-2026-0601-003",
-        "isCompleted": false,
-      },
-      {
-        "title": "Family Savings",
-        "date": "May 15, 2026",
-        "amount": "\$200",
-        "status": "completed",
-        "id": "TXN-2028-0515-004",
-        "isCompleted": true,
-      },
-    ];
-
+  Widget _buildTransactionList(PaymentHistoryController controller) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: transactions.length,
+      itemCount: controller.historyList.length,
       separatorBuilder: (context, index) => SizedBox(height: 16.h),
       itemBuilder: (context, index) {
-        final tx = transactions[index];
+        final tx = controller.historyList[index];
+        String dateStr = "N/A";
+        if (tx.paymentDate != null) {
+          dateStr = DateFormat('MMM d, yyyy').format(DateTime.parse(tx.paymentDate!).toLocal());
+        }
+        
         return _buildTransactionCard(
-          title: tx["title"] as String,
-          date: tx["date"] as String,
-          amount: tx["amount"] as String,
-          status: tx["status"] as String,
-          id: tx["id"] as String,
-          isCompleted: tx["isCompleted"] as bool,
+          title: tx.group?.name ?? "Unknown Group",
+          date: dateStr,
+          amount: "\$${tx.amount ?? 0}",
+          status: tx.status ?? "N/A",
+          id: tx.transactionId ?? "N/A",
+          isCompleted: tx.status?.toLowerCase() == 'paid',
         );
       },
     );
@@ -203,7 +234,7 @@ class PaymentHistoryScreen extends StatelessWidget {
                 child: Icon(
                   isCompleted ? Icons.check_circle_outline : Icons.access_time,
                   size: 20.sp,
-                  color: AppColors.black,
+                  color: isCompleted ? const Color(0xFF27AE60) : Colors.orange,
                 ),
               ),
               SizedBox(width: 12.w),
@@ -243,9 +274,9 @@ class PaymentHistoryScreen extends StatelessWidget {
                     color: AppColors.black,
                   ),
                   CommonText(
-                    text: status,
+                    text: status.capitalizeFirst ?? '',
                     fontSize: 12.sp,
-                    color: const Color(0xFF27AE60),
+                    color: isCompleted ? const Color(0xFF27AE60) : Colors.orange,
                   ),
                 ],
               ),

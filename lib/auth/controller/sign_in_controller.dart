@@ -6,6 +6,7 @@ import '../../../services/api/api_client.dart';
 import '../../../services/api/api_service.dart';
 import '../../../services/storage/storage_keys.dart';
 import '../../../services/storage/storage_services.dart';
+import '../../../services/socket/socket_service.dart';
 import '../../../utils/log/app_utils.dart';
 import '../screen/webview_screen.dart';
 
@@ -41,6 +42,7 @@ class SignInController extends GetxController {
           await LocalStorage.setString(LocalStorageKeys.token, data['accessToken'] ?? "");
           await LocalStorage.setString(LocalStorageKeys.refreshToken, data['refreshToken'] ?? "");
           await LocalStorage.setBool(LocalStorageKeys.isLogIn, true);
+          SocketService.connect(forceNew: true);
 
           final userInfo = data['userInfo'];
           if (userInfo != null) {
