@@ -11,12 +11,11 @@ import '../data/discover_group_model.dart';
 import '../../component/other_widgets/common_skeleton.dart';
 
 class DiscoverScreen extends StatelessWidget {
-  DiscoverScreen({super.key});
-
-  final DiscoverController controller = Get.put(DiscoverController());
+  const DiscoverScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final DiscoverController controller = Get.put(DiscoverController());
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -335,6 +334,7 @@ class DiscoverScreen extends StatelessWidget {
   }
 
   void _showJoinConfirmation(BuildContext context, DiscoverGroupModel group) {
+    final controller = Get.find<DiscoverController>();
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),

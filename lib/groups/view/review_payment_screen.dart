@@ -199,6 +199,22 @@ class ReviewPaymentScreen extends StatelessWidget {
             "Due Date",
             args['dueDate'],
           ),
+          if (args['periodNumber'] != null) ...[
+            SizedBox(height: 16.h),
+            _buildDetailItem(
+              Icons.info_outline,
+              "Period",
+              "${args['periodNumber']}",
+            ),
+          ],
+          if (args['cycleNumber'] != null) ...[
+            SizedBox(height: 16.h),
+            _buildDetailItem(
+              Icons.loop,
+              "Cycle",
+              "${args['cycleNumber']}",
+            ),
+          ],
           SizedBox(height: 16.h),
           _buildDetailItem(
             Icons.credit_card_outlined,

@@ -124,4 +124,18 @@ class GroupDetailsController extends GetxController {
     final member = periodHistory.value!.members?.firstWhereOrNull((m) => m.member?.id == currentUserId);
     return member?.status?.toLowerCase() == "receiver";
   }
+
+  bool isCurrentUserPending() {
+    if (periodHistory.value == null) return false;
+    final currentUserId = LocalStorage.userId;
+    final member = periodHistory.value!.members?.firstWhereOrNull((m) => m.member?.id == currentUserId);
+    return member?.status?.toLowerCase() == "pending";
+  }
+
+  bool isCurrentUserPaid() {
+    if (periodHistory.value == null) return false;
+    final currentUserId = LocalStorage.userId;
+    final member = periodHistory.value!.members?.firstWhereOrNull((m) => m.member?.id == currentUserId);
+    return member?.status?.toLowerCase() == "paid";
+  }
 }

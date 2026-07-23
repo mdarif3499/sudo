@@ -10,7 +10,6 @@ import 'utils/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // স্টোরেজ ইনিশিয়ালাইজ করা হলো
   await LocalStorage.init();
 
   runApp(const MyApp());
@@ -21,7 +20,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ThemeController ইনজেক্ট করা হচ্ছে
     final themeController = Get.put(ThemeController());
 
     return ScreenUtilInit(
@@ -29,16 +27,13 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) {
-        // Obx ব্যবহার করা হয়েছে যাতে থিম চেঞ্জ হলে পুরো অ্যাপ আপডেট হয়
         return Obx(() => GetMaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'SUDO',
           
-          // লাইট এবং ডার্ক থিম সেটআপ
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           
-          // কন্ট্রোলার থেকে থিম মোড নেওয়া হচ্ছে
           themeMode: themeController.themeMode,
           
           initialBinding: DependencyInjection(),

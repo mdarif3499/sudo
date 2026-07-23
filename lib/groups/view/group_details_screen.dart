@@ -7,9 +7,11 @@ import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_string.dart';
 import '../controller/group_details_controller.dart';
+import '../controller/invite_controller.dart';
 import '../data/group_details_model.dart';
 import 'package:intl/intl.dart';
 import '../../component/other_widgets/common_skeleton.dart';
+import '../../component/text_field/common_text_field.dart';
 
 class GroupDetailsScreen extends StatelessWidget {
   const GroupDetailsScreen({super.key});
@@ -119,19 +121,28 @@ class GroupDetailsScreen extends StatelessWidget {
     final selectedPeriod = controller.periodHistory.value?.periodNumber ?? 0;
     final selectedCycle = controller.periodHistory.value?.cycleNumber ?? 0;
     
-    // Strict match logic: Show ONLY if it matches the current active period and cycle
+    // Strict match logic: Show if it matches the current active period and cycle
     bool isMatch = (selectedPeriod == currentPeriod) && (selectedCycle == currentCycle);
     
-    // Also hide if period number is greater than current (Future)
+    // Future check
     bool isFuture = (selectedPeriod > currentPeriod) || (selectedPeriod == currentPeriod && selectedCycle > currentCycle);
     
+    // Past check
+    bool isPast = (selectedPeriod < currentPeriod) || (selectedPeriod == currentPeriod && selectedCycle < currentCycle);
+
+    // Show Pay Now if:
+    // 1. Group is active
+    // 2. User is not the receiver for this period
+    // 3. User hasn't paid yet
+    // 4. AND (It is the current period OR It is a past period and user is still pending)
     bool canPay = details.group?.status?.toLowerCase() == "active" && 
                   !controller.isCurrentUserReceiver() && 
-                  isMatch && 
+                  !controller.isCurrentUserPaid() && 
+                  (isMatch || (isPast && controller.isCurrentUserPending())) && 
                   !isFuture;
 
     if (canPay) {
-      return _buildNextContributionCard(context, details);
+      return _buildNextContributionCard(context, controller, details);
     }
     return const SizedBox.shrink();
   }
@@ -199,7 +210,7 @@ class GroupDetailsScreen extends StatelessWidget {
                 buttonRadius: 14,
                 gradient: AppColors.primaryGradient,
                 prefixIcon: Icon(Icons.person_add_alt_1_outlined, color: Colors.white, size: 20.sp),
-                onTap: () => Get.toNamed(AppRoutes.inviteMembers),
+                onTap: () => _showInviteDialog(context, controller, group!.id!),
               ),
             ),
           
@@ -207,6 +218,7 @@ class GroupDetailsScreen extends StatelessWidget {
         ],
 
         Expanded(
+
           child: CommonButton(
             titleText: AppString.chat,
             titleColor: isDark ? Colors.white : AppColors.black,
@@ -219,8 +231,15 @@ class GroupDetailsScreen extends StatelessWidget {
               color: isDark ? Colors.white : AppColors.black,
               size: 20.sp,
             ),
-            onTap: () => Get.toNamed(AppRoutes.chat),
+            onTap: () => Get.toNamed(
+              AppRoutes.chat,
+              arguments: {
+                "id": group?.id,
+                "name": group?.name,
+              },
+            ),
           ),
+
         ),
       ],
     );
@@ -670,13 +689,22 @@ class GroupDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNextContributionCard(BuildContext context, GroupDetailsModel details) {
+  Widget _buildNextContributionCard(BuildContext context, GroupDetailsController controller, GroupDetailsModel details) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final group = details.group!;
+    final history = controller.periodHistory.value;
+    
+    // Use history cycle if available, otherwise fallback to current
+    final displayCycle = history?.cycleNumber ?? details.currentCycle ?? 1;
+    
     String nextDate = "N/A";
     if (group.startDate != null) {
       nextDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(group.startDate!));
     }
+
+    // Determine if it's a past period
+    final bool isPast = (history?.periodNumber ?? 0) < (details.currentPeriod ?? 0) || 
+                        ((history?.periodNumber ?? 0) == (details.currentPeriod ?? 0) && (history?.cycleNumber ?? 0) < (details.currentCycle ?? 0));
 
     return Container(
       padding: EdgeInsets.all(20.r),
@@ -712,7 +740,7 @@ class GroupDetailsScreen extends StatelessWidget {
                 ),
                 child: Icon(
                   Icons.calendar_today_outlined,
-                  color: const Color(0xFF00ADEF),
+                  color: isPast ? Colors.orange : const Color(0xFF00ADEF),
                   size: 22.sp,
                 ),
               ),
@@ -721,13 +749,14 @@ class GroupDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CommonText(
-                      text: AppString.nextContribution,
+                    CommonText(
+                      text: isPast ? "Pending Contribution" : AppString.nextContribution,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
+                      color: isPast ? Colors.orange : (isDark ? Colors.white : Colors.black),
                     ),
                     CommonText(
-                      text: "Cycle ${details.currentCycle ?? 1}",
+                      text: "Cycle $displayCycle",
                       fontSize: 13,
                       color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
                     ),
@@ -746,9 +775,9 @@ class GroupDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CommonText(
-                text: "Due: $nextDate",
+                text: isPast ? "Overdue" : "Due: $nextDate",
                 fontSize: 14,
-                color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
+                color: isPast ? Colors.redAccent : (isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C),
               ),
               GestureDetector(
                 onTap: () => Get.toNamed(
@@ -758,16 +787,18 @@ class GroupDetailsScreen extends StatelessWidget {
                     "amount": "${group.contributionAmount}",
                     "groupName": group.name ?? "N/A",
                     "dueDate": nextDate,
+                    "periodNumber": history?.periodNumber,
+                    "cycleNumber": history?.cycleNumber,
                   },
                 ),
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                   decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
+                    gradient: isPast ? const LinearGradient(colors: [Colors.orange, Colors.deepOrange]) : AppColors.primaryGradient,
                     borderRadius: BorderRadius.circular(12.r),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withValues(alpha: 0.2),
+                        color: (isPast ? Colors.orange : Colors.blue).withValues(alpha: 0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -784,6 +815,63 @@ class GroupDetailsScreen extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _showInviteDialog(BuildContext context, GroupDetailsController controller, String groupId) {
+    final inviteController = Get.put(InviteController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.r)),
+        backgroundColor: isDark ? AppColors.darkCardBg : Colors.white,
+        child: Padding(
+          padding: EdgeInsets.all(24.r),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const CommonText(
+                    text: "Invite Member",
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Icon(Icons.close, color: isDark ? Colors.white70 : Colors.grey),
+                  ),
+                ],
+              ),
+              SizedBox(height: 8.h),
+              CommonText(
+                text: "Send an invitation email to join this group.",
+                fontSize: 14,
+                color: isDark ? Colors.white60 : Colors.grey,
+              ),
+              SizedBox(height: 24.h),
+              CommonTextField(
+                controller: inviteController.emailController,
+                hintText: "Enter email address",
+                keyboardType: TextInputType.emailAddress,
+                prefixIcon: const Icon(Icons.email_outlined, color: Colors.blue),
+                borderRadius: 16,
+              ),
+              SizedBox(height: 32.h),
+              Obx(() => CommonButton(
+                titleText: "Send Invitation",
+                isLoading: inviteController.isLoading.value,
+                gradient: AppColors.primaryGradient,
+                buttonRadius: 14,
+                onTap: () => inviteController.sendInvitation(groupId),
+              )),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -12,12 +12,11 @@ import 'package:intl/intl.dart';
 import '../../component/other_widgets/common_skeleton.dart';
 
 class GroupsScreen extends StatelessWidget {
-  GroupsScreen({super.key});
-
-  final GroupsController controller = Get.put(GroupsController());
+  const GroupsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final GroupsController controller = Get.put(GroupsController());
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(

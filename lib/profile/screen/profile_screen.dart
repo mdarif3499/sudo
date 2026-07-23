@@ -8,14 +8,14 @@ import '../../config/route/app_routes.dart';
 import '../controller/profile_controller.dart';
 import '../widget/profile_menu_item.dart';
 import '../../component/other_widgets/common_skeleton.dart';
+import '../../component/image/common_image.dart';
 
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key});
-
-  final ProfileController controller = Get.put(ProfileController());
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ProfileController controller = Get.put(ProfileController());
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -94,18 +94,26 @@ class ProfileScreen extends StatelessWidget {
                         Container(
                           height: 80.h,
                           width: 80.h,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            gradient: AppColors.primaryGradient,
+                            gradient: data?['image'] == null ? AppColors.primaryGradient : null,
                           ),
-                          child: Center(
-                            child: CommonText(
-                              text: (data?['fullName'] ?? "U").substring(0, 1).toUpperCase(),
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
+                          child: data?['image'] != null
+                              ? CommonImage(
+                                  imageSrc: data!['image'],
+                                  borderRadius: 40,
+                                  height: 80,
+                                  width: 80,
+                                  fill: BoxFit.cover,
+                                )
+                              : Center(
+                                  child: CommonText(
+                                    text: (data?['fullName'] ?? "U").substring(0, 1).toUpperCase(),
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                         SizedBox(height: 12.h),
                         CommonText(
@@ -121,7 +129,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 16.h),
                         GestureDetector(
-                          onTap: () => Get.toNamed(AppRoutes.editProfile),
+                          onTap: () => Get.toNamed(AppRoutes.editProfile, arguments: data),
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 20.w,
@@ -183,7 +191,7 @@ class ProfileScreen extends StatelessWidget {
                           iconColor: Colors.blue,
                           iconBgColor: Colors.blue.withValues(alpha: 0.1),
                           title: "Edit Profile",
-                          onTap: () => Get.toNamed(AppRoutes.editProfile),
+                          onTap: () => Get.toNamed(AppRoutes.editProfile, arguments: data),
                         ),
                         SizedBox(height: 5.h),
                         Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),

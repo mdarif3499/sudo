@@ -2,32 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'dart:math' as math;
+import '../../component/image/common_image.dart';
 import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
 import '../controller/chat_controller.dart';
 import '../data/chat_model.dart';
 
 class ChatScreen extends StatelessWidget {
-  ChatScreen({super.key});
-
-  final ChatController controller = Get.put(ChatController());
+  const ChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ChatController controller = Get.put(ChatController());
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(),
+            _buildAppBar(controller),
             Expanded(
               child: Obx(
-                () => ListView.separated(
-                  reverse: false,
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                  itemCount: controller.messages.length,
-                  separatorBuilder: (context, index) => SizedBox(height: 20.h),
-                  itemBuilder: (context, index) {
+                () {
+                  if (controller.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  
+                  if (controller.messages.isEmpty) {
+                    return Center(
+                      child: CommonText(
+                        text: "No messages yet. Say hi!",
+                        fontSize: 14.sp,
+                        color: Colors.grey,
+                      ),
+                    );
+                  }
+
+                  return ListView.separated(
+                    controller: controller.scrollController,
+                    reverse: false,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    itemCount: controller.messages.length,
+                    separatorBuilder: (context, index) => SizedBox(height: 20.h),
+                    itemBuilder: (context, index) {
                     final message = controller.messages[index];
                     if (message.isMe) {
                       return _buildSenderMessage(message);
@@ -35,8 +51,8 @@ class ChatScreen extends StatelessWidget {
                       return _buildReceiverMessage(message);
                     }
                   },
-                ),
-              ),
+                );
+              }),
             ),
             _buildMessageInput(),
           ],
@@ -45,7 +61,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(ChatController controller) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       decoration: const BoxDecoration(
@@ -72,11 +88,14 @@ class ChatScreen extends StatelessWidget {
             ),
           ),
           SizedBox(width: 15.w),
-          CommonText(
-            text: "Family Savings",
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w600,
-            color: AppColors.black,
+          Expanded(
+            child: CommonText(
+              text: controller.groupName ?? "Group Chat",
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -84,40 +103,74 @@ class ChatScreen extends StatelessWidget {
   }
 
   Widget _buildReceiverMessage(ChatMessage message) {
-    return Column(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CommonText(
-          text: message.senderName,
-          fontSize: 12.sp,
-          color: Colors.grey,
-        ),
-        SizedBox(height: 4.h),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          height: 36.r,
+          width: 36.r,
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: const Color(0xFFF2F2F7)),
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(20.r),
-              bottomLeft: Radius.circular(20.r),
-              bottomRight: Radius.circular(20.r),
-              topLeft: Radius.circular(20.r),
-
-            ),
+            shape: BoxShape.circle,
+            gradient: (message.senderImage == null || message.senderImage!.isEmpty) 
+                ? AppColors.primaryGradient 
+                : null,
           ),
-          child: CommonText(
-            text: message.message,
-            fontSize: 14.sp,
-            color: Colors.black,
+          child: (message.senderImage != null && message.senderImage!.isNotEmpty)
+              ? CommonImage(
+                  imageSrc: message.senderImage!,
+                  borderRadius: 18,
+                  height: 36,
+                  width: 36,
+                  fill: BoxFit.cover,
+                )
+              : Center(
+                  child: CommonText(
+                    text: (message.senderName ?? "U").substring(0, 1).toUpperCase(),
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+        ),
+        SizedBox(width: 12.w),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CommonText(
+                text: message.senderName ?? "Unknown",
+                fontSize: 12.sp,
+                color: Colors.grey,
+              ),
+              SizedBox(height: 4.h),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: const Color(0xFFF2F2F7)),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20.r),
+                    bottomLeft: Radius.circular(20.r),
+                    bottomRight: Radius.circular(20.r),
+                    topLeft: Radius.circular(4.r),
+                  ),
+                ),
+                child: CommonText(
+                  text: message.message,
+                  fontSize: 14.sp,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              CommonText(
+                text: message.time,
+                fontSize: 10.sp,
+                color: Colors.grey,
+              ),
+            ],
           ),
         ),
-        SizedBox(height: 4.h),
-        CommonText(
-          text: message.time,
-          fontSize: 10.sp,
-          color: Colors.grey,
-        ),
+        SizedBox(width: 40.w), // Space on the right for balance
       ],
     );
   }
@@ -156,6 +209,7 @@ class ChatScreen extends StatelessWidget {
   }
 
   Widget _buildMessageInput() {
+    final controller = Get.find<ChatController>();
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
       decoration: const BoxDecoration(
