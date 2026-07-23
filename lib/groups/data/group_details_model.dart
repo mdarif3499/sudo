@@ -4,8 +4,11 @@ class GroupDetailsModel {
   final int? currentCycle;
   final dynamic currentReceiver;
   final dynamic progress;
+  final num? currentPeriodExpectedAmount;
+  final num? currentPeriodCollectedAmount;
   final bool? isCurrentReceiver;
   final bool? hasPaidCurrentPeriod;
+  final int? totalPeriods;
 
   GroupDetailsModel({
     this.group,
@@ -13,8 +16,11 @@ class GroupDetailsModel {
     this.currentCycle,
     this.currentReceiver,
     this.progress,
+    this.currentPeriodExpectedAmount,
+    this.currentPeriodCollectedAmount,
     this.isCurrentReceiver,
     this.hasPaidCurrentPeriod,
+    this.totalPeriods,
   });
 
   factory GroupDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -24,8 +30,11 @@ class GroupDetailsModel {
       currentCycle: json['currentCycle'],
       currentReceiver: json['currentReceiver'],
       progress: json['progress'],
+      currentPeriodExpectedAmount: json['currentPeriodExpectedAmount'],
+      currentPeriodCollectedAmount: json['currentPeriodCollectedAmount'],
       isCurrentReceiver: json['isCurrentReceiver'],
       hasPaidCurrentPeriod: json['hasPaidCurrentPeriod'],
+      totalPeriods: json['totalPeriods'],
     );
   }
 }
@@ -41,7 +50,8 @@ class GroupData {
   final int? totalCycles;
   final String? startDate;
   final String? visibility;
-  final List<String>? members;
+  final List<Member>? members;
+  final List<RotationSchedule>? rotationSchedule;
   final String? status;
   final DateTime? createdAt;
 
@@ -57,6 +67,7 @@ class GroupData {
     this.startDate,
     this.visibility,
     this.members,
+    this.rotationSchedule,
     this.status,
     this.createdAt,
   });
@@ -73,9 +84,32 @@ class GroupData {
       totalCycles: json['totalCycles'],
       startDate: json['startDate'],
       visibility: json['visibility'],
-      members: json['members'] != null ? List<String>.from(json['members']) : [],
+      members: json['members'] != null 
+          ? List<Member>.from(json['members'].map((x) => Member.fromJson(x))) 
+          : [],
+      rotationSchedule: json['rotationSchedule'] != null
+          ? List<RotationSchedule>.from(json['rotationSchedule'].map((x) => RotationSchedule.fromJson(x)))
+          : [],
       status: json['status'],
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+    );
+  }
+}
+
+class Member {
+  final String? id;
+  final String? email;
+  final String? fullName;
+  final String? image;
+
+  Member({this.id, this.email, this.fullName, this.image});
+
+  factory Member.fromJson(Map<String, dynamic> json) {
+    return Member(
+      id: json['_id'] ?? json['id'],
+      email: json['email'],
+      fullName: json['fullName'],
+      image: json['image'],
     );
   }
 }
@@ -84,14 +118,45 @@ class Admin {
   final String? id;
   final String? email;
   final String? fullName;
+  final String? image;
 
-  Admin({this.id, this.email, this.fullName});
+  Admin({this.id, this.email, this.fullName, this.image});
 
   factory Admin.fromJson(Map<String, dynamic> json) {
     return Admin(
       id: json['_id'] ?? json['id'],
       email: json['email'],
       fullName: json['fullName'],
+      image: json['image'],
+    );
+  }
+}
+
+class RotationSchedule {
+  final String? id;
+  final int? periodNumber;
+  final int? cycleNumber;
+  final Member? receiver;
+  final String? payoutDate;
+  final String? status;
+
+  RotationSchedule({
+    this.id,
+    this.periodNumber,
+    this.cycleNumber,
+    this.receiver,
+    this.payoutDate,
+    this.status,
+  });
+
+  factory RotationSchedule.fromJson(Map<String, dynamic> json) {
+    return RotationSchedule(
+      id: json['_id'],
+      periodNumber: json['periodNumber'],
+      cycleNumber: json['cycleNumber'],
+      receiver: json['receiverId'] != null ? Member.fromJson(json['receiverId']) : null,
+      payoutDate: json['payoutDate'],
+      status: json['status'],
     );
   }
 }

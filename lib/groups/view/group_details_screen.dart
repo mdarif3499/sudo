@@ -489,35 +489,93 @@ class GroupDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CommonText(
-            text: group.name ?? '',
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-          SizedBox(height: 8.h),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(Icons.people_outline, color: Colors.white70, size: 18.sp),
-              SizedBox(width: 6.w),
-              CommonText(
-                text: "${group.members?.length ?? 0} Members",
-                fontSize: 14,
-                color: Colors.white70,
+              Expanded(
+                child: CommonText(
+                  text: group.name ?? '',
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Row(
+                children: [
+                  Icon(Icons.people_outline, color: Colors.white70, size: 18.sp),
+                  SizedBox(width: 6.w),
+                  CommonText(
+                    text: "${group.members?.length ?? 0} / ${group.targetedMembers ?? 0} Members",
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
+                ],
               ),
             ],
           ),
           SizedBox(height: 25.h),
-          const CommonText(
-            text: AppString.totalPool,
-            fontSize: 14,
-            color: Colors.white70,
-          ),
-          CommonText(
-            text: "\$${group.targetPoolAmount}",
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CommonText(
+                      text: AppString.totalPool,
+                      fontSize: 14,
+                      color: Colors.white70,
+                    ),
+                    CommonText(
+                      text: "\$${group.targetPoolAmount}",
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                height: 60.h,
+                width: 1,
+                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                color: Colors.white.withValues(alpha: 0.2),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const CommonText(
+                      text: "Contribution / cycle",
+                      fontSize: 12,
+                      color: Colors.white70,
+                      textAlign: TextAlign.end,
+                    ),
+                    CommonText(
+                      text: "${group.contributionAmount}",
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      textAlign: TextAlign.end,
+                    ),
+                    Divider(height: 16.h, color: Colors.white.withValues(alpha: 0.2)),
+                    CommonText(
+                      text: "${details.currentCycle} / ${group.totalCycles} cycles",
+                      fontSize: 13,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      textAlign: TextAlign.end,
+                    ),
+                    CommonText(
+                      text: group.paymentFrequency?.capitalizeFirst ?? '',
+                      fontSize: 12,
+                      color: Colors.white70,
+                      textAlign: TextAlign.end,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 20.h),
           Stack(
@@ -549,12 +607,12 @@ class GroupDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CommonText(
-                text: "${(progressValue * 100).toInt()}%",
+                text: "${(progressValue * 100).toInt()}% Complete",
                 fontSize: 14,
                 color: Colors.white,
               ),
               CommonText(
-                text: "\$${group.contributionAmount} / \$${group.targetPoolAmount}",
+                text: "\$${details.currentPeriodCollectedAmount ?? 0} / \$${details.currentPeriodExpectedAmount ?? 0}",
                 fontSize: 14,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,

@@ -41,16 +41,28 @@ class ChatController extends GetxController {
     });
   }
 
+  void _onSocketConnect(dynamic _) {
+    debugPrint("✅ Chat Socket: Reconnected, joining room $groupId");
+    SocketService.emit("join-group-chat", groupId);
+  }
+
   void _setupSocket() {
-    SocketService.on("new-message-$groupId", (data) {
-      if (data != null) {
-        final newMessage = ChatMessage.fromJson(data, currentUserId);
-        if (!messages.any((m) => m.id == newMessage.id)) {
-          messages.add(newMessage);
-          _scrollToBottom();
-        }
-      }
-    });
+    if (groupId == null) return;
+    
+    debugPrint("💬 Chat: Setting up socket for group $groupId");
+    
+    // সকেট কানেক্টেড থাকুক বা না থাকুক, আমরা Listen অন করে রাখছি
+    SocketService.on("new-group-message", _handleNewMessage);
+
+    // সকেট কানেক্ট হলে যেন অটোমেটিক গ্রুপে জয়েন করে (রিয়েল-টাইম নিশ্চিত করতে)
+    SocketService.on("connect", _onSocketConnect);
+
+    // প্রথমবার স্ক্রিনে আসলে জয়েন করার চেষ্টা করবে
+    if (SocketService.isConnected) {
+      SocketService.emit("join-group-chat", groupId);
+    } else {
+      SocketService.connect();
+    }
   }
 
   Future<void> fetchMessages() async {
@@ -98,8 +110,34 @@ class ChatController extends GetxController {
     }
   }
 
+  void _handleNewMessage(dynamic data) {
+    debugPrint("📩 Chat: Received new message from socket: $data");
+    if (data != null) {
+      try {
+        final newMessage = ChatMessage.fromJson(data, currentUserId);
+        
+        // Filter by groupId if available in the payload
+        final incomingGroupId = newMessage.groupId;
+        if (incomingGroupId != null && incomingGroupId != groupId) {
+          debugPrint("ℹ️ Chat: Message belongs to another group ($incomingGroupId), current is $groupId. Skipping.");
+          return;
+        }
+        
+        if (!messages.any((m) => m.id == newMessage.id)) {
+          messages.add(newMessage);
+          _scrollToBottom();
+          debugPrint("✅ Chat: Message added to list");
+        } else {
+          debugPrint("ℹ️ Chat: Message already exists, skipping");
+        }
+      } catch (e) {
+        debugPrint("❌ Chat: Error parsing socket message: $e");
+      }
+    }
+  }
+
   void _scrollToBottom() {
-    Future.delayed(const Duration(milliseconds: 100), () {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (scrollController.hasClients) {
         scrollController.animateTo(
           scrollController.position.maxScrollExtent,
@@ -112,6 +150,12 @@ class ChatController extends GetxController {
 
   @override
   void onClose() {
+    debugPrint("🔌 Chat: Leaving group $groupId and cleaning up socket");
+    SocketService.off("connect", _onSocketConnect);
+    if (groupId != null) {
+      SocketService.emit("leave-group-chat", groupId);
+    }
+    SocketService.off("new-group-message", _handleNewMessage);
     messageController.dispose();
     scrollController.dispose();
     super.onClose();

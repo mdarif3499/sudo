@@ -16,14 +16,22 @@ class GroupDetailsController extends GetxController {
   var isLoading = false.obs;
   var isHistoryLoading = false.obs;
   var isStarting = false.obs;
+  String? _groupId;
 
   @override
   void onInit() {
     super.onInit();
-    final String? groupId = Get.arguments;
-    if (groupId != null) {
-      fetchGroupDetails(groupId);
-      fetchPeriodHistory(groupId);
+    final args = Get.arguments;
+    
+    if (args is String) {
+      _groupId = args;
+    } else if (args is Map<String, dynamic>) {
+      _groupId = args['id'];
+    }
+
+    if (_groupId != null) {
+      fetchGroupDetails(_groupId!);
+      fetchPeriodHistory(_groupId!);
     }
   }
 
@@ -57,10 +65,10 @@ class GroupDetailsController extends GetxController {
       if (response.statusCode == 200) {
         periodHistory.value = PeriodHistoryModel.fromJson(response.data['data']);
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        // Utils.errorSnackBar("Error", response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", e.toString());
+      // Utils.errorSnackBar("Error", e.toString());
     } finally {
       isHistoryLoading.value = false;
     }
@@ -68,18 +76,16 @@ class GroupDetailsController extends GetxController {
 
   void loadNextPeriod() {
     if (periodHistory.value != null && periodHistory.value!.periodNumber != null) {
-      final String? groupId = Get.arguments;
-      if (groupId != null) {
-        fetchPeriodHistory(groupId, periodNumber: periodHistory.value!.periodNumber! + 1);
+      if (_groupId != null) {
+        fetchPeriodHistory(_groupId!, periodNumber: periodHistory.value!.periodNumber! + 1);
       }
     }
   }
   
   void loadPreviousPeriod() {
     if (periodHistory.value != null && periodHistory.value!.periodNumber != null && periodHistory.value!.periodNumber! > 1) {
-      final String? groupId = Get.arguments;
-      if (groupId != null) {
-        fetchPeriodHistory(groupId, periodNumber: periodHistory.value!.periodNumber! - 1);
+      if (_groupId != null) {
+        fetchPeriodHistory(_groupId!, periodNumber: periodHistory.value!.periodNumber! - 1);
       }
     }
   }
