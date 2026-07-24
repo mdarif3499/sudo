@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../config/api/api_end_point.dart';
 import '../../services/api/api_service.dart';
 import '../../utils/log/app_utils.dart';
+import '../../../utils/constants/app_string.dart';
 import '../data/group_model.dart';
 
 class GroupsController extends GetxController {
@@ -25,10 +26,10 @@ class GroupsController extends GetxController {
         final List<dynamic> data = response.data['data'];
         groupsList.value = data.map((json) => GroupModel.fromJson(json)).toList();
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", e.toString());
+      Utils.errorSnackBar(AppString.someThingWrong.tr, e.toString());
     } finally {
       isLoading.value = false;
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../component/text/common_text.dart';
+import '../../utils/constants/app_string.dart';
 import '../../utils/constants/app_colors.dart';
 
 class NotificationScreen extends StatelessWidget {
@@ -12,53 +13,47 @@ class NotificationScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        leading: Padding(
-          padding: EdgeInsets.all(8.r),
-          child: GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: isDark ? Colors.white12 : Colors.grey.withValues(alpha: 0.2)),
-              ),
-              child: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black, size: 20.sp),
-            ),
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
           ),
         ),
-        title: CommonText(
-          text: "Notifications",
-          fontSize: 20.sp,
-          fontWeight: FontWeight.bold,
-        ),
-        centerTitle: false,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CommonText(
-                  text: "2 unread",
-                  fontSize: 14.sp,
-                  color: isDark ? Colors.white60 : Colors.grey,
-                ),
-                GestureDetector(
-                  onTap: () {},
-                  child: const CommonText(
-                    text: "Mark all as read",
-                    fontSize: 14,
-                    color: Colors.blue,
+        child: Column(
+          children: [
+            _buildAppBar(context, isDark),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CommonText(
+                    text: AppString.unreadWithCount.trParams({'count': '2'}), // Replace '2' with actual dynamic count if available
+                    fontSize: 14.sp,
+                    color: isDark ? Colors.white60 : Colors.grey,
                   ),
-                ),
-              ],
+                  GestureDetector(
+                    onTap: () {},
+                    child: CommonText(
+                      text: AppString.markAllAsRead.tr,
+                      fontSize: 14,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
           Expanded(
             child: ListView(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -125,7 +120,7 @@ class NotificationScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildNotificationItem(
@@ -232,6 +227,31 @@ class NotificationScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+  Widget _buildAppBar(BuildContext context, bool isDark) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      leading: Padding(
+        padding: EdgeInsets.all(8.r),
+        child: GestureDetector(
+          onTap: () => Get.back(),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: isDark ? Colors.white12 : Colors.grey.withValues(alpha: 0.2)),
+            ),
+            child: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black, size: 20.sp),
+          ),
+        ),
+      ),
+      title: CommonText(
+        text: AppString.notificationsTitle.tr,
+        fontSize: 20.sp,
+        fontWeight: FontWeight.bold,
+      ),
+      centerTitle: false,
     );
   }
 }

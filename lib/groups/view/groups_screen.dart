@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_images.dart';
+import '../../utils/constants/app_string.dart';
 import '../../component/text/common_text.dart';
 import '../../component/button/common_button.dart';
 import '../../config/route/app_routes.dart';
@@ -20,105 +21,122 @@ class GroupsScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : const Color(0xFFF8FBFF),
-      body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: 10.h),
-            // Header
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CommonText(
-                    text: "My Groups",
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  Row(
-                    children: [
-                      CommonButton(
-                        titleText: "New Group",
-                        titleSize: 12,
-                        buttonWidth: 130.w,
-                        buttonHeight: 45.h,
-                        buttonRadius: 12,
-                        gradient: AppColors.primaryGradient,
-                        prefixIcon: Icon(Icons.add, color: Colors.white, size: 20.sp),
-                        onTap: () => Get.toNamed(AppRoutes.createGroup),
-                      ),
-                      SizedBox(width: 12.w),
-                      GestureDetector(
-                        onTap: () => Get.toNamed(AppRoutes.notification),
-                        child: Container(
-                          padding: EdgeInsets.all(10.r),
-                          decoration: BoxDecoration(
-                            color: isDark ? AppColors.darkCardBg : Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.blue.withValues(alpha: 0.1)),
-                          ),
-                          child: Icon(Icons.notifications_none, color: Colors.blue, size: 24.sp),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 15.h),
-            CommonText(
-              text: "Manage your saving groups",
-              fontSize: 14.sp,
-              color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
-            ),
-            SizedBox(height: 20.h),
-
-            // Groups List
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemCount: 3,
-                    itemBuilder: (context, index) => _buildSkeletonCard(context),
-                  );
-                }
-                
-                if (controller.groupsList.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              SizedBox(height: 10.h),
+              // Header
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CommonText(
+                      text: AppString.myGroups.tr,
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    Row(
                       children: [
-                        Icon(Icons.group_off_outlined, size: 64.sp, color: Colors.grey),
-                        SizedBox(height: 16.h),
-                        CommonText(text: "No groups found", fontSize: 16.sp, color: Colors.grey),
+                        CommonButton(
+                          titleText: AppString.newGroup.tr,
+                          titleSize: 14,
+                          buttonWidth: 140.w,
+                          buttonHeight: 40.h,
+                          buttonRadius: 12,
+                          gradient: AppColors.primaryGradient,
+                          prefixIcon: Icon(Icons.add, color: Colors.white, size: 20.sp),
+                          onTap: () => Get.toNamed(AppRoutes.createGroup),
+                        ),
+                        SizedBox(width: 12.w),
+                        GestureDetector(
+                          onTap: () => Get.toNamed(AppRoutes.notification),
+                          child: Container(
+                            padding: EdgeInsets.all(10.r),
+                            decoration: BoxDecoration(
+                              color: isDark ? AppColors.darkCardBg : Colors.white,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.blue.withValues(alpha: 0.1)),
+                            ),
+                            child: Icon(Icons.notifications_none, color: Colors.blue, size: 24.sp),
+                          ),
+                        ),
                       ],
                     ),
-                  );
-                }
+                  ],
+                ),
+              ),
+              SizedBox(height: 15.h),
+              CommonText(
+                text: AppString.manageSavingGroups.tr,
+                fontSize: 14.sp,
+                color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
+              ),
+              SizedBox(height: 20.h),
 
-                return RefreshIndicator(
-                  onRefresh: () => controller.fetchMyGroups(),
-                  child: ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                    itemCount: controller.groupsList.length,
-                    itemBuilder: (context, index) {
-                      final group = controller.groupsList[index];
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 20.h),
-                        child: GestureDetector(
-                          onTap: () => Get.toNamed(AppRoutes.groupDetails, arguments: group.id),
-                          child: _buildGroupCard(context, group: group),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              }),
-            ),
-          ],
+              // Groups List
+              Expanded(
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return ListView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      itemCount: 3,
+                      itemBuilder: (context, index) => _buildSkeletonCard(context),
+                    );
+                  }
+                  
+                  if (controller.groupsList.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.group_off_outlined, size: 64.sp, color: Colors.grey),
+                          SizedBox(height: 16.h),
+                          CommonText(text: AppString.noGroupsFound.tr, fontSize: 16.sp, color: Colors.grey),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: () => controller.fetchMyGroups(),
+                    child: ListView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                      itemCount: controller.groupsList.length,
+                      itemBuilder: (context, index) {
+                        final group = controller.groupsList[index];
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 20.h),
+                          child: GestureDetector(
+                            onTap: () => Get.toNamed(AppRoutes.groupDetails, arguments: group.id),
+                            child: _buildGroupCard(context, group: group),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -237,7 +255,7 @@ class GroupsScreen extends StatelessWidget {
                         Icon(Icons.people_outline, size: 16.sp, color: Colors.grey),
                         SizedBox(width: 4.w),
                         CommonText(
-                          text: "${group.membersCount} members",
+                          text: "${group.membersCount} ${AppString.members.tr}",
                           fontSize: 14.sp,
                           color: Colors.grey,
                         ),
@@ -254,7 +272,7 @@ class GroupsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CommonText(
-                text: "Progress",
+                text: AppString.complete.tr,
                 fontSize: 14.sp,
                 color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
               ),
@@ -280,11 +298,11 @@ class GroupsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildStatItem(context, "Pool Total", "\$${group.poolTotal}"),
-              _buildStatItem(context, "My Share", "\$${group.myShare}"),
+              _buildStatItem(context, AppString.totalPool.tr, "\$${group.poolTotal}"),
+              _buildStatItem(context, AppString.contributionAmountCycle.tr, "\$${group.myShare}"),
               _buildStatItem(
                 context, 
-                "Next Due", 
+                AppString.nextContribution.tr, 
                 group.nextDue != null ? DateFormat('MMM dd').format(DateTime.parse(group.nextDue!)) : "N/A"
               ),
             ],

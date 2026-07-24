@@ -6,6 +6,7 @@ import '../../config/route/app_routes.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_icons.dart';
 import '../../utils/constants/app_images.dart';
+import '../../utils/constants/app_string.dart';
 import '../../component/text/common_text.dart';
 import '../controller/dashboard_controller.dart';
 import '../controller/invitation_controller.dart';
@@ -25,362 +26,379 @@ class DashboardScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Obx(() {
-          if (profileController.isLoading.value || controller.isDashboardLoading.value) {
-            return _buildSkeleton(context);
-          }
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Obx(() {
+            if (profileController.isLoading.value || controller.isDashboardLoading.value) {
+              return _buildSkeleton(context);
+            }
 
-          final profile = profileController.profileData.value;
-          final dashboard = controller.dashboardData.value;
+            final profile = profileController.profileData.value;
+            final dashboard = controller.dashboardData.value;
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              await profileController.fetchProfile();
-              await controller.fetchDashboardSummary();
-              await controller.fetchOutstandingContributions();
-            },
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 10.h),
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Image.asset(AppImages.splash, height: 32.h),
-                          SizedBox(width: 6.w),
-                          Image.asset(
-                            AppImages.sudo,
-                            height: 16.h,
-                            color: isDark ? Colors.white : null,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          if (invitationController.pendingInvitations.isNotEmpty) SizedBox(width: 12.w),
-                          GestureDetector(
-                            onTap: () => Get.toNamed(AppRoutes.notification),
-                            child: Image.asset(
-                              AppIcons.notification,
-                              height: 47.h,
-                              width: 47.w,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 25.h),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CommonText(
-                              text: "Welcome back,",
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: isDark ? Colors.white70 : AppColors.textPrimary,
-                            ),
-                            CommonText(
-                              text: profile?['fullName'] ?? "User",
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : AppColors.textSecondaryColor7C7C7C,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 10.w),
-                      CommonButton(
-                        titleText: "New Group",
-                        titleSize: 16,
-                        buttonWidth: 140.w,
-                        buttonHeight: 45.h,
-                        buttonRadius: 12,
-                        gradient: AppColors.primaryGradient,
-                        prefixIcon: Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 20.sp,
-                        ),
-                        onTap: () => Get.toNamed(AppRoutes.createGroup),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10.h),
-
-                  // Pending Invitation Prompt Card
-                  Obx(() {
-                    if (invitationController.pendingInvitations.isNotEmpty) {
-                      return Container(
-                        margin: EdgeInsets.only(bottom: 20.h),
-                        padding: EdgeInsets.all(16.r),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF00ADEF).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16.r),
-                          border: Border.all(color: const Color(0xFF00ADEF).withValues(alpha: 0.3)),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(10.r),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF00ADEF),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(Icons.mail_outline, color: Colors.white, size: 20.sp),
-                            ),
-                            SizedBox(width: 15.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CommonText(
-                                    text: "Pending Invitations (${invitationController.pendingInvitations.length})",
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  CommonText(
-                                    text: "You have received ${invitationController.pendingInvitations.length} new group invitations",
-                                    fontSize: 13,
-                                    color: isDark ? Colors.white70 : Colors.black54,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => Get.toNamed(AppRoutes.invitations),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF00ADEF),
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                child: const CommonText(
-                                  text: "View",
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }),
-
-                  // Total Contribution Card
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(20.r),
-                    decoration: BoxDecoration(
-                      gradient: isDark
-                        ? LinearGradient(
-                            colors: [
-                              AppColors.darkCardBg,
-                              AppColors.darkCardBg.withValues(alpha: 0.8),
-                            ],
-                          )
-                        : const LinearGradient(
-                            colors: [Color(0xFFDEE8F9), Color(0xFFE8F6F3)],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            return RefreshIndicator(
+              onRefresh: () async {
+                await profileController.fetchProfile();
+                await controller.fetchDashboardSummary();
+                await controller.fetchOutstandingContributions();
+              },
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10.h),
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            CommonText(
-                              text: "Total Contribution",
-                              fontSize: 14.sp,
-                              color: isDark ? Colors.white70 : AppColors.textSecondary,
-                            ),
-                            Icon(
-                              Icons.trending_up,
-                              color: isDark ? Colors.white : AppColors.textPrimary,
-                              size: 24.r,
+                            Image.asset(AppImages.splash, height: 32.h),
+                            SizedBox(width: 6.w),
+                            Image.asset(
+                              AppImages.sudo,
+                              height: 16.h,
+                              color: isDark ? Colors.white : null,
                             ),
                           ],
                         ),
-                        SizedBox(height: 8.h),
-                        CommonText(
-                          text: "\$${dashboard?.totalContribution ?? 0}",
-                          fontSize: 32.sp,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : AppColors.textPrimary,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-
-                  // Small Stat Cards
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: _buildStatCard(
-                            context,
-                            "Total Savings",
-                            "\$${dashboard?.totalSavings ?? 0}",
-                            Icons.account_balance_wallet_outlined,
-                            isDark ? AppColors.darkCardBg : const Color(0xFFE4FFF9),
-                            isDark ? AppColors.darkCardBorder : const Color(0xFFAAFFED),
-                          ),
-                        ),
-                        SizedBox(width: 15.w),
-                        Expanded(
-                          child: _buildStatCard(
-                            context,
-                            "Active Groups",
-                            "${dashboard?.activeGroups ?? 0}",
-                            Icons.group_outlined,
-                            isDark ? AppColors.darkCardBg : const Color(0xFFEAF9FF),
-                            isDark ? AppColors.darkCardBorder : const Color(0xFFCAF0FF),
-                          ),
-                        ),
-                        SizedBox(width: 15.w),
-                        Expanded(
-                          child: _buildStatCard(
-                            context,
-                            "This Month",
-                            "\$${dashboard?.thisMonthContribution ?? 0}",
-                            Icons.calendar_today_outlined,
-                            isDark ? AppColors.darkCardBg : const Color(0xFFE9FEFF),
-                            isDark ? AppColors.darkCardBorder : const Color(0xFFB8FCFF),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-
-                  // Outstanding Contributions Section
-                  Obx(() {
-                    final outstanding = controller.outstandingData.value;
-                    if (outstanding == null || 
-                        ((outstanding.currentDues?.isEmpty ?? true) && 
-                         (outstanding.overdues?.isEmpty ?? true))) {
-                      return const SizedBox.shrink();
-                    }
-
-                    final allDues = [
-                      ...(outstanding.overdues ?? []).map((e) => MapEntry(true, e)),
-                      ...(outstanding.currentDues ?? []).map((e) => MapEntry(false, e)),
-                    ];
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const CommonText(
-                          text: "Outstanding Contributions",
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          bottom: 12,
-                        ),
-                        ...allDues.map((entry) {
-                          final isOverdue = entry.key;
-                          final due = entry.value;
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 15.h),
-                            child: _buildOutstandingCard(context, due, isOverdue),
-                          );
-                        }),
-                      ],
-                    );
-                  }),
-
-
-                  SizedBox(height: 25.h),
-
-                  // Recent Activity Section
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const CommonText(
-                        text: "Recent Activity",
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Get.toNamed(AppRoutes.paymentHistory);
-                        },
-                        child: Row(
+                        Row(
                           children: [
-                            CommonText(
-                              text: "View All",
-                              fontSize: 14.sp,
-                              color: Colors.blue,
+                            if (invitationController.pendingInvitations.isNotEmpty) SizedBox(width: 12.w),
+                            GestureDetector(
+                              onTap: () => Get.toNamed(AppRoutes.notification),
+                              child: Image.asset(
+                                AppIcons.notification,
+                                height: 47.h,
+                                width: 47.w,
+                              ),
                             ),
-                            Icon(Icons.north_east, size: 14.r, color: Colors.blue),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15.h),
-                  if (dashboard?.last5Contributions == null || dashboard!.last5Contributions!.isEmpty)
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20.h),
-                        child: const CommonText(text: "No recent activity", color: Colors.grey),
-                      ),
-                    )
-                  else
-                    ...dashboard.last5Contributions!.map((contribution) {
-                      String formattedDate = "N/A";
-                      if (contribution.paymentDate != null) {
-                        formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(contribution.paymentDate!).toLocal());
+                      ],
+                    ),
+                    SizedBox(height: 25.h),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CommonText(
+                                text: AppString.welcomeBackComma.tr,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: isDark ? Colors.white70 : AppColors.textPrimary,
+                              ),
+                              CommonText(
+                                text: profile?['fullName'] ?? "User",
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : AppColors.textSecondaryColor7C7C7C,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        CommonButton(
+                          titleText: AppString.newGroup.tr,
+                          titleSize: 14,
+                          buttonWidth: 150.w,
+                          buttonHeight: 45.h,
+                          buttonRadius: 12,
+                          gradient: AppColors.primaryGradient,
+                          prefixIcon: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 20.sp,
+                          ),
+                          onTap: () => Get.toNamed(AppRoutes.createGroup),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10.h),
+
+                    // Pending Invitation Prompt Card
+                    Obx(() {
+                      if (invitationController.pendingInvitations.isNotEmpty) {
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 20.h),
+                          padding: EdgeInsets.all(16.r),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00ADEF).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(color: const Color(0xFF00ADEF).withValues(alpha: 0.3)),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(10.r),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF00ADEF),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.mail_outline, color: Colors.white, size: 20.sp),
+                              ),
+                              SizedBox(width: 15.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CommonText(
+                                      text: AppString.pendingInvitationsTitle.trParams({'count': invitationController.pendingInvitations.length.toString()}),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    CommonText(
+                                      text: AppString.newInvitationsDescription.trParams({'count': invitationController.pendingInvitations.length.toString()}),
+                                      fontSize: 13,
+                                      color: isDark ? Colors.white70 : Colors.black54,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => Get.toNamed(AppRoutes.invitations),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF00ADEF),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: CommonText(
+                                    text: AppString.view.tr,
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
                       }
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 10.h),
-                        child: _buildActivityItem(
-                          context,
-                          contribution.group?.name ?? "Unknown Group",
-                          formattedDate,
-                          "\$${contribution.amount ?? 0}",
-                          "completed",
-                        ),
+                      return const SizedBox.shrink();
+                    }),
+
+                    // Total Contribution Card
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(20.r),
+                      decoration: BoxDecoration(
+                        gradient: isDark
+                          ? LinearGradient(
+                              colors: [
+                                AppColors.darkCardBg,
+                                AppColors.darkCardBg.withValues(alpha: 0.8),
+                              ],
+                            )
+                          : const LinearGradient(
+                              colors: [Color(0xFFDEE8F9), Color(0xFFE8F6F3)],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CommonText(
+                                text: AppString.totalContribution.tr,
+                                fontSize: 14.sp,
+                                color: isDark ? Colors.white70 : AppColors.textSecondary,
+                              ),
+                              Icon(
+                                Icons.trending_up,
+                                color: isDark ? Colors.white : AppColors.textPrimary,
+                                size: 24.r,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8.h),
+                          CommonText(
+                            text: "\$${dashboard?.totalContribution ?? 0}",
+                            fontSize: 32.sp,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : AppColors.textPrimary,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+
+                    // Small Stat Cards
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              AppString.totalSavings.tr,
+                              "\$${dashboard?.totalSavings ?? 0}",
+                              Icons.account_balance_wallet_outlined,
+                              isDark ? AppColors.darkCardBg : const Color(0xFFE4FFF9),
+                              isDark ? AppColors.darkCardBorder : const Color(0xFFAAFFED),
+                            ),
+                          ),
+                          SizedBox(width: 15.w),
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              AppString.activeGroups.tr,
+                              "${dashboard?.activeGroups ?? 0}",
+                              Icons.group_outlined,
+                              isDark ? AppColors.darkCardBg : const Color(0xFFEAF9FF),
+                              isDark ? AppColors.darkCardBorder : const Color(0xFFCAF0FF),
+                            ),
+                          ),
+                          SizedBox(width: 15.w),
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              AppString.thisMonth.tr,
+                              "\$${dashboard?.thisMonthContribution ?? 0}",
+                              Icons.calendar_today_outlined,
+                              isDark ? AppColors.darkCardBg : const Color(0xFFE9FEFF),
+                              isDark ? AppColors.darkCardBorder : const Color(0xFFB8FCFF),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+
+                    // Outstanding Contributions Section
+                    Obx(() {
+                      final outstanding = controller.outstandingData.value;
+                      if (outstanding == null || 
+                          ((outstanding.currentDues?.isEmpty ?? true) && 
+                           (outstanding.overdues?.isEmpty ?? true))) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final allDues = [
+                        ...(outstanding.overdues ?? []).map((e) => MapEntry(true, e)),
+                        ...(outstanding.currentDues ?? []).map((e) => MapEntry(false, e)),
+                      ];
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CommonText(
+                            text: AppString.outstandingContributions.tr,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            bottom: 12,
+                          ),
+                          ...allDues.map((entry) {
+                            final isOverdue = entry.key;
+                            final due = entry.value;
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: 15.h),
+                              child: _buildOutstandingCard(context, due, isOverdue),
+                            );
+                          }),
+                        ],
                       );
                     }),
-                  SizedBox(height: 20.h),
-                ],
+
+
+                    SizedBox(height: 25.h),
+
+                    // Recent Activity Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CommonText(
+                          text: AppString.recentActivity.tr,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.paymentHistory);
+                          },
+                          child: Row(
+                            children: [
+                              CommonText(
+                                text: AppString.viewAll.tr,
+                                fontSize: 14.sp,
+                                color: Colors.blue,
+                              ),
+                              Icon(Icons.north_east, size: 14.r, color: Colors.blue),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15.h),
+                    if (dashboard?.last5Contributions == null || dashboard!.last5Contributions!.isEmpty)
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20.h),
+                          child: CommonText(text: AppString.noRecentActivity.tr, color: Colors.grey),
+                        ),
+                      )
+                    else
+                      ...dashboard.last5Contributions!.map((contribution) {
+                        String formattedDate = "N/A";
+                        if (contribution.paymentDate != null) {
+                          formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(contribution.paymentDate!).toLocal());
+                        }
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 10.h),
+                          child: _buildActivityItem(
+                            context,
+                            contribution.group?.name ?? "Unknown Group",
+                            formattedDate,
+                            "\$${contribution.amount ?? 0}",
+                            AppString.complete.tr,
+                          ),
+                        );
+                      }),
+                    SizedBox(height: 20.h),
+                  ],
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -614,7 +632,7 @@ class DashboardScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CommonText(
-                      text: isOverdue ? "Overdue Contribution" : "Next Contribution",
+                      text: isOverdue ? AppString.overdueContribution.tr : AppString.nextContribution.tr,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: isOverdue ? Colors.red : (isDark ? Colors.white : Colors.black),
@@ -639,7 +657,7 @@ class DashboardScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CommonText(
-                text: "Due: $formattedDate",
+                text: "${AppString.dueColon.tr} $formattedDate",
                 fontSize: 14.sp,
                 color: isOverdue ? Colors.red : (isDark ? Colors.white60 : AppColors.textSecondary),
               ),
@@ -665,8 +683,8 @@ class DashboardScreen extends StatelessWidget {
                         : AppColors.primaryGradient,
                     borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: const CommonText(
-                    text: "Pay Now",
+                  child: CommonText(
+                    text: AppString.payNow.tr,
                     fontSize: 14,
                     color: Colors.white,
                     fontWeight: FontWeight.w500,

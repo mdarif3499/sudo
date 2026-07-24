@@ -4,6 +4,7 @@ import '../../services/api/api_service.dart';
 import '../../config/api/api_end_point.dart';
 import '../../utils/log/app_utils.dart';
 import '../../config/route/app_routes.dart';
+import '../../utils/constants/app_string.dart';
 import '../data/dashboard_summary_model.dart';
 import '../data/outstanding_contribution_model.dart';
 
@@ -36,7 +37,7 @@ class DashboardController extends GetxController {
       if (response.statusCode == 200) {
         dashboardData.value = DashboardSummaryModel.fromJson(response.data['data']);
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
       debugPrint("Error fetching dashboard summary: $e");
@@ -171,13 +172,13 @@ class DashboardController extends GetxController {
           await Get.toNamed(AppRoutes.stripeWebView, arguments: url);
           checkStripeStatus();
         } else {
-          Utils.errorSnackBar("Error", "Could not generate onboarding link.");
+          Utils.errorSnackBar(AppString.someThingWrong.tr, "Could not generate onboarding link.");
         }
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", "Something went wrong. Please try again.");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, "Something went wrong. Please try again.");
     } finally {
       isLoading.value = false;
     }

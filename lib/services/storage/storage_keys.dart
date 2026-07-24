@@ -15,4 +15,6 @@ class LocalStorageKeys {
   static const String password = "password";
   static const String kycStatus = "kycStatus";
   static const String isDarkMode = "isDarkMode";
+  static const String languageCode = "languageCode";
+  static const String countryCode = "countryCode";
 }

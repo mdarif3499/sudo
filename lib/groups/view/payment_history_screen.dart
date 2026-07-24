@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import '../controller/payment_history_controller.dart';
 import '../data/payment_history_model.dart';
 import '../../component/other_widgets/common_skeleton.dart';
@@ -14,41 +15,59 @@ class PaymentHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(PaymentHistoryController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppBar(),
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value && controller.historyList.isEmpty) {
-                  return _buildSkeleton();
-                }
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(),
+              Expanded(
+                child: Obx(() {
+                  if (controller.isLoading.value && controller.historyList.isEmpty) {
+                    return _buildSkeleton();
+                  }
 
-                return RefreshIndicator(
-                  onRefresh: () => controller.fetchPaymentHistory(),
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 20.h),
-                        _buildSummaryCards(controller),
-                        SizedBox(height: 24.h),
-                        if (controller.historyList.isEmpty)
-                          _buildEmptyState()
-                        else
-                          _buildTransactionList(controller),
-                        SizedBox(height: 20.h),
-                      ],
+                  return RefreshIndicator(
+                    onRefresh: () => controller.fetchPaymentHistory(),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 20.h),
+                          _buildSummaryCards(controller, isDark),
+                          SizedBox(height: 24.h),
+                          if (controller.historyList.isEmpty)
+                            _buildEmptyState()
+                          else
+                            _buildTransactionList(controller, isDark),
+                          SizedBox(height: 20.h),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }),
-            ),
-          ],
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -60,8 +79,8 @@ class PaymentHistoryScreen extends StatelessWidget {
         SizedBox(height: 60.h),
         Icon(Icons.history, size: 64.sp, color: Colors.grey.shade300),
         SizedBox(height: 16.h),
-        const CommonText(
-          text: "No payment history found",
+        CommonText(
+          text: AppString.noPaymentHistoryFound.tr,
           color: Colors.grey,
           fontSize: 16,
         ),
@@ -96,6 +115,7 @@ class PaymentHistoryScreen extends StatelessWidget {
   }
 
   Widget _buildAppBar() {
+    final isDark = Get.isDarkMode;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       child: Row(
@@ -106,43 +126,42 @@ class PaymentHistoryScreen extends StatelessWidget {
               padding: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE0E0E0)),
+                border: Border.all(color: isDark ? Colors.white24 : const Color(0xFFE0E0E0)),
               ),
               child: Icon(
                 Icons.arrow_back,
                 size: 20.sp,
-                color: AppColors.black,
+                color: isDark ? Colors.white : AppColors.black,
               ),
             ),
           ),
           SizedBox(width: 15.w),
           CommonText(
-            text: "Payment History",
+            text: AppString.paymentHistory.tr,
             fontSize: 20.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.black,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryCards(PaymentHistoryController controller) {
+  Widget _buildSummaryCards(PaymentHistoryController controller, bool isDark) {
     return Row(
       children: [
         Expanded(
           child: _buildSummaryCard(
-            label: "Total Paid",
+            label: AppString.totalPaid.tr,
             amount: "\$${controller.totalPaid.value.toStringAsFixed(0)}",
-            backgroundColor: const Color(0xFFE8F9F5),
+            backgroundColor: isDark ? AppColors.darkCardBg : const Color(0xFFE8F9F5),
           ),
         ),
         SizedBox(width: 15.w),
         Expanded(
           child: _buildSummaryCard(
-            label: "This Month",
+            label: AppString.thisMonth.tr,
             amount: "\$${controller.thisMonthPaid.value.toStringAsFixed(0)}",
-            backgroundColor: const Color(0xFFF1F8FF),
+            backgroundColor: isDark ? AppColors.darkCardBg : const Color(0xFFF1F8FF),
           ),
         ),
       ],
@@ -179,7 +198,7 @@ class PaymentHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionList(PaymentHistoryController controller) {
+  Widget _buildTransactionList(PaymentHistoryController controller, bool isDark) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -199,6 +218,7 @@ class PaymentHistoryScreen extends StatelessWidget {
           status: tx.status ?? "N/A",
           id: tx.transactionId ?? "N/A",
           isCompleted: tx.status?.toLowerCase() == 'paid',
+          isDark: isDark,
         );
       },
     );
@@ -211,13 +231,19 @@ class PaymentHistoryScreen extends StatelessWidget {
     required String status,
     required String id,
     required bool isCompleted,
+    required bool isDark,
   }) {
+    String displayStatus = status;
+    if (status.toLowerCase() == 'paid') {
+      displayStatus = AppString.paid.tr;
+    }
+
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: const Color(0xFFF2F2F7)),
+        border: Border.all(color: isDark ? AppColors.darkCardBorder : const Color(0xFFF2F2F7)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,7 +255,7 @@ class PaymentHistoryScreen extends StatelessWidget {
                 padding: EdgeInsets.all(8.r),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFE0E0E0)),
+                  border: Border.all(color: isDark ? Colors.white10 : const Color(0xFFE0E0E0)),
                 ),
                 child: Icon(
                   isCompleted ? Icons.check_circle_outline : Icons.access_time,
@@ -246,18 +272,17 @@ class PaymentHistoryScreen extends StatelessWidget {
                       text: title,
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.black,
                     ),
                     SizedBox(height: 4.h),
                     Row(
                       children: [
                         Icon(Icons.calendar_today_outlined,
-                            size: 12.sp, color: const Color(0xFF828282)),
+                            size: 12.sp, color: isDark ? Colors.white38 : const Color(0xFF828282)),
                         SizedBox(width: 4.w),
                         CommonText(
                           text: date,
                           fontSize: 12.sp,
-                          color: const Color(0xFF828282),
+                          color: isDark ? Colors.white38 : const Color(0xFF828282),
                         ),
                       ],
                     ),
@@ -271,10 +296,9 @@ class PaymentHistoryScreen extends StatelessWidget {
                     text: amount,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.black,
                   ),
                   CommonText(
-                    text: status.capitalizeFirst ?? '',
+                    text: displayStatus.capitalizeFirst ?? '',
                     fontSize: 12.sp,
                     color: isCompleted ? const Color(0xFF27AE60) : Colors.orange,
                   ),
@@ -283,12 +307,12 @@ class PaymentHistoryScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 12.h),
-          const Divider(color: Color(0xFFF2F2F7), thickness: 1),
+          Divider(color: isDark ? Colors.white10 : const Color(0xFFF2F2F7), thickness: 1),
           SizedBox(height: 8.h),
           CommonText(
-            text: "Transaction ID: $id",
+            text: "${AppString.transactionId.tr}: $id",
             fontSize: 12.sp,
-            color: const Color(0xFF828282),
+            color: isDark ? Colors.white38 : const Color(0xFF828282),
           ),
         ],
       ),

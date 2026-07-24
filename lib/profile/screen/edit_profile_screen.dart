@@ -9,6 +9,7 @@ import '../../component/image/common_image.dart';
 import '../../component/text/common_text.dart';
 import '../../component/text_field/common_text_field.dart';
 import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import '../controller/edit_profile_controller.dart';
 
 class EditProfileScreen extends StatelessWidget {
@@ -17,15 +18,16 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(EditProfileController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
       extendBodyBehindAppBar: true,
-      appBar: const CommonAppBar(title: "Edit Profile"),
+      appBar: CommonAppBar(title: AppString.editProfile.tr),
       body: Container(
         height: double.infinity,
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: isDark ? null : const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
@@ -46,9 +48,9 @@ class EditProfileScreen extends StatelessWidget {
                 SizedBox(height: 20.h),
                 Center(
                   child: CommonText(
-                    text: "Search your saving groups",
+                    text: AppString.searchFavouriteGroups.tr,
                     fontSize: 14,
-                    color: AppColors.textSecondaryColor7C7C7C,
+                    color: isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C,
                   ),
                 ),
                 SizedBox(height: 24.h),
@@ -58,51 +60,51 @@ class EditProfileScreen extends StatelessWidget {
                 // Form Fields
                 CommonTextField(
                   controller: controller.fullNameController,
-                  title: "Full Name",
-                  hintText: "John Doe",
-                  prefixIcon: const Icon(Icons.person_outline,
-                      size: 20, color: AppColors.textSecondaryColor),
+                  title: AppString.fullName.tr,
+                  hintText: AppString.fullNameHint.tr,
+                  prefixIcon: Icon(Icons.person_outline,
+                      size: 20, color: isDark ? Colors.white54 : AppColors.textSecondaryColor),
                 ),
                 SizedBox(height: 16.h),
                 CommonTextField(
                   controller: controller.emailController,
-                  title: "Email Address",
-                  hintText: "john@example.com",
+                  title: AppString.emailAddress.tr,
+                  hintText: AppString.emailHint.tr,
                   readOnly: true,
-                  prefixIcon: const Icon(Icons.email_outlined,
-                      size: 20, color: AppColors.textSecondaryColor),
+                  prefixIcon: Icon(Icons.email_outlined,
+                      size: 20, color: isDark ? Colors.white54 : AppColors.textSecondaryColor),
                   keyboardType: TextInputType.emailAddress,
                 ),
                 CommonTextField(
                   controller: controller.phoneController,
-                  title: "Phone Number",
-                  hintText: "+1 (555) 000-0000",
-                  prefixIcon: const Icon(Icons.phone_outlined,
-                      size: 20, color: AppColors.textSecondaryColor),
+                  title: AppString.phoneNumber.tr,
+                  hintText: AppString.phoneHint.tr,
+                  prefixIcon: Icon(Icons.phone_outlined,
+                      size: 20, color: isDark ? Colors.white54 : AppColors.textSecondaryColor),
                   keyboardType: TextInputType.phone,
                 ),
                 SizedBox(height: 16.h),
                 CommonTextField(
                   controller: controller.addressController,
-                  title: "Address",
-                  hintText: "123 Main St, New York, NY 10001",
-                  prefixIcon: const Icon(Icons.location_on_outlined,
-                      size: 20, color: AppColors.textSecondaryColor),
+                  title: AppString.address.tr,
+                  hintText: AppString.addressHint.tr,
+                  prefixIcon: Icon(Icons.location_on_outlined,
+                      size: 20, color: isDark ? Colors.white54 : AppColors.textSecondaryColor),
                 ),
                 SizedBox(height: 40.h),
                 // Buttons
                 Obx(() => CommonButton(
-                  titleText: "Save Changes",
+                  titleText: AppString.saveChanges.tr,
                   isLoading: controller.isLoading.value,
                   gradient: AppColors.primaryGradient,
                   onTap: () => controller.saveChanges(),
                 )),
                 SizedBox(height: 12.h),
                 CommonButton(
-                  titleText: "Cancel",
-                  buttonColor: Colors.transparent,
-                  titleColor: AppColors.textSecondaryColor,
-                  borderColor: Colors.grey.withValues(alpha: 0.3),
+                  titleText: AppString.cancel.tr,
+                  buttonColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.transparent,
+                  titleColor: isDark ? Colors.white70 : AppColors.textSecondaryColor,
+                  borderColor: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.3),
                   onTap: () => Get.back(),
                 ),
                 SizedBox(height: 40.h),
@@ -115,15 +117,16 @@ class EditProfileScreen extends StatelessWidget {
   }
 
   Widget _buildProfileImagePicker(EditProfileController controller) {
+    final isDark = Get.isDarkMode;
     return GestureDetector(
       onTap: () => _showImageSourceSheet(controller),
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(vertical: 24.h),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.5),
+          color: isDark ? AppColors.darkCardBg : Colors.white.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(24.r),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+          border: Border.all(color: isDark ? AppColors.darkCardBorder : Colors.white.withValues(alpha: 0.2)),
         ),
         child: Column(
           children: [
@@ -172,7 +175,7 @@ class EditProfileScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFF4A7FE0),
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
+                      border: Border.all(color: isDark ? AppColors.darkCardBg : Colors.white, width: 2),
                     ),
                     child: const Icon(Icons.camera_alt_outlined,
                         color: Colors.white, size: 16),
@@ -182,9 +185,9 @@ class EditProfileScreen extends StatelessWidget {
             ),
             SizedBox(height: 12.h),
             CommonText(
-              text: "Tap to change photo",
+              text: AppString.tapToChangePhoto.tr,
               fontSize: 12,
-              color: AppColors.textSecondaryColor,
+              color: isDark ? Colors.white38 : AppColors.textSecondaryColor,
             ),
           ],
         ),
@@ -193,18 +196,19 @@ class EditProfileScreen extends StatelessWidget {
   }
 
   void _showImageSourceSheet(EditProfileController controller) {
+    final isDark = Get.isDarkMode;
     Get.bottomSheet(
       Container(
         padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? AppColors.darkCardBg : Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             CommonText(
-              text: "Choose Profile Photo",
+              text: AppString.chooseProfilePhoto.tr,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -214,7 +218,7 @@ class EditProfileScreen extends StatelessWidget {
               children: [
                 _buildSourceOption(
                   icon: Icons.camera_alt,
-                  label: "Camera",
+                  label: AppString.camera.tr,
                   onTap: () {
                     Get.back();
                     controller.pickImage(ImageSource.camera);
@@ -222,7 +226,7 @@ class EditProfileScreen extends StatelessWidget {
                 ),
                 _buildSourceOption(
                   icon: Icons.photo_library,
-                  label: "Gallery",
+                  label: AppString.gallery.tr,
                   onTap: () {
                     Get.back();
                     controller.pickImage(ImageSource.gallery);

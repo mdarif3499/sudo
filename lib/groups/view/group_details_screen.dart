@@ -22,56 +22,73 @@ class GroupDetailsScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Obx(() {
-          if (controller.isLoading.value) {
-            return _buildSkeleton(context);
-          }
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Obx(() {
+            if (controller.isLoading.value) {
+              return _buildSkeleton(context);
+            }
 
-          final details = controller.groupDetails.value;
-          if (details == null || details.group == null) {
-            return const Center(child: CommonText(text: "No details found"));
-          }
+            final details = controller.groupDetails.value;
+            if (details == null || details.group == null) {
+              return Center(child: CommonText(text: AppString.dataEmpty.tr));
+            }
 
-          return Column(
-            children: [
-              _buildAppBar(context),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 15.h),
-                      _buildSavingsCard(details),
-                      SizedBox(height: 20.h),
-                      _buildActionButtons(context, controller),
-                      SizedBox(height: 15.h),
-                      
-                      // Cycle Number Info instead of Current Receiver
-                      _buildCycleInfoCard(context, controller),
-                      
-                      SizedBox(height: 25.h),
-                      
-                      _buildPeriodHistoryHeader(context, controller),
-                      SizedBox(height: 12.h),
-                      _buildPeriodHistoryList(context, controller),
-                      
-                      SizedBox(height: 20.h),
-                      
-                      // Strict matching logic for Pay Now section
-                      _buildConditionalPaySection(context, controller, details),
-                      
-                      SizedBox(height: 20.h),
-                    ],
+            return Column(
+              children: [
+                _buildAppBar(context),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 15.h),
+                        _buildSavingsCard(details),
+                        SizedBox(height: 20.h),
+                        _buildActionButtons(context, controller),
+                        SizedBox(height: 15.h),
+                        
+                        // Cycle Number Info instead of Current Receiver
+                        _buildCycleInfoCard(context, controller),
+                        
+                        SizedBox(height: 25.h),
+                        
+                        _buildPeriodHistoryHeader(context, controller),
+                        SizedBox(height: 12.h),
+                        _buildPeriodHistoryList(context, controller),
+                        
+                        SizedBox(height: 20.h),
+                        
+                        // Strict matching logic for Pay Now section
+                        _buildConditionalPaySection(context, controller, details),
+                        
+                        SizedBox(height: 20.h),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        }),
+              ],
+            );
+          }),
+        ),
       ),
     );
   }
@@ -96,12 +113,12 @@ class GroupDetailsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CommonText(
-              text: "Cycle Number",
+              text: AppString.cycleNumber.tr,
               fontSize: 12,
               color: isDark ? Colors.white38 : const Color(0xFF828282),
             ),
             CommonText(
-              text: "Cycle ${history?.cycleNumber ?? 1}",
+              text: "${AppString.cycle.tr} ${history?.cycleNumber ?? 1}",
               fontSize: 16,
               fontWeight: FontWeight.w500,
               color: const Color(0xFF06D6A0),
@@ -170,8 +187,8 @@ class GroupDetailsScreen extends StatelessWidget {
             ),
           ),
           SizedBox(width: 15.w),
-          const CommonText(
-            text: AppString.groupDetails,
+          CommonText(
+            text: AppString.groupDetails.tr,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -193,7 +210,7 @@ class GroupDetailsScreen extends StatelessWidget {
           if (isFull && isAdmin)
             Expanded(
               child: Obx(() => CommonButton(
-                    titleText: "Start Group",
+                    titleText: AppString.startGroup.tr,
                     buttonHeight: 52.h,
                     buttonRadius: 14,
                     isLoading: controller.isStarting.value,
@@ -205,7 +222,7 @@ class GroupDetailsScreen extends StatelessWidget {
           else if (!isFull)
             Expanded(
               child: CommonButton(
-                titleText: AppString.invite,
+                titleText: AppString.invite.tr,
                 buttonHeight: 52.h,
                 buttonRadius: 14,
                 gradient: AppColors.primaryGradient,
@@ -220,7 +237,7 @@ class GroupDetailsScreen extends StatelessWidget {
         Expanded(
 
           child: CommonButton(
-            titleText: AppString.chat,
+            titleText: AppString.chat.tr,
             titleColor: isDark ? Colors.white : AppColors.black,
             buttonColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
             borderColor: isDark ? AppColors.darkCardBorder : const Color(0xFFE0E0E0),
@@ -251,7 +268,7 @@ class GroupDetailsScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CommonText(
-          text: "Period History",
+          text: AppString.periodHistory.tr,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
@@ -271,7 +288,7 @@ class GroupDetailsScreen extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.w),
                 child: Obx(() => CommonText(
-                  text: "Period ${controller.periodHistory.value?.periodNumber ?? 1}",
+                  text: "${AppString.period.tr} ${controller.periodHistory.value?.periodNumber ?? 1}",
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.blue,
@@ -301,7 +318,7 @@ class GroupDetailsScreen extends StatelessWidget {
 
       final history = controller.periodHistory.value;
       if (history == null || history.members == null || history.members!.isEmpty) {
-        return const Center(child: CommonText(text: "No history found for this period"));
+        return Center(child: CommonText(text: AppString.noGroupsFound.tr)); // Reusing noGroupsFound for history
       }
 
       return Column(
@@ -325,26 +342,30 @@ class GroupDetailsScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     Color statusColor;
     IconData statusIcon;
-    
+    String displayStatus = status;
+
     switch (status.toLowerCase()) {
       case 'paid':
         statusColor = const Color(0xFF27AE60);
         statusIcon = Icons.check_circle_outline_rounded;
+        displayStatus = AppString.paid.tr;
         break;
       case 'receiver':
         statusColor = Colors.blue;
         statusIcon = Icons.account_balance_wallet_outlined;
+        displayStatus = AppString.beneficiary.tr;
         break;
       default:
         statusColor = Colors.orange;
         statusIcon = Icons.access_time;
+        displayStatus = AppString.pending.tr;
     }
 
-    String formattedDate = "Pending";
+    String formattedDate = AppString.pending.tr;
     if (date != null) {
       formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(date));
     } else if (status.toLowerCase() == 'receiver') {
-      formattedDate = "Beneficiary";
+      formattedDate = AppString.beneficiary.tr;
     }
 
     return Container(
@@ -401,7 +422,7 @@ class GroupDetailsScreen extends StatelessWidget {
                 color: isDark ? Colors.white : AppColors.primaryColor,
               ),
               CommonText(
-                text: status.capitalizeFirst ?? '',
+                text: displayStatus.capitalizeFirst ?? '',
                 fontSize: 11,
                 color: statusColor,
                 fontWeight: FontWeight.w500,
@@ -505,7 +526,7 @@ class GroupDetailsScreen extends StatelessWidget {
                   Icon(Icons.people_outline, color: Colors.white70, size: 18.sp),
                   SizedBox(width: 6.w),
                   CommonText(
-                    text: "${group.members?.length ?? 0} / ${group.targetedMembers ?? 0} Members",
+                    text: "${group.members?.length ?? 0} / ${group.targetedMembers ?? 0} ${AppString.members.tr}",
                     fontSize: 14,
                     color: Colors.white70,
                   ),
@@ -521,8 +542,8 @@ class GroupDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CommonText(
-                      text: AppString.totalPool,
+                    CommonText(
+                      text: AppString.totalPool.tr,
                       fontSize: 14,
                       color: Colors.white70,
                     ),
@@ -545,8 +566,8 @@ class GroupDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const CommonText(
-                      text: "Contribution / cycle",
+                    CommonText(
+                      text: AppString.contributionAmountCycle.tr,
                       fontSize: 12,
                       color: Colors.white70,
                       textAlign: TextAlign.end,
@@ -560,7 +581,7 @@ class GroupDetailsScreen extends StatelessWidget {
                     ),
                     Divider(height: 16.h, color: Colors.white.withValues(alpha: 0.2)),
                     CommonText(
-                      text: "${details.currentCycle} / ${group.totalCycles} cycles",
+                      text: "${details.currentCycle} / ${group.totalCycles} ${AppString.cycle.tr}s",
                       fontSize: 13,
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
@@ -607,7 +628,7 @@ class GroupDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CommonText(
-                text: "${(progressValue * 100).toInt()}% Complete",
+                text: "${(progressValue * 100).toInt()}% ${AppString.complete.tr}",
                 fontSize: 14,
                 color: Colors.white,
               ),
@@ -808,13 +829,13 @@ class GroupDetailsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CommonText(
-                      text: isPast ? "Pending Contribution" : AppString.nextContribution,
+                      text: isPast ? AppString.pendingContribution.tr : AppString.nextContribution.tr,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                       color: isPast ? Colors.orange : (isDark ? Colors.white : Colors.black),
                     ),
                     CommonText(
-                      text: "Cycle $displayCycle",
+                      text: "${AppString.cycle.tr} $displayCycle",
                       fontSize: 13,
                       color: isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C,
                     ),
@@ -833,7 +854,7 @@ class GroupDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CommonText(
-                text: isPast ? "Overdue" : "Due: $nextDate",
+                text: isPast ? AppString.overdue.tr : "${AppString.due.tr}: $nextDate",
                 fontSize: 14,
                 color: isPast ? Colors.redAccent : (isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C),
               ),
@@ -862,8 +883,8 @@ class GroupDetailsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const CommonText(
-                    text: "Pay Now",
+                  child: CommonText(
+                    text: AppString.payNow.tr,
                     fontSize: 14,
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
@@ -894,8 +915,8 @@ class GroupDetailsScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CommonText(
-                    text: "Invite Member",
+                  CommonText(
+                    text: AppString.inviteMember.tr,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -907,21 +928,21 @@ class GroupDetailsScreen extends StatelessWidget {
               ),
               SizedBox(height: 8.h),
               CommonText(
-                text: "Send an invitation email to join this group.",
+                text: AppString.sendInvitationEmail.tr,
                 fontSize: 14,
                 color: isDark ? Colors.white60 : Colors.grey,
               ),
               SizedBox(height: 24.h),
               CommonTextField(
                 controller: inviteController.emailController,
-                hintText: "Enter email address",
+                hintText: AppString.emailHint.tr,
                 keyboardType: TextInputType.emailAddress,
                 prefixIcon: const Icon(Icons.email_outlined, color: Colors.blue),
                 borderRadius: 16,
               ),
               SizedBox(height: 32.h),
               Obx(() => CommonButton(
-                titleText: "Send Invitation",
+                titleText: AppString.sendInvitation.tr, // Need to ensure sendInvitation is in AppString
                 isLoading: inviteController.isLoading.value,
                 gradient: AppColors.primaryGradient,
                 buttonRadius: 14,

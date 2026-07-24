@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+import '../constants/app_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -26,15 +28,15 @@ extension TimeFormater on DateTime {
     final difference = currentDateTime.difference(this);
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
-        return ('${difference.inMinutes} minutes ago');
+        return ('${difference.inMinutes} ${AppString.minutesAgo.tr}');
       } else {
-        return ('${difference.inHours} hours ago');
+        return ('${difference.inHours} ${AppString.hoursAgo.tr}');
       }
     } else {
       final createdAtTime = toIso8601String().split('.')[0];
       final date = createdAtTime.split('T')[0];
       final time = createdAtTime.split('T')[1];
-      return '$date at $time';
+      return '$date ${AppString.at.tr} $time';
     }
   }
 }

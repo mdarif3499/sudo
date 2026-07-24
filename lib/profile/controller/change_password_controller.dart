@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../utils/constants/app_string.dart';
+import '../../utils/log/app_utils.dart';
 
 class ChangePasswordController extends GetxController {
   final oldPasswordController = TextEditingController();
@@ -12,7 +14,7 @@ class ChangePasswordController extends GetxController {
     if (formKey.currentState!.validate()) {
       // Implement change password logic
       Get.back();
-      Get.snackbar("Success", "Password changed successfully");
+      Utils.successSnackBar(AppString.passwordChangedSuccess.tr);
     }
   }
 

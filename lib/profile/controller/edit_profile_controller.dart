@@ -7,6 +7,7 @@ import '../../../services/api/multipart_helper.dart';
 import '../../../utils/log/app_utils.dart';
 import '../../../config/route/app_routes.dart';
 import '../../../component/bottom_nav_bar/bottom_nav_controller.dart';
+import '../../../utils/constants/app_string.dart';
 import 'profile_controller.dart';
 
 class EditProfileController extends GetxController {
@@ -76,7 +77,7 @@ class EditProfileController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        Utils.successSnackBar("Profile updated successfully");
+        Utils.successSnackBar(AppString.profileUpdatedSuccess.tr);
         // Refresh profile data
         if (Get.isRegistered<ProfileController>()) {
           Get.find<ProfileController>().fetchProfile();
@@ -84,11 +85,11 @@ class EditProfileController extends GetxController {
         Get.toNamed(AppRoutes.main);
         Get.find<BottomNavController>().changeIndex(3);
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
       debugPrint("===> Update Profile Error: $e");
-      Utils.errorSnackBar("Error", "Something went wrong");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, "Something went wrong");
     } finally {
       isLoading.value = false;
     }

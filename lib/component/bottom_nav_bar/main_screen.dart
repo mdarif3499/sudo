@@ -5,6 +5,7 @@ import 'package:sudo/discoverd/screen/discover_screen.dart';
 import 'bottom_nav_controller.dart';
 import '../../utils/constants/app_icons.dart';
 import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import '../text/common_text.dart';
 import '../../profile/screen/profile_screen.dart';
 import '../../home/screen/dashboard_screen.dart';
@@ -16,10 +17,10 @@ class NavbarScreen extends StatelessWidget {
   final BottomNavController controller = Get.put(BottomNavController());
 
   final List<Widget> screens = [
-    DashboardScreen(),
-    GroupsScreen(),
-    DiscoverScreen(),
-    ProfileScreen(),
+    const DashboardScreen(),
+    const GroupsScreen(),
+    const DiscoverScreen(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -39,7 +40,7 @@ class NavbarScreen extends StatelessWidget {
                 offset: const Offset(0, -5),
               ),
             ],
-            border: isDark ? Border(top: BorderSide(color: AppColors.darkCardBorder, width: 0.5)) : null,
+            border: isDark ? Border(top: BorderSide(color: AppColors.darkCardBorder, width: 0.5)) : Border(top: BorderSide(color: Colors.grey.withValues(alpha: 0.1), width: 0.5)),
           ),
           child: SafeArea(
             top: false,
@@ -49,25 +50,25 @@ class NavbarScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildNavItem(context, 0, "Dashboard", AppIcons.homeA, AppIcons.homeI),
+                  _buildNavItem(context, 0, AppString.dashboard.tr, AppIcons.homeA, AppIcons.homeI),
                   _buildNavItem(
                     context,
                     1,
-                    "Groups",
+                    AppString.groups.tr,
                     AppIcons.groupsA,
                     AppIcons.groupsI,
                   ),
                   _buildNavItem(
                     context,
                     2,
-                    "Discover",
+                    AppString.discover.tr,
                     AppIcons.discoverA,
                     AppIcons.discoverI,
                   ),
                   _buildNavItem(
                     context,
                     3,
-                    "Profile",
+                    AppString.profile.tr,
                     AppIcons.profileA,
                     AppIcons.profileI,
                   ),

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../config/api/api_end_point.dart';
 import '../../services/api/api_service.dart';
 import '../../utils/log/app_utils.dart';
+import '../../utils/constants/app_string.dart';
 import '../data/discover_group_model.dart';
 import '../../component/bottom_nav_bar/bottom_nav_controller.dart';
 import '../../groups/controller/groups_controller.dart';
@@ -31,10 +32,10 @@ class DiscoverController extends GetxController {
         allGroups.value = data.map((json) => DiscoverGroupModel.fromJson(json)).toList();
         filteredGroups.value = allGroups;
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", e.toString());
+      Utils.errorSnackBar(AppString.someThingWrong.tr, e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -59,7 +60,7 @@ class DiscoverController extends GetxController {
       if (Get.isDialogOpen ?? false) Get.back();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Utils.successSnackBar("Joined group successfully");
+        Utils.successSnackBar(AppString.joinedGroupSuccess.tr);
 
         if (Get.isRegistered<GroupsController>()) {
           Get.find<GroupsController>().fetchMyGroups();
@@ -71,12 +72,12 @@ class DiscoverController extends GetxController {
           Get.find<BottomNavController>().selectedIndex.value = 1;
         }
       } else {
-        Utils.errorSnackBar("Join Failed", response.message);
+        Utils.errorSnackBar(AppString.joinFailed.tr, response.message);
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
       
-      Utils.errorSnackBar("Error", e.toString());
+      Utils.errorSnackBar(AppString.someThingWrong.tr, e.toString());
     } finally {
       isJoining.value = false;
     }

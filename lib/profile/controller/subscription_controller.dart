@@ -6,6 +6,8 @@ import '../../../services/api/api_client.dart';
 import '../../../services/api/api_service.dart';
 import '../../../services/storage/storage_keys.dart';
 import '../../../services/storage/storage_services.dart';
+import '../../../utils/constants/app_string.dart';
+import '../../../utils/log/app_utils.dart';
 import '../../auth/screen/webview_screen.dart';
 
 class SubscriptionController extends GetxController {
@@ -33,9 +35,12 @@ class SubscriptionController extends GetxController {
           // ৩. অন্যথায় কেওয়াইসি সেশন তৈরি করবে
           await createKycSession();
         }
+      } else {
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
       debugPrint("===> checkProfileAndKyc Exception: $e");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, e.toString());
     } finally {
       isLoading.value = false;
     }

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../config/api/api_end_point.dart';
 import '../../services/api/api_service.dart';
 import '../../utils/log/app_utils.dart';
+import '../../../utils/constants/app_string.dart';
 import '../data/payment_history_model.dart';
 
 class PaymentHistoryController extends GetxController {
@@ -35,10 +36,10 @@ class PaymentHistoryController extends GetxController {
         historyList.value = data.map((json) => PaymentHistoryModel.fromJson(json)).toList();
         _calculateStats();
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", "Failed to fetch payment history");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, "Failed to fetch payment history");
     } finally {
       isLoading.value = false;
     }

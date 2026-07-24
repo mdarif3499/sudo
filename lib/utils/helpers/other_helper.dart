@@ -12,6 +12,7 @@ class OtherHelper {
     DateTime? firstDate,
     DateTime? lastDate,
   }) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -19,7 +20,9 @@ class OtherHelper {
       lastDate: lastDate ?? DateTime(2101),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: AppColors.primaryColor),
+          colorScheme: isDark 
+              ? const ColorScheme.dark(primary: AppColors.primaryColor, surface: AppColors.darkCardBg)
+              : const ColorScheme.light(primary: AppColors.primaryColor),
         ),
         child: child!,
       ),
@@ -53,9 +56,18 @@ class OtherHelper {
     required BuildContext context,
     TextEditingController? controller,
   }) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: isDark 
+              ? const ColorScheme.dark(primary: AppColors.primaryColor, surface: AppColors.darkCardBg)
+              : const ColorScheme.light(primary: AppColors.primaryColor),
+        ),
+        child: child!,
+      ),
     );
 
     if (picked == null) return null;

@@ -6,6 +6,7 @@ import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_images.dart';
 import '../../config/route/app_routes.dart';
+import '../../utils/constants/app_string.dart';
 import '../controller/sign_in_controller.dart';
 
 class AuthScreen extends StatelessWidget {
@@ -18,11 +19,22 @@ class AuthScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(),
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Column(
@@ -57,21 +69,21 @@ class AuthScreen extends StatelessWidget {
                 // Feature Cards
                 _buildFeatureCard(
                   context: context,
-                  title: 'Build wealth together',
-                  subtitle: 'Join savings circles, contribute regularly, and achieve your financial goals faster.',
+                  title: AppString.buildWealthTogether.tr,
+                  subtitle: AppString.buildWealthSubtitle.tr,
                 ),
                 SizedBox(height: 16.h),
                 _buildFeatureCard(
                   context: context,
-                  title: '100% Secure',
-                  subtitle: 'Bank-level encryption and transparent tracking for complete peace of mind.',
+                  title: AppString.secure100.tr,
+                  subtitle: AppString.secureSubtitle.tr,
                 ),
 
                 const Spacer(flex: 3),
 
                 // Buttons Section
                 CommonButton(
-                  titleText: 'Create Account',
+                  titleText: AppString.createAccount.tr,
                   gradient: AppColors.primaryGradient,
                   onTap: () {
                      Get.toNamed(AppRoutes.register);
@@ -79,7 +91,7 @@ class AuthScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 12.h),
                 CommonButton(
-                  titleText: 'Sign In',
+                  titleText: AppString.signIn.tr,
                   buttonColor: isDark ? Colors.white.withValues(alpha: 0.1) : AppColors.white,
                   titleColor: isDark ? Colors.white : AppColors.textPrimary,
                   borderColor: isDark ? Colors.white24 : Colors.grey.shade300,
@@ -103,10 +115,10 @@ class AuthScreen extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkCardBg : AppColors.white.withValues(alpha: 0.9),
+        color: isDark ? AppColors.darkCardBg : Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: isDark ? AppColors.darkCardBorder : const Color(0xFFE0E4ED)),
-        boxShadow: [
+        boxShadow: isDark ? [] : [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,

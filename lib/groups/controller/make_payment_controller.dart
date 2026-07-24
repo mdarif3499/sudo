@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../config/api/api_end_point.dart';
 import '../../services/api/api_service.dart';
 import '../../utils/log/app_utils.dart';
+import '../../../utils/constants/app_string.dart';
 import '../view/stripe_web_view_page.dart';
 
 class MakePaymentController extends GetxController {
@@ -31,13 +32,13 @@ class MakePaymentController extends GetxController {
         if (url != null) {
           Get.to(() => StripeWebViewPage(checkoutUrl: url));
         } else {
-          Utils.errorSnackBar("Error", "Checkout URL not found");
+          Utils.errorSnackBar(AppString.someThingWrong.tr, "Checkout URL not found");
         }
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", "Failed to initiate payment: $e");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, "Failed to initiate payment: $e");
     } finally {
       isLoading.value = false;
     }
