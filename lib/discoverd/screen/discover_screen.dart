@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import '../../component/text/common_text.dart';
 import '../../component/text_field/common_text_field.dart';
 import '../../component/button/common_button.dart';
@@ -19,10 +20,26 @@ class DiscoverScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
             _buildHeader(context),
             Expanded(
               child: RefreshIndicator(
@@ -36,7 +53,7 @@ class DiscoverScreen extends StatelessWidget {
                       SizedBox(height: 20.h),
                       Center(
                         child: CommonText(
-                          text: "Search your favourite groups",
+                          text: AppString.searchFavouriteGroups.tr,
                           fontSize: 16,
                           color: isDark ? Colors.white38 : Colors.grey,
                         ),
@@ -45,13 +62,13 @@ class DiscoverScreen extends StatelessWidget {
                       CommonTextField(
                         controller: controller.searchController,
                         onChanged: (value) => controller.filterGroups(value),
-                        hintText: "Search groups...",
+                        hintText: AppString.searchGroupsHint.tr,
                         prefixIcon: Icon(Icons.search, color: isDark ? Colors.white38 : Colors.grey),
                         borderRadius: 16,
                       ),
                       SizedBox(height: 24.h),
-                      const CommonText(
-                        text: "All Public Circles",
+                      CommonText(
+                        text: AppString.allPublicCircles.tr,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -71,7 +88,7 @@ class DiscoverScreen extends StatelessWidget {
                             child: Padding(
                               padding: EdgeInsets.only(top: 40.h),
                               child: CommonText(
-                                text: "No groups found",
+                                text: AppString.noGroupsFound.tr,
                                 fontSize: 14,
                                 color: isDark ? Colors.white38 : Colors.grey,
                               ),
@@ -104,7 +121,7 @@ class DiscoverScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildSkeletonCard(BuildContext context) {
@@ -177,8 +194,8 @@ class DiscoverScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const CommonText(
-            text: "Discover",
+          CommonText(
+            text: AppString.discover.tr,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -196,8 +213,8 @@ class DiscoverScreen extends StatelessWidget {
                     children: [
                       Icon(Icons.add, color: Colors.white, size: 16.sp),
                       SizedBox(width: 4.w),
-                      const CommonText(
-                        text: "New Group",
+                      CommonText(
+                        text: AppString.newGroup.tr,
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -292,7 +309,7 @@ class DiscoverScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CommonText(
-                        text: "Target", fontSize: 12, color: isDark ? Colors.white38 : Colors.grey),
+                        text: AppString.target.tr, fontSize: 12, color: isDark ? Colors.white38 : Colors.grey),
                     SizedBox(height: 4.h),
                     CommonText(
                       text: "\$${group.targetPoolAmount}",
@@ -307,7 +324,7 @@ class DiscoverScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CommonText(
-                        text: "Per Member", fontSize: 12, color: isDark ? Colors.white38 : Colors.grey),
+                        text: AppString.perMember.tr, fontSize: 12, color: isDark ? Colors.white38 : Colors.grey),
                     SizedBox(height: 4.h),
                     CommonText(
                       text: "\$${group.contributionAmount}",
@@ -318,7 +335,7 @@ class DiscoverScreen extends StatelessWidget {
                 ),
               ),
               CommonButton(
-                titleText: "Join",
+                titleText: AppString.join.tr,
                 buttonWidth: 70,
                 buttonHeight: 36,
                 padding: EdgeInsets.zero,
@@ -338,15 +355,15 @@ class DiscoverScreen extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: const CommonText(text: "Join Group", fontSize: 18, fontWeight: FontWeight.bold),
+        title: CommonText(text: AppString.joinGroupTitle.tr, fontSize: 18, fontWeight: FontWeight.bold),
         content: CommonText(
-          text: "Are you sure you want to join '${group.name}'?",
+          text: AppString.joinConfirmation.trParams({'name': group.name ?? ""}),
           fontSize: 14,
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const CommonText(text: "Cancel", color: Colors.grey),
+            child: CommonText(text: AppString.cancel.tr, color: Colors.grey),
           ),
           Obx(() => controller.isJoining.value 
             ? const Padding(
@@ -358,7 +375,7 @@ class DiscoverScreen extends StatelessWidget {
                   await controller.joinGroup(group.id!);
                   Get.back(); // Close dialog
                 },
-                child: const CommonText(text: "Join Now", color: Colors.blue, fontWeight: FontWeight.bold),
+                child: CommonText(text: AppString.joinNow.tr, color: Colors.blue, fontWeight: FontWeight.bold),
               ),
           ),
         ],

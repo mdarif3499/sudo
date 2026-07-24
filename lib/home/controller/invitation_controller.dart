@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../config/api/api_end_point.dart';
 import '../../services/api/api_service.dart';
 import '../../utils/log/app_utils.dart';
+import '../../utils/constants/app_string.dart';
 import '../data/group_invitation_model.dart';
 import '../../groups/controller/groups_controller.dart';
 
@@ -47,7 +48,7 @@ class InvitationController extends GetxController {
       );
       
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Utils.successSnackBar(response.data['message'] ?? (accept ? "Joined group successfully" : "Invitation declined"));
+        Utils.successSnackBar(response.data['message'] ?? (accept ? AppString.joinedGroupSuccess.tr : "Invitation declined"));
         
         // Refresh invitations
         fetchInvitations();
@@ -57,10 +58,10 @@ class InvitationController extends GetxController {
           Get.find<GroupsController>().fetchMyGroups();
         }
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", "Failed to process invitation");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, "Failed to process invitation");
     } finally {
       isActionLoading.value = false;
     }

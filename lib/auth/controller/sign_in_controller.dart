@@ -8,6 +8,7 @@ import '../../../services/storage/storage_keys.dart';
 import '../../../services/storage/storage_services.dart';
 import '../../../services/socket/socket_service.dart';
 import '../../../utils/log/app_utils.dart';
+import '../../../utils/constants/app_string.dart';
 import '../screen/webview_screen.dart';
 
 class SignInController extends GetxController {
@@ -19,7 +20,7 @@ class SignInController extends GetxController {
 
   Future<void> signIn() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      Utils.errorSnackBar("Error", "Please fill all fields");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, AppString.fillAllFields.tr);
       return;
     }
 
@@ -59,10 +60,10 @@ class SignInController extends GetxController {
       } else if (response.statusCode == 407) {
         Get.toNamed(AppRoutes.otp, parameters: {'email': emailController.text.trim()});
       } else {
-        Utils.errorSnackBar("Login Failed", response.message);
+        Utils.errorSnackBar(AppString.loginFailed.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", e.toString());
+      Utils.errorSnackBar(AppString.someThingWrong.tr, e.toString());
     } finally {
       isLoading.value = false;
     }

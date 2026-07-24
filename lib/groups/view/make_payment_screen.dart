@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../component/button/common_button.dart';
 import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import '../../config/route/app_routes.dart';
 import '../controller/make_payment_controller.dart';
 import 'stripe_web_view_page.dart';
@@ -26,44 +27,61 @@ class MakePaymentScreen extends StatelessWidget {
         };
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppBar(context),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20.h),
-                    _buildPaymentCard(args),
-                    SizedBox(height: 30.h),
-                    CommonText(
-                      text: "Select Payment Method",
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
-                    ),
-                    SizedBox(height: 16.h),
-                    Obx(() => _buildPaymentOption(
-                      context,
-                      icon: Icons.credit_card_outlined,
-                      title: "Stripe",
-                      isSelected: controller.selectedMethod.value == "Stripe",
-                      onTap: () => controller.selectMethod("Stripe"),
-                    )),
-                    SizedBox(height: 30.h),
-                    _buildSummaryCard(context, args['amount']),
-                    SizedBox(height: 40.h),
-                  ],
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(context),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
+                      _buildPaymentCard(args),
+                      SizedBox(height: 30.h),
+                      CommonText(
+                        text: AppString.selectPaymentMethod.tr,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.white70 : const Color(0xFF4F4F4F),
+                      ),
+                      SizedBox(height: 16.h),
+                      Obx(() => _buildPaymentOption(
+                        context,
+                        icon: Icons.credit_card_outlined,
+                        title: "Stripe",
+                        isSelected: controller.selectedMethod.value == "Stripe",
+                        onTap: () => controller.selectMethod("Stripe"),
+                      )),
+                      SizedBox(height: 30.h),
+                      _buildSummaryCard(context, args['amount']),
+                      SizedBox(height: 40.h),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            _buildBottomButton(context, controller, args),
-            SizedBox(height: 20.h),
-          ],
+              _buildBottomButton(context, controller, args),
+              SizedBox(height: 20.h),
+            ],
+          ),
         ),
       ),
     );
@@ -91,8 +109,8 @@ class MakePaymentScreen extends StatelessWidget {
             ),
           ),
           SizedBox(width: 15.w),
-          const CommonText(
-            text: "Make Payment",
+          CommonText(
+            text: AppString.makePayment.tr,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -124,7 +142,7 @@ class MakePaymentScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CommonText(
-            text: "Payment Amount",
+            text: AppString.paymentAmount.tr,
             fontSize: 14,
             color: Colors.white.withValues(alpha: 0.8),
           ),
@@ -145,16 +163,16 @@ class MakePaymentScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _buildCardRow("To:", args['groupName']),
+                _buildCardRow("${AppString.to.tr}:", args['groupName']), // Need 'to' in languages
                 SizedBox(height: 8.h),
-                _buildCardRow("Due Date:", args['dueDate']),
+                _buildCardRow("${AppString.due.tr} ${AppString.date.tr}:", args['dueDate']), // Need 'date' in languages
                 if (args['periodNumber'] != null) ...[
                   SizedBox(height: 8.h),
-                  _buildCardRow("Period:", "${args['periodNumber']}"),
+                  _buildCardRow("${AppString.period.tr}:", "${args['periodNumber']}"),
                 ],
                 if (args['cycleNumber'] != null) ...[
                   SizedBox(height: 8.h),
-                  _buildCardRow("Cycle:", "${args['cycleNumber']}"),
+                  _buildCardRow("${AppString.cycle.tr}:", "${args['cycleNumber']}"),
                 ],
               ],
             ),
@@ -263,11 +281,11 @@ class MakePaymentScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildSummaryRow(context, "Contribution", amount),
+          _buildSummaryRow(context, AppString.contributionTrends.tr, amount),
           SizedBox(height: 12.h),
-          _buildSummaryRow(context, "Processing Fee", "\$0.00"),
+          _buildSummaryRow(context, AppString.processingFee.tr, "\$0.00"),
           Divider(height: 32.h, color: isDark ? Colors.white12 : const Color(0xFFE0E0E0)),
-          _buildSummaryRow(context, "Total", amount, isTotal: true),
+          _buildSummaryRow(context, AppString.total.tr, amount, isTotal: true),
         ],
       ),
     );
@@ -298,7 +316,7 @@ class MakePaymentScreen extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Obx(() => CommonButton(
-        titleText: "Confirm & Pay",
+        titleText: AppString.confirmAndPay.tr,
         buttonHeight: 54.h,
         buttonRadius: 30,
         isLoading: controller.isLoading.value,
@@ -315,7 +333,7 @@ class MakePaymentScreen extends StatelessWidget {
               periodNumber: periodNumber as int,
             );
           } else {
-            Get.snackbar("Error", "Missing group or period  information");
+            Get.snackbar(AppString.someThingWrong.tr, "Missing group or period information");
           }
         },
       )),

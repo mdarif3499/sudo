@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../component/common_appbar/common_appbar.dart';
 import '../../component/text/common_text.dart';
+import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import '../controller/subscription_controller.dart';
 
 class SubscriptionScreen extends StatelessWidget {
@@ -11,88 +13,110 @@ class SubscriptionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SubscriptionController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const CommonAppBar(title: "Choose your plan"),
-      body: Obx(() => Stack(
-        children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 16.h),
-                CommonText(
-                  text: "You are currently using the free plan. Upgrade anytime to unlock premium smart navigation features.",
-                  fontSize: 13,
-                  color: const Color(0xFF475569),
-                  fontWeight: FontWeight.w400,
-                ),
-                SizedBox(height: 32.h),
-                
-                _buildPlanCard(
-                  onTap: () {
-                    controller.checkProfileAndKyc();
-                  },
-                  title: "Current Plan",
-                  subtitle: "Free",
-                  price: "\$0",
-                  features: ["Pot size: up to \$1000", "Up to 5 members", "1 active circle"],
-                  isActive: true,
-                  icon: Icons.bolt,
-                  iconColor: const Color(0xFF0EA5E9),
-                ),
-                
-                SizedBox(height: 24.h),
-                
-                _buildPlanCard(
-                  onTap: () {},
-                  title: "Plus",
-                  subtitle: "/month",
-                  price: "\$9.99",
-                  features: ["Pot size: up to \$10,000", "Up to 25 members", "5 active circles"],
-                  isPopular: true,
-                  icon: Icons.workspace_premium_outlined,
-                  iconColor: const Color(0xFF0EA5E9),
-                  showButton: true,
-                ),
-                
-                SizedBox(height: 24.h),
-                
-                _buildPlanCard(
-                  onTap: () {},
-                  title: "Family",
-                  subtitle: "/month",
-                  price: "\$19.99",
-                  features: ["Pot size: up to \$50,000", "Up to 50 members", "unlimited circles"],
-                  icon: Icons.workspace_premium_outlined,
-                  iconColor: const Color(0xFF0EA5E9),
-                  showButton: true,
-                ),
-                
-                SizedBox(height: 24.h),
-                
-                _buildPlanCard(
-                  onTap: () {},
-                  title: "Community",
-                  subtitle: "/month",
-                  price: "\$39.99",
-                  features: ["Pot size: up to \$250,000", "Up to 200 members", "Advanced reporting and governance tools"],
-                  icon: Icons.workspace_premium_outlined,
-                  iconColor: const Color(0xFF0EA5E9),
-                  showButton: true,
-                ),
-                SizedBox(height: 40.h),
-              ],
-            ),
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      appBar: CommonAppBar(title: AppString.chooseYourPlan.tr),
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
           ),
-          if (controller.isLoading.value)
-            const Center(
-              child: CircularProgressIndicator(),
+        ),
+        child: Obx(() => Stack(
+          children: [
+            SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 16.h),
+                  CommonText(
+                    text: AppString.planDescription.tr,
+                    fontSize: 13,
+                    color: isDark ? Colors.white70 : const Color(0xFF475569),
+                    fontWeight: FontWeight.w400,
+                  ),
+                  SizedBox(height: 32.h),
+                  
+                  _buildPlanCard(
+                    onTap: () {
+                      controller.checkProfileAndKyc();
+                    },
+                    title: AppString.currentPlan.tr,
+                    subtitle: AppString.free.tr,
+                    price: "\$0",
+                    features: ["Pot size: up to \$1000", "Up to 5 members", "1 active circle"],
+                    isActive: true,
+                    icon: Icons.bolt,
+                    iconColor: const Color(0xFF0EA5E9),
+                    isDark: isDark,
+                  ),
+                  
+                  SizedBox(height: 24.h),
+                  
+                  _buildPlanCard(
+                    onTap: () {},
+                    title: "Plus",
+                    subtitle: "/month",
+                    price: "\$9.99",
+                    features: ["Pot size: up to \$10,000", "Up to 25 members", "5 active circles"],
+                    isPopular: true,
+                    icon: Icons.workspace_premium_outlined,
+                    iconColor: const Color(0xFF0EA5E9),
+                    showButton: true,
+                    isDark: isDark,
+                  ),
+                  
+                  SizedBox(height: 24.h),
+                  
+                  _buildPlanCard(
+                    onTap: () {},
+                    title: "Family",
+                    subtitle: "/month",
+                    price: "\$19.99",
+                    features: ["Pot size: up to \$50,000", "Up to 50 members", "unlimited circles"],
+                    icon: Icons.workspace_premium_outlined,
+                    iconColor: const Color(0xFF0EA5E9),
+                    showButton: true,
+                    isDark: isDark,
+                  ),
+                  
+                  SizedBox(height: 24.h),
+                  
+                  _buildPlanCard(
+                    onTap: () {},
+                    title: "Community",
+                    subtitle: "/month",
+                    price: "\$39.99",
+                    features: ["Pot size: up to \$250,000", "Up to 200 members", "Advanced reporting and governance tools"],
+                    icon: Icons.workspace_premium_outlined,
+                    iconColor: const Color(0xFF0EA5E9),
+                    showButton: true,
+                    isDark: isDark,
+                  ),
+                  SizedBox(height: 40.h),
+                ],
+              ),
             ),
-        ],
-      )),
+            if (controller.isLoading.value)
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
+          ],
+        )),
+      ),
     );
   }
 
@@ -107,6 +131,7 @@ class SubscriptionScreen extends StatelessWidget {
     bool showButton = false,
     required IconData icon,
     required Color iconColor,
+    required bool isDark,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -117,7 +142,8 @@ class SubscriptionScreen extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.all(20.w),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
+              color: isDark ? AppColors.darkCardBg : null,
+              gradient: isDark ? null : const LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
@@ -127,10 +153,10 @@ class SubscriptionScreen extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(24.r),
               border: Border.all(
-                color: isPopular ? const Color(0xFF4A7FE0) : Colors.white.withValues(alpha: 0.5),
+                color: isPopular ? const Color(0xFF4A7FE0) : (isDark ? AppColors.darkCardBorder : Colors.white.withValues(alpha: 0.5)),
                 width: 1.5,
               ),
-              boxShadow: [
+              boxShadow: isDark ? [] : [
                 BoxShadow(
                   color: const Color(0xFFE9E8FD).withValues(alpha: 0.8),
                   blurRadius: 20,
@@ -154,7 +180,7 @@ class SubscriptionScreen extends StatelessWidget {
                         Container(
                           padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.5),
+                            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(icon, color: iconColor, size: 24.sp),
@@ -167,13 +193,12 @@ class SubscriptionScreen extends StatelessWidget {
                               text: title,
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF1E293B),
                             ),
-                            if (subtitle == "Free")
+                            if (subtitle == AppString.free.tr)
                               CommonText(
                                 text: subtitle,
                                 fontSize: 13,
-                                color: const Color(0xFF64748B),
+                                color: isDark ? Colors.white38 : const Color(0xFF64748B),
                               ),
                           ],
                         ),
@@ -183,11 +208,11 @@ class SubscriptionScreen extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFDCFCE7),
+                          color: const Color(0xFFDCFCE7).withValues(alpha: isDark ? 0.1 : 1),
                           borderRadius: BorderRadius.circular(100.r),
                         ),
                         child: CommonText(
-                          text: "Active",
+                          text: AppString.active.tr,
                           fontSize: 12,
                           color: const Color(0xFF166534),
                           fontWeight: FontWeight.w600,
@@ -203,15 +228,14 @@ class SubscriptionScreen extends StatelessWidget {
                       text: price,
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1E293B),
                     ),
-                    if (subtitle != "Free")
+                    if (subtitle != AppString.free.tr)
                       Padding(
                         padding: EdgeInsets.only(bottom: 4.h),
                         child: CommonText(
                           text: subtitle,
                           fontSize: 14,
-                          color: const Color(0xFF64748B),
+                          color: isDark ? Colors.white38 : const Color(0xFF64748B),
                         ),
                       ),
                   ],
@@ -227,7 +251,7 @@ class SubscriptionScreen extends StatelessWidget {
                         child: CommonText(
                           text: feature,
                           fontSize: 13,
-                          color: const Color(0xFF475569),
+                          color: isDark ? Colors.white60 : const Color(0xFF475569),
                         ),
                       ),
                     ],
@@ -243,7 +267,7 @@ class SubscriptionScreen extends StatelessWidget {
                         colors: [Color(0xFF00A3FF), Color(0xFF3D5AFE)],
                       ),
                       borderRadius: BorderRadius.circular(16.r),
-                      boxShadow: [
+                      boxShadow: isDark ? [] : [
                         BoxShadow(
                           color: const Color(0xFF3D5AFE).withValues(alpha: 0.2),
                           blurRadius: 10,
@@ -253,7 +277,7 @@ class SubscriptionScreen extends StatelessWidget {
                     ),
                     child: Center(
                       child: CommonText(
-                        text: "Upgrade Now",
+                        text: AppString.upgradeNow.tr,
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -279,7 +303,7 @@ class SubscriptionScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100.r),
                   ),
                   child: CommonText(
-                    text: "Most Popular",
+                    text: AppString.mostPopular.tr,
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,

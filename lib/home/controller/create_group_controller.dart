@@ -4,6 +4,7 @@ import 'package:sudo/config/route/app_routes.dart';
 import '../../config/api/api_end_point.dart';
 import '../../services/api/api_service.dart';
 import '../../utils/log/app_utils.dart';
+import '../../utils/constants/app_string.dart';
 import 'package:intl/intl.dart';
 import '../../component/bottom_nav_bar/bottom_nav_controller.dart';
 import '../../groups/controller/groups_controller.dart';
@@ -65,7 +66,7 @@ class CreateGroupController extends GetxController {
 
     if (target > 0 && contribution > 0) {
       if (target % contribution != 0) {
-        contributionError = "Target ($target) must be divisible by contribution ($contribution)";
+        contributionError = "${AppString.target.tr} ($target) must be divisible by ${AppString.contribution.tr.toLowerCase()} ($contribution)";
       } else {
         contributionError = null;
         // Logic removed so user can enter total cycles manually
@@ -89,7 +90,7 @@ class CreateGroupController extends GetxController {
         contributionController.text.isEmpty ||
         totalCyclesController.text.isEmpty ||
         selectedDate == null) {
-      Utils.errorSnackBar("Error", "Please fill all fields");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, AppString.fillAllFields.tr);
       return;
     }
 
@@ -98,7 +99,7 @@ class CreateGroupController extends GetxController {
     int totalCycles = int.tryParse(totalCyclesController.text) ?? 0;
 
     if (contribution == 0 || target % contribution != 0) {
-      Utils.errorSnackBar("Error", "Pool amount must be divisible by contribution.");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, AppString.poolAmountDivisibleError.tr);
       return;
     }
 
@@ -122,7 +123,7 @@ class CreateGroupController extends GetxController {
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        Utils.successSnackBar("Group created successfully");
+        Utils.successSnackBar(AppString.groupCreatedSuccess.tr);
         
         if (Get.isRegistered<GroupsController>()) {
           Get.find<GroupsController>().fetchMyGroups();
@@ -136,10 +137,10 @@ class CreateGroupController extends GetxController {
 
         Get.toNamed(AppRoutes.main);
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", e.toString());
+      Utils.errorSnackBar(AppString.someThingWrong.tr, e.toString());
     } finally {
       isLoading.value = false;
     }

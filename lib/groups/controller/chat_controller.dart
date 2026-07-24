@@ -4,6 +4,7 @@ import '../../../config/api/api_end_point.dart';
 import '../../../services/api/api_service.dart';
 import '../../../services/storage/storage_services.dart';
 import '../../../utils/log/app_utils.dart';
+import '../../utils/constants/app_string.dart';
 import '../data/chat_model.dart';
 import '../../../services/socket/socket_service.dart';
 
@@ -102,11 +103,11 @@ class ChatController extends GetxController {
           _scrollToBottom();
         }
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
       debugPrint("Error sending message: $e");
-      Utils.errorSnackBar("Error", "Failed to send message");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, "Failed to send message");
     }
   }
 

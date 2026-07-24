@@ -1,28 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:get/get.dart';
+import 'package:flutter_html/flutter_html.dart';
 import '../../component/common_appbar/common_appbar.dart';
 import '../../component/text/common_text.dart';
+import '../../utils/constants/app_string.dart';
+import '../controller/terms_condition_controller.dart';
 
 class TermsCondition extends StatelessWidget {
   const TermsCondition({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return      Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const CommonAppBar(title: "Terms & Condition"),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-        child: CommonText(
-          text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic.",
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Color(0xFF575757),
-          textAlign: TextAlign.justify,
+    final controller = Get.put(TermsConditionController());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      appBar: CommonAppBar(title: AppString.termsConditionTitle.tr),
+      extendBodyBehindAppBar: true,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (controller.termsCondition.value == null || controller.termsCondition.value!.content == null) {
+              return Center(child: CommonText(text: AppString.noContentAvailable.tr));
+            }
+
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+              child: Html(
+                data: controller.termsCondition.value!.content!,
+                style: {
+                  "body": Style(
+                    fontSize: FontSize(14.sp),
+                    color: isDark ? Colors.white : const Color(0xFF575757),
+                    textAlign: TextAlign.justify,
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.zero,
+                  ),
+                  "h1": Style(
+                    fontSize: FontSize(22.sp),
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                },
+              ),
+            );
+          }),
         ),
       ),
     );
   }
-
 }

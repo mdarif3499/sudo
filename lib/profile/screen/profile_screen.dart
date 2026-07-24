@@ -5,7 +5,9 @@ import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_icons.dart';
 import '../../config/route/app_routes.dart';
+import '../../utils/constants/app_string.dart';
 import '../controller/profile_controller.dart';
+import '../../services/localization/language_controller.dart';
 import '../widget/profile_menu_item.dart';
 import '../../component/other_widgets/common_skeleton.dart';
 import '../../component/image/common_image.dart';
@@ -16,6 +18,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ProfileController controller = Get.put(ProfileController());
+    final LanguageController langController = Get.find<LanguageController>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -51,22 +54,22 @@ class ProfileScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const CommonText(
-                        text: "Profile",
+                      CommonText(
+                        text: AppString.profile.tr,
                         fontSize: 24,
                         fontWeight: FontWeight.w600,
                       ),
-                      Image.asset(
-                        AppIcons.notification,
-                        height: 42.h,
-                        width: 42.w,
-                      ),
+                      // Image.asset(
+                      //   AppIcons.notification,
+                      //   height: 42.h,
+                      //   width: 42.w,
+                      // ),
                     ],
                   ),
                   SizedBox(height: 20.h),
                   Center(
                     child: CommonText(
-                      text: "Your Account Settings",
+                      text: AppString.accountSettings.tr,
                       fontSize: 14,
                       color: isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C,
                     ),
@@ -149,8 +152,8 @@ class ProfileScreen extends StatelessWidget {
                                   width: 18.w,
                                 ),
                                 SizedBox(width: 8.w),
-                                const CommonText(
-                                  text: "Edit Profile",
+                                CommonText(
+                                  text: AppString.editProfile.tr,
                                   fontSize: 14,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
@@ -168,14 +171,25 @@ class ProfileScreen extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(child: _buildStatCard(context, "4", "Active Groups")),
+                        Expanded(
+                          child: _buildStatCard(
+                            context, 
+                            controller.dashboardData.value?.activeGroups?.toString() ?? "0", 
+                            AppString.activeGroups.tr
+                          )
+                        ),
                         SizedBox(width: 16.w),
-                        Expanded(child: _buildStatCard(context, "\$12.5k", "Total Saved")),
+                        Expanded(
+                          child: _buildStatCard(
+                            context, 
+                            _formatAmount(controller.dashboardData.value?.totalSavings), 
+                            AppString.totalSaved.tr
+                          )
+                        ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 12.h),
-                  _buildSectionTitle(context, "Account"),
+                  _buildSectionTitle(context, AppString.account.tr),
                   SizedBox(height: 12.h),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -193,7 +207,7 @@ class ProfileScreen extends StatelessWidget {
                           icon: AppIcons.profile,
                           iconColor: Colors.blue,
                           iconBgColor: Colors.blue.withValues(alpha: 0.1),
-                          title: "Edit Profile",
+                          title: AppString.editProfile.tr,
                           onTap: () => Get.toNamed(AppRoutes.editProfile, arguments: data),
                         ),
                         SizedBox(height: 5.h),
@@ -202,10 +216,10 @@ class ProfileScreen extends StatelessWidget {
                           icon: AppIcons.kyc,
                           iconColor: Colors.green,
                           iconBgColor: Colors.green.withValues(alpha: 0.1),
-                          title: "KYC Verification",
+                          title: AppString.kycVerification.tr,
                           trailingText: data?['kycStatus']?.toString().capitalizeFirst ?? "Required",
                           trailingTextColor: data?['kycStatus'] == 'approved' ? Colors.green : Colors.orange,
-                          onTap: () => Get.toNamed(AppRoutes.kyc),
+                          onTap: () {},
                         ),
                         SizedBox(height: 5.h),
                         Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
@@ -213,27 +227,28 @@ class ProfileScreen extends StatelessWidget {
                           icon: AppIcons.subscriptions,
                           iconColor: Colors.orange,
                           iconBgColor: Colors.orange.withValues(alpha: 0.1),
-                          title: "Subscriptions",
-                          trailingText: "Free",
+                          title: AppString.subscriptions.tr,
+                          trailingText: AppString.free.tr,
                           trailingTextColor: Colors.orange,
                           onTap: () {
                             Get.toNamed(AppRoutes.subscriptionScreen);
                           },
                         ),
                         Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
-                        _buildProfileMenu(
-                          icon: AppIcons.payment,
+                        Obx(() => _buildProfileMenu(
+                          icon: Icons.language,
                           iconColor: Colors.purple,
                           iconBgColor: Colors.purple.withValues(alpha: 0.1),
-                          title: "Payment Methods",
-                          onTap: () => Get.toNamed(AppRoutes.paymentMethod),
-                        ),
+                          title: AppString.language.tr,
+                          trailingText: langController.selectedLanguage.value,
+                          onTap: () => Get.toNamed(AppRoutes.language),
+                        )),
                         SizedBox(height: 8.h),
                       ],
                     ),
                   ),
                   SizedBox(height: 24.h),
-                  _buildSectionTitle(context, "Preferences"),
+                  _buildSectionTitle(context, AppString.support.tr),
                   SizedBox(height: 8.h),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -246,62 +261,34 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        SizedBox(height: 8.h),
+                        SizedBox(height: 16.h),
                         _buildProfileMenu(
-                          icon: AppIcons.notificationP,
-                          iconColor: Colors.orangeAccent,
-                          iconBgColor: Colors.orangeAccent.withValues(alpha: 0.1),
-                          title: "Notifications",
-                          trailing: Obx(
-                            () => Transform.scale(
-                              scale: 0.8,
-                              child: Switch(
-                                value: controller.isNotificationOn.value,
-                                onChanged: (val) {
-                                  controller.toggleNotification(val);
-                                },
-                                activeTrackColor: const Color(0xFF4A7FE0),
-                                inactiveTrackColor: Colors.grey.shade300,
-                                thumbColor: WidgetStateProperty.all(Colors.white),
-                                trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
-                              ),
-                            ),
-                          ),
-                          onTap: () {},
+                          icon: AppIcons.faqs,
+                          iconColor: const Color(0xFF4A7FE0),
+                          iconBgColor: const Color(0xFF4A7FE0).withValues(alpha: 0.1),
+                          title: AppString.faqsTitle.tr,
+                          onTap: () => Get.toNamed(AppRoutes.faq),
                         ),
+                        SizedBox(height: 5.h),
                         Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
                         _buildProfileMenu(
-                          icon: AppIcons.passport,
-                          iconColor: Colors.brown.withValues(alpha: 0.5),
-                          iconBgColor: Colors.brown.withValues(alpha: 0.1),
-                          title: "Change Password",
-                          onTap: () => Get.toNamed(AppRoutes.changePassword),
+                          icon: AppIcons.privacy,
+                          iconColor: const Color(0xFF10B981),
+                          iconBgColor: const Color(0xFF10B981).withValues(alpha: 0.1),
+                          title: AppString.privacyPolicyTitle.tr,
+                          onTap: () => Get.toNamed(AppRoutes.privacyPolicy),
                         ),
-                        SizedBox(height: 8.h),
+                        SizedBox(height: 5.h),
+                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                        _buildProfileMenu(
+                          icon: AppIcons.terms,
+                          iconColor: const Color(0xFF8B5CF6),
+                          iconBgColor: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+                          title: AppString.termsConditionTitle.tr,
+                          onTap: () => Get.toNamed(AppRoutes.termsCondition),
+                        ),
+                        SizedBox(height: 16.h),
                       ],
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                  _buildSectionTitle(context, "Support"),
-                  SizedBox(height: 8.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkCardBg : Colors.white,
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
-                        color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.h),
-                      child: _buildProfileMenu(
-                        icon: AppIcons.help,
-                        iconColor: Colors.blueGrey,
-                        iconBgColor: Colors.blueGrey.withValues(alpha: 0.1),
-                        title: "Help & Support",
-                        onTap: () => Get.toNamed(AppRoutes.helpSupport),
-                      ),
                     ),
                   ),
                   SizedBox(height: 32.h),
@@ -321,8 +308,8 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           Icon(Icons.logout, color: Colors.red, size: 20.sp),
                           SizedBox(width: 8.w),
-                          const CommonText(
-                            text: "Log Out",
+                          CommonText(
+                            text: AppString.logout.tr,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Colors.red,
@@ -377,7 +364,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildProfileMenu({
-    required String icon,
+    required dynamic icon,
     required Color iconColor,
     required Color iconBgColor,
     required String title,
@@ -387,7 +374,7 @@ class ProfileScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return ProfileMenuItem(
-      iconPath: icon,
+      icon: icon,
       iconColor: iconColor,
       iconBgColor: iconBgColor,
       title: title,
@@ -435,5 +422,17 @@ class ProfileScreen extends StatelessWidget {
       fontWeight: FontWeight.w400,
       color: isDark ? Colors.white : AppColors.textPrimary,
     );
+  }
+
+  String _formatAmount(num? amount) {
+    if (amount == null) return "\$0";
+    if (amount >= 1000) {
+      double kAmount = amount / 1000;
+      if (kAmount == kAmount.toInt()) {
+        return "\$${kAmount.toInt()}k";
+      }
+      return "\$${kAmount.toStringAsFixed(1)}k";
+    }
+    return "\$${amount.toString()}";
   }
 }

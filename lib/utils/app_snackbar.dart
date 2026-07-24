@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'constants/app_colors.dart';
+import 'constants/app_string.dart';
 import 'package:flutter/material.dart';
 
 class AppSnackbar {
@@ -8,7 +9,7 @@ class AppSnackbar {
 
   static void success({required String title, required String message}) {
     _showSnackbar(
-      title: kDebugMode ? title : 'Success',
+      title: kDebugMode ? title : AppString.success.tr,
       message: message,
       backgroundColor: AppColors.black,
       position: SnackPosition.BOTTOM,
@@ -17,7 +18,7 @@ class AppSnackbar {
 
   static void error({String? title, required String message}) {
     _showSnackbar(
-      title: kDebugMode ? (title ?? 'Error') : 'Oops',
+      title: kDebugMode ? (title ?? AppString.error.tr) : AppString.oops.tr,
       message: message,
       backgroundColor: AppColors.red,
       position: SnackPosition.TOP,

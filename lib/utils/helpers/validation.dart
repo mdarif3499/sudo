@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-
+import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import '../constants/app_string.dart';
 
 class AppValidation {
@@ -11,7 +11,7 @@ class AppValidation {
 
   static String? required(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return AppString.thisFieldIsRequired;
+      return AppString.thisFieldIsRequired.tr;
     }
     return null;
   }
@@ -21,7 +21,7 @@ class AppValidation {
     if (error != null) return error;
 
     if (!emailRegexp.hasMatch(value!)) {
-      return AppString.enterValidEmail;
+      return AppString.enterValidEmail.tr;
     }
     return null;
   }
@@ -30,7 +30,7 @@ class AppValidation {
     final error = required(value);
     if (error != null) return error;
     if (value!.length < 8) {
-      return AppString.passwordMustBeeEightCharacters;
+      return AppString.passwordMustBeeEightCharacters.tr;
     }
     return null;
   }
@@ -43,7 +43,7 @@ class AppValidation {
     if (error != null) return error;
 
     if (value != passwordController.text) {
-      return AppString.thePasswordDoesNotMatch;
+      return AppString.thePasswordDoesNotMatch.tr;
     }
     return null;
   }

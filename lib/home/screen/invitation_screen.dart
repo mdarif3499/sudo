@@ -5,6 +5,7 @@ import '../../component/image/common_image.dart';
 import '../../component/text/common_text.dart';
 import '../../component/button/common_button.dart';
 import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import '../controller/invitation_controller.dart';
 import '../data/group_invitation_model.dart';
 
@@ -17,46 +18,95 @@ class InvitationScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const CommonText(text: "Group Invitations", fontSize: 20, fontWeight: FontWeight.bold),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
-          onPressed: () => Get.back(),
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(context, isDark),
+              Expanded(
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (controller.invitations.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.mail_outline, size: 64.sp, color: Colors.grey),
+                          SizedBox(height: 16.h),
+                          CommonText(text: AppString.noInvitationsFound.tr, fontSize: 16, color: Colors.grey),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: () => controller.fetchInvitations(),
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(20.r),
+                      itemCount: controller.invitations.length,
+                      itemBuilder: (context, index) {
+                        return _buildInvitationCard(context, controller.invitations[index], controller);
+                      },
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    );
+  }
 
-        if (controller.invitations.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.mail_outline, size: 64.sp, color: Colors.grey),
-                SizedBox(height: 16.h),
-                const CommonText(text: "No invitations found", fontSize: 16, color: Colors.grey),
-              ],
+  Widget _buildAppBar(BuildContext context, bool isDark) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Get.back(),
+            child: Container(
+              padding: EdgeInsets.all(10.r),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: isDark ? Colors.white24 : const Color(0xFFE0E0E0)),
+              ),
+              child: Icon(
+                Icons.arrow_back,
+                size: 20.sp,
+                color: isDark ? Colors.white : AppColors.black,
+              ),
             ),
-          );
-        }
-
-        return RefreshIndicator(
-          onRefresh: () => controller.fetchInvitations(),
-          child: ListView.builder(
-            padding: EdgeInsets.all(20.r),
-            itemCount: controller.invitations.length,
-            itemBuilder: (context, index) {
-              return _buildInvitationCard(context, controller.invitations[index], controller);
-            },
           ),
-        );
-      }),
+          SizedBox(width: 15.w),
+          Expanded(
+            child: CommonText(
+              text: AppString.groupInvitations.tr,
+              fontSize: 20.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -72,7 +122,7 @@ class InvitationScreen extends StatelessWidget {
         color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
         border: isDark ? Border.all(color: AppColors.darkCardBorder) : Border.all(color: const Color(0xFFF2F2F7)),
-        boxShadow: [
+        boxShadow: isDark ? [] : [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
@@ -119,9 +169,9 @@ class InvitationScreen extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                     CommonText(
-                      text: "invited you to join",
+                      text: AppString.invitedYouToJoin.tr,
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: isDark ? Colors.white38 : Colors.grey,
                     ),
                   ],
                 ),
@@ -146,11 +196,11 @@ class InvitationScreen extends StatelessWidget {
                   color: const Color(0xFF00ADEF),
                 ),
                 SizedBox(height: 12.h),
-                _buildInfoRow(Icons.attach_money, "Contribution:", "\$${group?.contributionAmount ?? 0}"),
+                _buildInfoRow(Icons.attach_money, AppString.contribution.tr, "\$${group?.contributionAmount ?? 0}"),
                 SizedBox(height: 8.h),
-                _buildInfoRow(Icons.calendar_today, "Frequency:", group?.paymentFrequency?.capitalizeFirst ?? "N/A"),
+                _buildInfoRow(Icons.calendar_today, AppString.frequency.tr, group?.paymentFrequency?.capitalizeFirst ?? "N/A"),
                 SizedBox(height: 8.h),
-                _buildInfoRow(Icons.loop, "Total Cycles:", "${group?.totalCycles ?? 0}"),
+                _buildInfoRow(Icons.loop, AppString.totalCyclesLabel.tr, "${group?.totalCycles ?? 0}"),
               ],
             ),
           ),
@@ -160,7 +210,7 @@ class InvitationScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: Obx(() => CommonButton(
-                    titleText: "Reject",
+                    titleText: AppString.reject.tr,
                     buttonHeight: 45.h,
                     buttonColor: Colors.transparent,
                     borderColor: Colors.red.withValues(alpha: 0.5),
@@ -172,7 +222,7 @@ class InvitationScreen extends StatelessWidget {
                 SizedBox(width: 12.w),
                 Expanded(
                   child: Obx(() => CommonButton(
-                    titleText: "Accept",
+                    titleText: AppString.accept.tr,
                     buttonHeight: 45.h,
                     gradient: AppColors.primaryGradient,
                     isLoading: controller.isActionLoading.value,

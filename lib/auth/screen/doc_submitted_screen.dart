@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../component/text/common_text.dart';
 import '../../../utils/constants/app_colors.dart';
 import '../../../utils/constants/app_icons.dart';
+import '../../../utils/constants/app_string.dart';
 import '../../../config/route/app_routes.dart';
 
 class DocSubmittedScreen extends StatefulWidget {
@@ -51,63 +52,77 @@ class _DocSubmittedScreenState extends State<DocSubmittedScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Image.asset(
-                    AppIcons.submitted,
-                    height: 120.h,
-                    width: 120.w,
-                    // If the icon is a black/dark asset, you might want to tint it for dark mode
-                    // color: isDark ? Colors.white : null, 
-                  ),
-                  Positioned(
-                    bottom: 0.h,
-                    child: Container(
-                      height: 10.h,
-                      width: 75.w,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10.r),
-                        child: LinearProgressIndicator(
-                          value: _animation.value,
-                          backgroundColor: Colors.transparent,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            const Color(0xFF6C92F4).withValues(alpha: 0.6),
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Image.asset(
+                      AppIcons.submitted,
+                      height: 120.h,
+                      width: 120.w,
+                    ),
+                    Positioned(
+                      bottom: 0.h,
+                      child: Container(
+                        height: 10.h,
+                        width: 75.w,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.r),
+                          child: LinearProgressIndicator(
+                            value: _animation.value,
+                            backgroundColor: Colors.transparent,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              const Color(0xFF6C92F4).withValues(alpha: 0.6),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 40.h),
-              const CommonText(
-                text: "Documents Submitted Successfully",
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 16.h),
-              CommonText(
-                text:
-                    "We've received your documents and they're now being reviewed. Please sit tight while we verify your information. We'll notify you as soon as the review is complete.",
-                fontSize: 14,
-                color: isDark ? Colors.white70 : AppColors.textSecondaryColor,
-                textAlign: TextAlign.center,
-              ),
-            ],
+                  ],
+                ),
+                SizedBox(height: 40.h),
+                CommonText(
+                  text: AppString.docSubmittedSuccess.tr,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16.h),
+                CommonText(
+                  text: AppString.docSubmittedDescription.tr,
+                  fontSize: 14,
+                  color: isDark ? Colors.white70 : AppColors.textSecondaryColor,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       ),

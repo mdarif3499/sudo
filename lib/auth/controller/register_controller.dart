@@ -7,6 +7,7 @@ import '../../services/api/api_service.dart';
 import '../../config/api/api_end_point.dart';
 import '../../utils/log/app_utils.dart';
 import '../../config/route/app_routes.dart';
+import '../../utils/constants/app_string.dart';
 import '../../services/api/multipart_helper.dart';
 
 class RegisterController extends GetxController {
@@ -70,10 +71,10 @@ class RegisterController extends GetxController {
         Utils.successSnackBar(response.message);
         Get.toNamed(AppRoutes.otp, parameters: {'email': emailController.text.trim()});
       } else {
-        Utils.errorSnackBar("Registration Failed", response.message);
+        Utils.errorSnackBar(AppString.registrationFailed.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", e.toString());
+      Utils.errorSnackBar(AppString.someThingWrong.tr, e.toString());
     } finally {
       isLoading.value = false;
     }

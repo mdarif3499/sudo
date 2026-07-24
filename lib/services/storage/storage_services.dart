@@ -19,6 +19,8 @@ class LocalStorage {
   static String adminId = "";
   static String kycStatus = "";
   static bool isDarkMode = false;
+  static String languageCode = "en";
+  static String countryCode = "US";
 
   static Future<void> init() async {
     preferences = await SharedPreferences.getInstance();
@@ -45,6 +47,8 @@ class LocalStorage {
     adminId = localStorage.getString(LocalStorageKeys.adminId) ?? "";
     kycStatus = localStorage.getString(LocalStorageKeys.kycStatus) ?? "";
     isDarkMode = localStorage.getBool(LocalStorageKeys.isDarkMode) ?? false;
+    languageCode = localStorage.getString(LocalStorageKeys.languageCode) ?? "en";
+    countryCode = localStorage.getString(LocalStorageKeys.countryCode) ?? "US";
 
     appLog(userId, source: "Local Storage");
   }
@@ -77,6 +81,8 @@ class LocalStorage {
     if (key == LocalStorageKeys.plan) plan = value;
     if (key == LocalStorageKeys.adminId) adminId = value;
     if (key == LocalStorageKeys.kycStatus) kycStatus = value;
+    if (key == LocalStorageKeys.languageCode) languageCode = value;
+    if (key == LocalStorageKeys.countryCode) countryCode = value;
   }
 
   static Future<void> setBool(String key, bool value) async {
@@ -116,5 +122,8 @@ class LocalStorage {
     adminId = "";
     kycStatus = "";
     isDarkMode = false;
+    // We don't usually reset language on logout, but you can if you want.
+    // languageCode = "en";
+    // countryCode = "US";
   }
 }

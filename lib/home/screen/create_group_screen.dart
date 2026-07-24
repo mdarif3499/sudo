@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import '../../component/text/common_text.dart';
 import '../../component/text_field/common_text_field.dart';
 import '../../component/button/common_button.dart';
@@ -16,190 +17,217 @@ class CreateGroupScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        leading: Padding(
-          padding: EdgeInsets.all(8.r),
-          child: GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: isDark ? Colors.white12 : Colors.grey.withValues(alpha: 0.2)),
-              ),
-              child: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black, size: 20.sp),
-            ),
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
           ),
         ),
-        title: CommonText(
-          text: "Create Group",
-          fontSize: 20.sp,
-          fontWeight: FontWeight.bold,
-        ),
-        centerTitle: false,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: GetBuilder<CreateGroupController>(
-          builder: (controller) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 10.h),
-                Center(
-                  child: CommonText(
-                    text: "Set up your group details and invite members to\njoin",
-                    fontSize: 14.sp,
-                    color: isDark ? Colors.white60 : Colors.grey,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SizedBox(height: 20.h),
-
-                // Group Name
-                _buildLabel(context, "Group Name"),
-                CommonTextField(
-                  controller: controller.nameController,
-                  hintText: "e.g., Family Savings",
-                  prefixIcon: Icon(Icons.people_outline, size: 20.sp, color: isDark ? Colors.white38 : Colors.grey),
-                  borderRadius: 24,
-                ),
-                SizedBox(height: 16.h),
-
-                // Target Pool Amount
-                _buildLabel(context, "Target Pool Amount"),
-                CommonTextField(
-                  controller: controller.targetAmountController,
-                  hintText: "100000",
-                  keyboardType: TextInputType.number,
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.all(12.r),
-                    child: CommonText(text: "\$", fontSize: 16.sp, color: isDark ? Colors.white38 : Colors.grey),
-                  ),
-                  borderRadius: 24,
-                  onChanged: (v) => controller.validateAmounts(),
-                ),
-                SizedBox(height: 16.h),
-
-                _buildLabel(context, "Contribution Amount (per member)"),
-                CommonTextField(
-                  controller: controller.contributionController,
-                  hintText: "200",
-                  keyboardType: TextInputType.number,
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.all(12.r),
-                    child: CommonText(text: "\$", fontSize: 16.sp, color: isDark ? Colors.white38 : Colors.grey),
-                  ),
-                  borderRadius: 24,
-                  errorText: controller.contributionError,
-                  onChanged: (v) => controller.validateAmounts(),
-                ),
-                SizedBox(height: 16.h),
-
-                // Total Cycles
-                _buildLabel(context, "Total Cycles"),
-                CommonTextField(
-                  controller: controller.totalCyclesController,
-                  hintText: "e.g., 20",
-                  keyboardType: TextInputType.number,
-                  prefixIcon: Icon(Icons.loop, size: 20.sp, color: isDark ? Colors.white38 : Colors.grey),
-                  borderRadius: 24,
-                ),
-                SizedBox(height: 16.h),
-
-                _buildLabel(context, "Payment Frequency"),
-                Obx(() => Row(
-                  children: [
-                    Expanded(child: _buildFrequencyItem(context, controller, "Weekly", Icons.access_time)),
-                    SizedBox(width: 12.w),
-                    Expanded(child: _buildFrequencyItem(context, controller, "Monthly", Icons.access_time)),
-                    SizedBox(width: 12.w),
-                    Expanded(child: _buildFrequencyItem(context, controller, "Quarterly", Icons.access_time)),
-                  ],
-                )),
-                
-                Obx(() {
-                  final frequency = controller.selectedFrequency.value;
-                  List<String> options = [];
-                  
-                  if (frequency == "Quarterly") {
-                    options = ["2 Months", "3 Months", "4 Months", "5 Months","6 Months"];
-                  }
-
-                  if (options.isNotEmpty) {
+        child: Column(
+          children: [
+            _buildAppBar(context, isDark),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: GetBuilder<CreateGroupController>(
+                  builder: (controller) {
                     return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 12.h),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: options.map((opt) => _buildRadioButton(context, controller, opt)).toList(),
+                        SizedBox(height: 10.h),
+                        Center(
+                          child: CommonText(
+                            text: AppString.createGroupSubtitle.tr,
+                            fontSize: 14.sp,
+                            color: isDark ? Colors.white60 : Colors.grey,
+                            textAlign: TextAlign.center,
                           ),
                         ),
+                        SizedBox(height: 20.h),
+
+                        // Group Name
+                        _buildLabel(context, AppString.groupNameLabel.tr),
+                        CommonTextField(
+                          controller: controller.nameController,
+                          hintText: AppString.groupNameHint.tr,
+                          prefixIcon: Icon(Icons.people_outline, size: 20.sp, color: isDark ? Colors.white38 : Colors.grey),
+                          borderRadius: 24,
+                        ),
+                        SizedBox(height: 16.h),
+
+                        // Target Pool Amount
+                        _buildLabel(context, AppString.targetPoolAmountLabel.tr),
+                        CommonTextField(
+                          controller: controller.targetAmountController,
+                          hintText: "100000",
+                          keyboardType: TextInputType.number,
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(12.r),
+                            child: CommonText(text: "\$", fontSize: 16.sp, color: isDark ? Colors.white38 : Colors.grey),
+                          ),
+                          borderRadius: 24,
+                          onChanged: (v) => controller.validateAmounts(),
+                        ),
+                        SizedBox(height: 16.h),
+
+                        _buildLabel(context, AppString.contributionAmountPerMember.tr),
+                        CommonTextField(
+                          controller: controller.contributionController,
+                          hintText: "200",
+                          keyboardType: TextInputType.number,
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(12.r),
+                            child: CommonText(text: "\$", fontSize: 16.sp, color: isDark ? Colors.white38 : Colors.grey),
+                          ),
+                          borderRadius: 24,
+                          errorText: controller.contributionError,
+                          onChanged: (v) => controller.validateAmounts(),
+                        ),
+                        SizedBox(height: 16.h),
+
+                        // Total Cycles
+                        _buildLabel(context, AppString.totalCyclesInput.tr),
+                        CommonTextField(
+                          controller: controller.totalCyclesController,
+                          hintText: "e.g., 20",
+                          keyboardType: TextInputType.number,
+                          prefixIcon: Icon(Icons.loop, size: 20.sp, color: isDark ? Colors.white38 : Colors.grey),
+                          borderRadius: 24,
+                        ),
+                        SizedBox(height: 16.h),
+
+                        _buildLabel(context, AppString.paymentFrequency.tr),
+                        Obx(() => Row(
+                          children: [
+                            Expanded(child: _buildFrequencyItem(context, controller, AppString.weekly.tr, Icons.access_time)),
+                            SizedBox(width: 12.w),
+                            Expanded(child: _buildFrequencyItem(context, controller, AppString.monthly.tr, Icons.access_time)),
+                            SizedBox(width: 12.w),
+                            Expanded(child: _buildFrequencyItem(context, controller, AppString.quarterly.tr, Icons.access_time)),
+                          ],
+                        )),
+                        
+                        Obx(() {
+                          final frequency = controller.selectedFrequency.value;
+                          List<String> options = [];
+                          
+                          if (frequency == AppString.quarterly.tr) {
+                            options = ["2 Months", "3 Months", "4 Months", "5 Months","6 Months"];
+                          }
+
+                          if (options.isNotEmpty) {
+                            return Column(
+                              children: [
+                                SizedBox(height: 12.h),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: options.map((opt) => _buildRadioButton(context, controller, opt)).toList(),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        }),
+                        SizedBox(height: 16.h),
+
+                        // Start Date
+                        _buildLabel(context, AppString.startDate.tr),
+                        CommonTextField(
+                          controller: controller.startDateController,
+                          hintText: "MM/DD/YYYY",
+                          prefixIcon: Icon(Icons.calendar_today_outlined, size: 20.sp, color: isDark ? Colors.white38 : Colors.grey),
+                          borderRadius: 24,
+                          readOnly: true,
+                          onTap: () => controller.selectDate(context),
+                        ),
+                        SizedBox(height: 16.h),
+
+                        // Visibility
+                        _buildLabel(context, AppString.visibilityLabel.tr),
+                        Container(
+                          height: 48.h,
+                          decoration: BoxDecoration(
+                            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(24.r),
+                          ),
+                          child: Obx(() => Row(
+                            children: [
+                              Expanded(child: _buildVisibilityItem(context, controller, "Private")),
+                              Expanded(child: _buildVisibilityItem(context, controller, "Public")),
+                            ],
+                          )),
+                        ),
+                        SizedBox(height: 24.h),
+
+                        // Action Buttons
+                        Obx(() => CommonButton(
+                          titleText: AppString.createGroup.tr,
+                          isLoading: controller.isLoading.value,
+                          gradient: AppColors.primaryGradient,
+                          buttonRadius: 24,
+                          onTap: () => controller.createGroup(),
+                        )),
+                        SizedBox(height: 12.h),
+                        Center(
+                          child: TextButton(
+                            onPressed: () => Get.back(),
+                            child: CommonText(
+                              text: AppString.cancel.tr,
+                              fontSize: 16.sp,
+                              color: isDark ? Colors.white38 : Colors.grey,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
                       ],
                     );
-                  }
-                  return const SizedBox.shrink();
-                }),
-                SizedBox(height: 16.h),
-
-                // Start Date
-                _buildLabel(context, "Start Date"),
-                CommonTextField(
-                  controller: controller.startDateController,
-                  hintText: "MM/DD/YYYY",
-                  prefixIcon: Icon(Icons.calendar_today_outlined, size: 20.sp, color: isDark ? Colors.white38 : Colors.grey),
-                  borderRadius: 24,
-                  readOnly: true,
-                  onTap: () => controller.selectDate(context),
+                  },
                 ),
-                SizedBox(height: 16.h),
-
-                // Visibility
-                _buildLabel(context, "Visibility"),
-                Container(
-                  height: 48.h,
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(24.r),
-                  ),
-                  child: Obx(() => Row(
-                    children: [
-                      Expanded(child: _buildVisibilityItem(context, controller, "Private")),
-                      Expanded(child: _buildVisibilityItem(context, controller, "Public")),
-                    ],
-                  )),
-                ),
-                SizedBox(height: 24.h),
-
-                // Action Buttons
-                Obx(() => CommonButton(
-                  titleText: "Create Group",
-                  isLoading: controller.isLoading.value,
-                  gradient: AppColors.primaryGradient,
-                  buttonRadius: 24,
-                  onTap: () => controller.createGroup(),
-                )),
-                SizedBox(height: 12.h),
-                Center(
-                  child: TextButton(
-                    onPressed: () => Get.back(),
-                    child: CommonText(
-                      text: "Cancel",
-                      fontSize: 16.sp,
-                      color: isDark ? Colors.white38 : Colors.grey,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-              ],
-            );
-          },
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context, bool isDark) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      leading: Padding(
+        padding: EdgeInsets.all(8.r),
+        child: GestureDetector(
+          onTap: () => Get.back(),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: isDark ? Colors.white12 : Colors.grey.withValues(alpha: 0.2)),
+            ),
+            child: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black, size: 20.sp),
+          ),
+        ),
+      ),
+      title: CommonText(
+        text: AppString.createGroupTitle.tr,
+        fontSize: 20.sp,
+        fontWeight: FontWeight.bold,
+      ),
+      centerTitle: false,
     );
   }
 

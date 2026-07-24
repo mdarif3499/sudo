@@ -1,7 +1,7 @@
 class ApiEndPoint {
-  static const baseUrl = 'http://10.10.26.182:5002/api/v1';
-  static const imageUrl = 'http://10.10.26.182:5002';
-  static const socketUrl = 'http://10.10.26.182:5002';
+  static const baseUrl = 'https://fahim5002.naimulhassan.me/api/v1';
+  static const imageUrl = 'https://fahim5002.naimulhassan.me';
+  static const socketUrl = 'https://fahim5002.naimulhassan.me';
   static const chatUrl = '$socketUrl/chat';
   static const signUp = '/auth/signup';
   static const signIn = '/auth/login';
@@ -29,4 +29,7 @@ class ApiEndPoint {
   static const groupMessage = '/group-message/';
   static const contributionHistory = '/contribution/history';
   static const contributionOutstanding = '/contribution/outstanding';
+  static const faqAll = '/public/faq/all';
+  static const privacyPolicy = '/public/privacy-policy';
+  static const termsAndCondition = '/public/terms-and-condition';
 }

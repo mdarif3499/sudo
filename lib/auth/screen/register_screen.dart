@@ -22,29 +22,45 @@ class RegisterScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Form(
-            key: controller.formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 40.h),
-                const CommonText(
-                  text: "Create Account",
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
-                ),
-                SizedBox(height: 8.h),
-                CommonText(
-                  text: "Join thousands saving together",
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: isDark ? Colors.white70 : AppColors.textSecondaryColor,
-                ),
-                SizedBox(height: 24.h),
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Form(
+              key: controller.formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 40.h),
+                  CommonText(
+                    text: AppString.createAccount.tr,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  SizedBox(height: 8.h),
+                  CommonText(
+                    text: AppString.registerSubtitle.tr,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: isDark ? Colors.white70 : AppColors.textSecondaryColor,
+                  ),
+                  SizedBox(height: 24.h),
 
                 // Profile Image Picker
                 Center(
@@ -84,8 +100,8 @@ class RegisterScreen extends StatelessWidget {
 
                 CommonTextField(
                   controller: controller.fullNameController,
-                  title: "Full Name",
-                  hintText: "John Doe",
+                  title: AppString.fullName.tr,
+                  hintText: AppString.fullNameHint.tr,
                   prefixIcon: Icon(
                     Icons.person_outline,
                     size: 20,
@@ -93,7 +109,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return AppString.thisFieldIsRequired;
+                      return AppString.thisFieldIsRequired.tr;
                     }
                     return null;
                   },
@@ -101,8 +117,8 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(height: 20.h),
                 CommonTextField(
                   controller: controller.emailController,
-                  title: "Email Address",
-                  hintText: "john@example.com",
+                  title: AppString.emailAddress.tr,
+                  hintText: AppString.emailHint.tr,
                   prefixIcon: Icon(
                     Icons.email_outlined,
                     size: 20,
@@ -111,10 +127,10 @@ class RegisterScreen extends StatelessWidget {
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return AppString.thisFieldIsRequired;
+                      return AppString.thisFieldIsRequired.tr;
                     }
                     if (!GetUtils.isEmail(value)) {
-                      return AppString.enterValidEmail;
+                      return AppString.enterValidEmail.tr;
                     }
                     return null;
                   },
@@ -125,7 +141,7 @@ class RegisterScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CommonText(
-                      text: "Phone Number",
+                      text: AppString.phoneNumber.tr,
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                       color: isDark ? Colors.white70 : AppColors.color333333,
@@ -142,7 +158,7 @@ class RegisterScreen extends StatelessWidget {
                         color: isDark ? Colors.white : AppColors.black
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Phone Number',
+                        hintText: AppString.phoneHint.tr,
                         hintStyle: GoogleFonts.roboto(
                           fontSize: 14,
                           color: isDark ? Colors.white38 : AppColors.textSecondaryColor.withValues(alpha: 0.6),
@@ -165,7 +181,7 @@ class RegisterScreen extends StatelessWidget {
                       },
                       validator: (phone) {
                         if (phone == null || phone.number.isEmpty) {
-                          return AppString.thisFieldIsRequired;
+                          return AppString.thisFieldIsRequired.tr;
                         }
                         return null;
                       },
@@ -176,8 +192,8 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(height: 20.h),
                 CommonTextField(
                   controller: controller.addressController,
-                  title: "Address",
-                  hintText: "Enter your address",
+                  title: AppString.address.tr,
+                  hintText: AppString.addressHint.tr,
                   prefixIcon: Icon(
                     Icons.location_on_outlined,
                     size: 20,
@@ -185,7 +201,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return AppString.thisFieldIsRequired;
+                      return AppString.thisFieldIsRequired.tr;
                     }
                     return null;
                   },
@@ -193,8 +209,8 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(height: 20.h),
                 CommonTextField(
                   controller: controller.passwordController,
-                  title: "Password",
-                  hintText: "Min. 6 characters",
+                  title: AppString.password.tr,
+                  hintText: AppString.passwordHint.tr,
                   isPassword: true,
                   prefixIcon: Icon(
                     Icons.lock_outline,
@@ -203,10 +219,10 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return AppString.thisFieldIsRequired;
+                      return AppString.thisFieldIsRequired.tr;
                     }
                     if (value.length < 6) {
-                      return "Password must be at least 6 characters";
+                      return AppString.enterValidPassword.tr;
                     }
                     return null;
                   },
@@ -214,8 +230,8 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(height: 20.h),
                 CommonTextField(
                   controller: controller.confirmPasswordController,
-                  title: "Confirm Password",
-                  hintText: "Min. 6 characters",
+                  title: AppString.confirmPassword.tr,
+                  hintText: AppString.passwordHint.tr,
                   isPassword: true,
                   prefixIcon: Icon(
                     Icons.lock_outline,
@@ -224,10 +240,10 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return AppString.thisFieldIsRequired;
+                      return AppString.thisFieldIsRequired.tr;
                     }
                     if (value != controller.passwordController.text) {
-                      return AppString.thePasswordDoesNotMatch;
+                      return AppString.thePasswordDoesNotMatch.tr;
                     }
                     return null;
                   },
@@ -235,7 +251,7 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(height: 30.h),
                 Obx(() => CommonButton(
                       isLoading: controller.isLoading.value,
-                      titleText: "Next",
+                      titleText: AppString.next.tr,
                       gradient: AppColors.primaryGradient,
                       onTap: () => controller.signUp(),
                     )),
@@ -253,20 +269,20 @@ class RegisterScreen extends StatelessWidget {
                           height: 1.5,
                         ),
                         children: [
-                          const TextSpan(
-                            text: "By signing up, you agree to our ",
+                          TextSpan(
+                            text: AppString.bySigningUp.tr,
                           ),
-                          const TextSpan(
-                            text: "Terms of Service",
-                            style: TextStyle(
+                          TextSpan(
+                            text: AppString.termsOfService.tr,
+                            style: const TextStyle(
                               color: AppColors.color2F80ED,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const TextSpan(text: " and "),
-                          const TextSpan(
-                            text: "Privacy Policy",
-                            style: TextStyle(
+                          TextSpan(text: AppString.and.tr),
+                          TextSpan(
+                            text: AppString.privacyPolicy.tr,
+                            style: const TextStyle(
                               color: AppColors.color2F80ED,
                               fontWeight: FontWeight.w500,
                             ),
@@ -281,14 +297,14 @@ class RegisterScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CommonText(
-                      text: "Already have an account? ",
+                      text: AppString.alreadyHaveAccount.tr,
                       fontSize: 14,
                       color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
                     ),
                     GestureDetector(
                       onTap: () => Get.toNamed(AppRoutes.login),
-                      child: const CommonText(
-                        text: "Sign In",
+                      child: CommonText(
+                        text: AppString.signIn.tr,
                         fontSize: 14,
                         color: AppColors.color2F80ED,
                         fontWeight: FontWeight.w600,
@@ -302,20 +318,21 @@ class RegisterScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 
   OutlineInputBorder _buildPhoneBorder(BuildContext context, {bool isError = false, bool isFocused = false}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(32.r),
-      borderSide:
-      BorderSide(
+      borderSide: BorderSide(
         color: isError
             ? AppColors.red
-            : (isFocused 
-                ? AppColors.indicatorActive 
-                : (isDark ? AppColors.darkCardBorder : AppColors.indicatorActive.withValues(alpha: 0.16))),
+            : (isFocused
+                ? AppColors.indicatorActive
+                : (isDark
+                    ? AppColors.darkCardBorder
+                    : AppColors.indicatorActive.withValues(alpha: 0.16))),
         width: 1,
       ),
     );

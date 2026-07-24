@@ -2,9 +2,9 @@ import 'package:get/get.dart';
 import '../../config/api/api_end_point.dart';
 import '../../services/api/api_service.dart';
 import '../../utils/log/app_utils.dart';
+import '../../../utils/constants/app_string.dart';
 import '../data/group_details_model.dart';
 import '../../services/storage/storage_services.dart';
-import '../../component/bottom_nav_bar/bottom_nav_controller.dart';
 import '../data/period_history_model.dart';
 import 'groups_controller.dart';
 
@@ -43,10 +43,10 @@ class GroupDetailsController extends GetxController {
       if (response.statusCode == 200) {
         groupDetails.value = GroupDetailsModel.fromJson(response.data['data']);
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", e.toString());
+      Utils.errorSnackBar(AppString.someThingWrong.tr, e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -98,20 +98,22 @@ class GroupDetailsController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Utils.successSnackBar("Group started successfully!");
 
+        // Refresh all data on the current screen
+        await fetchGroupDetails(groupId);
+        await fetchPeriodHistory(groupId);
+
+        // Update other relevant controllers if they exist
         if (Get.isRegistered<GroupsController>()) {
           Get.find<GroupsController>().fetchMyGroups();
         }
 
-        if (Get.isRegistered<BottomNavController>()) {
-          Get.find<BottomNavController>().selectedIndex.value = 1;
-        }
-
-        Get.back();
+        // Note: I'm removing Get.back() so the user can see the updated "Active" status on the same screen.
+        // If you still want to go back, you can add it here.
       } else {
-        Utils.errorSnackBar("Error", response.message);
+        Utils.errorSnackBar(AppString.someThingWrong.tr, response.message);
       }
     } catch (e) {
-      Utils.errorSnackBar("Error", "Failed to start group");
+      Utils.errorSnackBar(AppString.someThingWrong.tr, "Failed to start group");
     } finally {
       isStarting.value = false;
     }

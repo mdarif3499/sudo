@@ -1,60 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 import '../component/common_appbar/common_appbar.dart';
 import '../component/text/common_text.dart';
 import '../utils/constants/app_colors.dart';
+import '../utils/constants/app_string.dart';
 
 class MmuBylawsScreen extends StatelessWidget {
   const MmuBylawsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const CommonAppBar(
-        title: "MMU Bylaws",
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      appBar: CommonAppBar(
+        title: AppString.mmuBylawsTitle.tr,
         showBackButton: true,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CommonText(
-              text: "MMU is a community-driven fundraising platform designed to support members in times of need and create meaningful financial impact through collective contribution. Our goal is to build a trusted and transparent ecosystem where members can contribute, request support, and stay connected within a supportive network.\nWe believe in unity, accountability, and compassion—ensuring that every contribution makes a real difference. MMU empowers individuals by providing a simple and reliable way to manage funds, participate in community support, and access financial aid when needed.",
-              fontSize: 14,
-              color: AppColors.color333333,
-              fontWeight: FontWeight.w400,
+      extendBodyBehindAppBar: true,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CommonText(
+                  text: AppString.mmuDescription.tr,
+                  fontSize: 14,
+                  color: isDark ? Colors.white70 : AppColors.color333333,
+                  fontWeight: FontWeight.w400,
+                  textAlign: TextAlign.justify,
+                ),
+                SizedBox(height: 24.h),
+                CommonText(
+                  text: AppString.membershipLaws.tr,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : AppColors.color333333,
+                ),
+                SizedBox(height: 12.h),
+                CommonText(
+                  text: AppString.membershipGuidelines.tr,
+                  fontSize: 14.sp,
+                  color: isDark ? Colors.white70 : AppColors.color333333,
+                  fontWeight: FontWeight.w600,
+                ),
+                SizedBox(height: 12.h),
+                _buildBulletPoint(context, AppString.bylawBullet1.tr),
+                _buildBulletPoint(context, AppString.bylawBullet2.tr),
+                _buildBulletPoint(context, AppString.bylawBullet3.tr),
+                _buildBulletPoint(context, AppString.bylawBullet4.tr),
+                _buildBulletPoint(context, AppString.bylawBullet5.tr),
+                _buildBulletPoint(context, AppString.bylawBullet6.tr),
+                SizedBox(height: 40.h),
+              ],
             ),
-            SizedBox(height: 24.h),
-            CommonText(
-              text: "Membership Laws",
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.color333333,
-            ),
-            SizedBox(height: 12.h),
-            CommonText(
-              text: "To maintain a fair and trustworthy environment, all members are expected to follow these guidelines:",
-              fontSize: 14.sp,
-              color: AppColors.color333333,
-              fontWeight: FontWeight.w600,
-            ),
-            SizedBox(height: 12.h),
-            _buildBulletPoint("Members must provide accurate and valid information during registration."),
-            _buildBulletPoint("All contributions and transactions must follow the platform's rules and guidelines."),
-            _buildBulletPoint("Any misuse, fraud, or misleading activity may result in account suspension or removal."),
-            _buildBulletPoint("Fund requests should be genuine, verified, and aligned with the platform's purpose."),
-            _buildBulletPoint("Members are encouraged to respect others and maintain a supportive community environment."),
-            _buildBulletPoint("The platform reserves the right to update policies and take necessary actions."),
-            SizedBox(height: 40.h),
-          ],
+          ),
         ),
       ),
     );
   }
-  Widget _buildBulletPoint(String text) {
+  
+  Widget _buildBulletPoint(BuildContext context, String text) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.only(bottom: 8.h),
       child: Row(
@@ -65,8 +92,8 @@ class MmuBylawsScreen extends StatelessWidget {
             child: Container(
               height: 5.h,
               width: 5.w,
-              decoration: const BoxDecoration(
-                color: Colors.black,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white70 : Colors.black,
                 shape: BoxShape.circle,
               ),
             ),
@@ -76,8 +103,9 @@ class MmuBylawsScreen extends StatelessWidget {
             child: CommonText(
               text: text,
               fontSize: 14.sp,
-              color: AppColors.color333333,
+              color: isDark ? Colors.white70 : AppColors.color333333,
               fontWeight: FontWeight.w400,
+              textAlign: TextAlign.justify,
             ),
           ),
         ],

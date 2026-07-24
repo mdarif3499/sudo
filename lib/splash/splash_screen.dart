@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../config/route/app_routes.dart';
 import '../services/storage/storage_services.dart';
+import '../utils/constants/app_colors.dart';
 import '../utils/constants/app_images.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,10 +21,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initializeApp() async {
-    // স্প্ল্যাশ স্ক্রিন দেখানোর জন্য ৩ সেকেন্ড ওয়েট করবে
     await Future.delayed(const Duration(seconds: 3));
 
-    // সরাসরি স্টোরেজ থেকে ডেটা চেক করা হচ্ছে
     bool isLogIn = LocalStorage.isLogIn;
     String kycStatus = LocalStorage.kycStatus;
 
@@ -43,8 +42,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? AppColors.black : Colors.white,
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -52,6 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
           image: DecorationImage(
             image: AssetImage(AppImages.background),
             fit: BoxFit.cover,
+            colorFilter: isDark ? ColorFilter.mode(Colors.black.withValues(alpha: 0.6), BlendMode.darken) : null,
           ),
         ),
         child: Column(
@@ -67,18 +68,24 @@ class _SplashScreenState extends State<SplashScreen> {
               AppImages.sudo,
               width: 202.w,
               height: 40.h,
+              color: isDark ? Colors.white : null,
             ),
             SizedBox(height: 24.h),
-            Image.asset(AppImages.sudoText, height: 9.h, width: 285.w),
+            Image.asset(
+              AppImages.sudoText, 
+              height: 9.h, 
+              width: 285.w,
+              color: isDark ? Colors.white70 : null,
+            ),
             const Spacer(flex: 4),
             Padding(
               padding: EdgeInsets.only(bottom: 60.h),
-              child: const SizedBox(
+              child: SizedBox(
                 width: 25,
                 height: 25,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: Colors.blueAccent,
+                  color: isDark ? Colors.white : Colors.blueAccent,
                 ),
               ),
             ),

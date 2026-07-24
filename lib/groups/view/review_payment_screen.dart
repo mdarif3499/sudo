@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../component/button/common_button.dart';
 import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import 'stripe_web_view_page.dart';
 
 class ReviewPaymentScreen extends StatelessWidget {
@@ -11,6 +12,7 @@ class ReviewPaymentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final Map<String, dynamic> args =
         Get.arguments ??
         {
@@ -20,83 +22,97 @@ class ReviewPaymentScreen extends StatelessWidget {
         };
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    SizedBox(height: 10.h),
-                    CommonText(
-                      text: "Review Your Payment",
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF242424),
-                    ),
-                    SizedBox(height: 8.h),
-                    CommonText(
-                      text:
-                          "Please confirm the details below before\nproceeding",
-                      fontSize: 14.sp,
-                      color: AppColors.textSecondaryColor7C7C7C,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 24.h),
-                    _buildPayingCard(args['amount']),
-                    SizedBox(height: 24.h),
-                    _buildPaymentDetails(args),
-                    SizedBox(height: 24.h),
-                    _buildSummaryCard(args['amount']),
-                    SizedBox(height: 40.h),
-                    CommonButton(
-                      titleText: "Confirm & Pay",
-                      buttonHeight: 54.h,
-                      buttonRadius: 30,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF00ADEF), Color(0xFF3B44D1)],
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10.h),
+                      CommonText(
+                        text: AppString.reviewYourPayment.tr,
+                        fontSize: 22.sp,
+                        fontWeight: FontWeight.w500,
                       ),
-                      onTap: () {
-                        // Navigate to Stripe WebView
-                        Get.to(() => const StripeWebViewPage(
-                              checkoutUrl: 'https://checkout.stripe.com/pay/placeholder_url',
-                            ));
-                      },
-                    ),
-                    SizedBox(height: 12.h),
-                    CommonButton(
-                      titleText: "Cancel",
-                      titleColor: const Color(0xFF828282),
-                      buttonColor: Colors.white,
-                      borderColor: const Color(0xFFD1D1D6),
-                      buttonHeight: 54.h,
-                      buttonRadius: 30,
-                      onTap: () => Get.back(),
-                    ),
-                    SizedBox(height: 24.h),
-                    CommonText(
-                      text:
-                          "By confirming, you agree to our payment terms and conditions",
-                      fontSize: 12.sp,
-                      color: const Color(0xFF828282),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20.h),
-                  ],
+                      SizedBox(height: 8.h),
+                      CommonText(
+                        text: AppString.confirmDetailsBefore.tr,
+                        fontSize: 14.sp,
+                        color: isDark ? Colors.white70 : AppColors.textSecondaryColor7C7C7C,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 24.h),
+                      _buildPayingCard(args['amount']),
+                      SizedBox(height: 24.h),
+                      _buildPaymentDetails(args, isDark),
+                      SizedBox(height: 24.h),
+                      _buildSummaryCard(args['amount'], isDark),
+                      SizedBox(height: 40.h),
+                      CommonButton(
+                        titleText: AppString.confirmAndPay.tr,
+                        buttonHeight: 54.h,
+                        buttonRadius: 30,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF00ADEF), Color(0xFF3B44D1)],
+                        ),
+                        onTap: () {
+                          Get.to(() => const StripeWebViewPage(
+                                checkoutUrl: 'https://checkout.stripe.com/pay/placeholder_url',
+                              ));
+                        },
+                      ),
+                      SizedBox(height: 12.h),
+                      CommonButton(
+                        titleText: AppString.cancel.tr,
+                        titleColor: const Color(0xFF828282),
+                        buttonColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+                        borderColor: isDark ? AppColors.darkCardBorder : const Color(0xFFD1D1D6),
+                        buttonHeight: 54.h,
+                        buttonRadius: 30,
+                        onTap: () => Get.back(),
+                      ),
+                      SizedBox(height: 24.h),
+                      CommonText(
+                        text: AppString.byConfirmingAgree.tr,
+                        fontSize: 12.sp,
+                        color: isDark ? Colors.white38 : const Color(0xFF828282),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20.h),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildAppBar() {
+    final isDark = Get.isDarkMode;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       child: Row(
@@ -107,12 +123,12 @@ class ReviewPaymentScreen extends StatelessWidget {
               padding: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE0E0E0)),
+                border: Border.all(color: isDark ? Colors.white24 : const Color(0xFFE0E0E0)),
               ),
               child: Icon(
                 Icons.arrow_back,
                 size: 20.sp,
-                color: AppColors.black,
+                color: isDark ? Colors.white : AppColors.black,
               ),
             ),
           ),
@@ -143,7 +159,7 @@ class ReviewPaymentScreen extends StatelessWidget {
       child: Column(
         children: [
           CommonText(
-            text: "You're Paying",
+            text: AppString.youArePaying.tr,
             fontSize: 14,
             color: Colors.white.withValues(alpha: 0.8),
           ),
@@ -154,25 +170,26 @@ class ReviewPaymentScreen extends StatelessWidget {
             fontWeight: FontWeight.w700,
             color: Colors.white,
           ),
-          CommonText(
+          const CommonText(
             text: "USD",
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Colors.white70,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPaymentDetails(Map<String, dynamic> args) {
+  Widget _buildPaymentDetails(Map<String, dynamic> args, bool isDark) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
+        border: isDark ? Border.all(color: AppColors.darkCardBorder) : null,
+        boxShadow: isDark ? [] : [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
@@ -184,26 +201,25 @@ class ReviewPaymentScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CommonText(
-            text: "Payment Details",
+            text: AppString.paymentDetails.tr,
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF242424),
           ),
           SizedBox(height: 20.h),
-          _buildDetailItem(Icons.people_outline, "Group", args['groupName']),
+          _buildDetailItem(Icons.people_outline, AppString.group.tr, args['groupName']),
           SizedBox(height: 16.h),
-          _buildDetailItem(Icons.attach_money, "Amount", args['amount']),
+          _buildDetailItem(Icons.attach_money, AppString.paymentAmount.tr, args['amount']),
           SizedBox(height: 16.h),
           _buildDetailItem(
             Icons.calendar_today_outlined,
-            "Due Date",
+            "${AppString.due.tr} ${AppString.date.tr}",
             args['dueDate'],
           ),
           if (args['periodNumber'] != null) ...[
             SizedBox(height: 16.h),
             _buildDetailItem(
               Icons.info_outline,
-              "Period",
+              AppString.period.tr,
               "${args['periodNumber']}",
             ),
           ],
@@ -211,15 +227,15 @@ class ReviewPaymentScreen extends StatelessWidget {
             SizedBox(height: 16.h),
             _buildDetailItem(
               Icons.loop,
-              "Cycle",
+              AppString.cycle.tr,
               "${args['cycleNumber']}",
             ),
           ],
           SizedBox(height: 16.h),
           _buildDetailItem(
             Icons.credit_card_outlined,
-            "Payment Method",
-            "Card ending •••• 4242",
+            AppString.paymentMethod.tr,
+            AppString.cardEnding.tr,
           ),
         ],
       ),
@@ -227,6 +243,7 @@ class ReviewPaymentScreen extends StatelessWidget {
   }
 
   Widget _buildDetailItem(IconData icon, String label, String value) {
+    final isDark = Get.isDarkMode;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -238,14 +255,13 @@ class ReviewPaymentScreen extends StatelessWidget {
             CommonText(
               text: label,
               fontSize: 12.sp,
-              color: const Color(0xFF828282),
+              color: isDark ? Colors.white38 : const Color(0xFF828282),
             ),
             SizedBox(height: 2.h),
             CommonText(
               text: value,
               fontSize: 14.sp,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF242424),
             ),
           ],
         ),
@@ -253,21 +269,21 @@ class ReviewPaymentScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCard(String amount) {
+  Widget _buildSummaryCard(String amount, bool isDark) {
     return Container(
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9F9F9),
+        color: isDark ? AppColors.darkCardBg : const Color(0xFFF9F9F9),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: const Color(0xFFF2F2F7)),
+        border: Border.all(color: isDark ? AppColors.darkCardBorder : const Color(0xFFF2F2F7)),
       ),
       child: Column(
         children: [
-          _buildSummaryRow("Contribution", amount),
+          _buildSummaryRow(AppString.contribution.tr, amount),
           SizedBox(height: 12.h),
-          _buildSummaryRow("Processing Fee", "\$0.00"),
-          Divider(height: 32.h, color: const Color(0xFFE0E0E0)),
-          _buildSummaryRow("Total", amount, isTotal: true),
+          _buildSummaryRow(AppString.processingFee.tr, "\$0.00"),
+          Divider(height: 32.h, color: isDark ? Colors.white10 : const Color(0xFFE0E0E0)),
+          _buildSummaryRow(AppString.total.tr, amount, isTotal: true),
         ],
       ),
     );
@@ -281,13 +297,11 @@ class ReviewPaymentScreen extends StatelessWidget {
           text: label,
           fontSize: isTotal ? 16.sp : 14.sp,
           fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400,
-          color: const Color(0xFF242424),
         ),
         CommonText(
           text: value,
           fontSize: isTotal ? 16.sp : 14.sp,
           fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400,
-          color: const Color(0xFF242424),
         ),
       ],
     );

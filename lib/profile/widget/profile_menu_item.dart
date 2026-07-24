@@ -4,7 +4,7 @@ import '../../utils/constants/app_colors.dart';
 import '../../component/text/common_text.dart';
 
 class ProfileMenuItem extends StatelessWidget {
-  final String iconPath;
+  final dynamic icon; // Can be String (path) or IconData
   final String title;
   final bool dived;
   final String? trailingText;
@@ -16,7 +16,7 @@ class ProfileMenuItem extends StatelessWidget {
 
   const ProfileMenuItem({
     super.key,
-    required this.iconPath,
+    required this.icon,
     required this.title,
     this.trailingText,
     this.trailingTextColor,
@@ -44,12 +44,18 @@ class ProfileMenuItem extends StatelessWidget {
                     color: iconBgColor,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
-                  child: Image.asset(
-                    iconPath,
-                    color: iconColor,
-                    height: 24.sp,
-                    width: 24.sp,
-                  ),
+                  child: icon is String
+                      ? Image.asset(
+                          icon as String,
+                          color: iconColor,
+                          height: 24.sp,
+                          width: 24.sp,
+                        )
+                      : Icon(
+                          icon as IconData,
+                          color: iconColor,
+                          size: 24.sp,
+                        ),
                 ),
                 SizedBox(width: 12.w),
 

@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import '../../component/image/common_image.dart';
 import '../../component/text/common_text.dart';
 import '../../utils/constants/app_colors.dart';
+import '../../utils/constants/app_string.dart';
 import '../controller/chat_controller.dart';
 import '../data/chat_model.dart';
 
@@ -14,59 +15,79 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ChatController controller = Get.put(ChatController());
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppBar(controller),
-            Expanded(
-              child: Obx(
-                () {
-                  if (controller.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (controller.messages.isEmpty) {
-                    return Center(
-                      child: CommonText(
-                        text: "No messages yet. Say hi!",
-                        fontSize: 14.sp,
-                        color: Colors.grey,
-                      ),
-                    );
-                  }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-                  return ListView.separated(
-                    controller: controller.scrollController,
-                    reverse: false,
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                    itemCount: controller.messages.length,
-                    separatorBuilder: (context, index) => SizedBox(height: 20.h),
-                    itemBuilder: (context, index) {
-                    final message = controller.messages[index];
-                    if (message.isMe) {
-                      return _buildSenderMessage(message);
-                    } else {
-                      return _buildReceiverMessage(message);
+    return Scaffold(
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: isDark ? null : const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFFFFDF8),
+              Color(0xFFF2FDFB),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.2, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(controller),
+              Expanded(
+                child: Obx(
+                  () {
+                    if (controller.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
                     }
-                  },
-                );
-              }),
-            ),
-            _buildMessageInput(),
-          ],
+                    if (controller.messages.isEmpty) {
+                      return Center(
+                        child: CommonText(
+                          text: AppString.noMessagesYet.tr,
+                          fontSize: 14.sp,
+                          color: isDark ? Colors.white38 : Colors.grey,
+                        ),
+                      );
+                    }
+
+                    return ListView.separated(
+                      controller: controller.scrollController,
+                      reverse: false,
+                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                      itemCount: controller.messages.length,
+                      separatorBuilder: (context, index) => SizedBox(height: 20.h),
+                      itemBuilder: (context, index) {
+                      final message = controller.messages[index];
+                      if (message.isMe) {
+                        return _buildSenderMessage(message);
+                      } else {
+                        return _buildReceiverMessage(message);
+                      }
+                    },
+                  );
+                }),
+              ),
+              _buildMessageInput(),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildAppBar(ChatController controller) {
+    final isDark = Get.isDarkMode;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: isDark ? Colors.transparent : Colors.white,
         border: Border(
-          bottom: BorderSide(color: Color(0xFFF2F2F7)),
+          bottom: BorderSide(color: isDark ? Colors.white10 : const Color(0xFFF2F2F7)),
         ),
       ),
       child: Row(
@@ -77,22 +98,22 @@ class ChatScreen extends StatelessWidget {
               padding: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE0E0E0)),
+                border: Border.all(color: isDark ? Colors.white24 : const Color(0xFFE0E0E0)),
               ),
               child: Icon(
                 Icons.arrow_back,
                 size: 20.sp,
-                color: AppColors.black,
+                color: isDark ? Colors.white : AppColors.black,
               ),
             ),
           ),
           SizedBox(width: 15.w),
           Expanded(
             child: CommonText(
-              text: controller.groupName ?? "Group Chat",
+              text: controller.groupName ?? AppString.groupChat.tr,
               fontSize: 20.sp,
               fontWeight: FontWeight.w600,
-              color: AppColors.black,
+              color: isDark ? Colors.white : AppColors.black,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -102,6 +123,7 @@ class ChatScreen extends StatelessWidget {
   }
 
   Widget _buildReceiverMessage(ChatMessage message) {
+    final isDark = Get.isDarkMode;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -139,14 +161,14 @@ class ChatScreen extends StatelessWidget {
               CommonText(
                 text: message.senderName ?? "Unknown",
                 fontSize: 12.sp,
-                color: Colors.grey,
+                color: isDark ? Colors.white38 : Colors.grey,
               ),
               SizedBox(height: 4.h),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFF2F2F7)),
+                  color: isDark ? AppColors.darkCardBg : Colors.white,
+                  border: Border.all(color: isDark ? AppColors.darkCardBorder : const Color(0xFFF2F2F7)),
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20.r),
                     bottomLeft: Radius.circular(20.r),
@@ -157,14 +179,14 @@ class ChatScreen extends StatelessWidget {
                 child: CommonText(
                   text: message.message,
                   fontSize: 14.sp,
-                  color: Colors.black,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
               SizedBox(height: 4.h),
               CommonText(
                 text: message.time,
                 fontSize: 10.sp,
-                color: Colors.grey,
+                color: isDark ? Colors.white38 : Colors.grey,
               ),
             ],
           ),
@@ -175,6 +197,7 @@ class ChatScreen extends StatelessWidget {
   }
 
   Widget _buildSenderMessage(ChatMessage message) {
+    final isDark = Get.isDarkMode;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -201,7 +224,7 @@ class ChatScreen extends StatelessWidget {
         CommonText(
           text: message.time,
           fontSize: 10.sp,
-          color: Colors.grey,
+          color: isDark ? Colors.white38 : Colors.grey,
         ),
       ],
     );
@@ -209,12 +232,13 @@ class ChatScreen extends StatelessWidget {
 
   Widget _buildMessageInput() {
     final controller = Get.find<ChatController>();
+    final isDark = Get.isDarkMode;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: isDark ? Colors.transparent : Colors.white,
         border: Border(
-          top: BorderSide(color: Color(0xFFF2F2F7)),
+          top: BorderSide(color: isDark ? Colors.white10 : const Color(0xFFF2F2F7)),
         ),
       ),
       child: Row(
@@ -222,15 +246,19 @@ class ChatScreen extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller.messageController,
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: isDark ? Colors.white : Colors.black),
               decoration: InputDecoration(
-                hintText: "Type a message...",
-                hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                hintText: AppString.typeMessageHint.tr,
+                hintStyle: TextStyle(color: isDark ? Colors.white38 : Colors.grey, fontSize: 14.sp),
                 filled: true,
-                fillColor: const Color(0xFFF1F8FF),
+                fillColor: isDark ? AppColors.darkCardBg : const Color(0xFFF1F8FF),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.r),
-                  borderSide: BorderSide.none,
+                  borderSide: isDark ? const BorderSide(color: AppColors.darkCardBorder) : BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.r),
+                  borderSide: isDark ? const BorderSide(color: AppColors.darkCardBorder) : BorderSide.none,
                 ),
                 contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
               ),
