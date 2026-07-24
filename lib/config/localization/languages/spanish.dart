@@ -320,4 +320,12 @@ final Map<String, String> spanish = {
   AppString.bylawBullet4: 'Las solicitudes de fondos deben ser genuinas, verificadas y alineadas con el propósito de la plataforma.',
   AppString.bylawBullet5: 'Se alienta a los miembros a respetar a los demás y mantener un entorno comunitario de apoyo.',
   AppString.bylawBullet6: 'La plataforma se reserva el derecho de actualizar las políticas y tomar las medidas necesarias.',
+
+  // Group Details Extras
+  AppString.noMembersYet: 'No hay miembros todavía',
+  AppString.admin: 'Administrador',
+  AppString.unknown: 'Desconocido',
+  AppString.user: 'Usuario',
+  AppString.cycles: 'Ciclos',
+  AppString.groupStartedSuccess: '¡Grupo iniciado con éxito!',
 };

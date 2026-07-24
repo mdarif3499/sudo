@@ -326,4 +326,12 @@ class AppString {
   static const String bylawBullet4 = 'bylaw_bullet4';
   static const String bylawBullet5 = 'bylaw_bullet5';
   static const String bylawBullet6 = 'bylaw_bullet6';
+
+  // Group Details Extras
+  static const String noMembersYet = 'no_members_yet';
+  static const String admin = 'admin';
+  static const String unknown = 'unknown';
+  static const String user = 'user';
+  static const String cycles = 'cycles';
+  static const String groupStartedSuccess = 'group_started_success';
 }
