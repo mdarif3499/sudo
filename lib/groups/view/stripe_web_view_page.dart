@@ -34,7 +34,6 @@ class _StripeWebViewPageState extends State<StripeWebViewPage> {
               _isLoading = false;
             });
 
-            // If success
             if (url.contains("success")) {
               Get.offAll(() => NavbarScreen());
               Utils.successSnackBar("Payment successful");

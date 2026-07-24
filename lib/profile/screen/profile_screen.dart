@@ -432,7 +432,7 @@ class ProfileScreen extends StatelessWidget {
           SizedBox(height: 4.h),
           CommonText(
             text: label,
-            fontSize: 12,
+            fontSize: 16,
             textAlign: TextAlign.center,
             color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
           ),
