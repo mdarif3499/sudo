@@ -320,4 +320,12 @@ final Map<String, String> english = {
   AppString.bylawBullet4: 'Fund requests should be genuine, verified, and aligned with the platform\'s purpose.',
   AppString.bylawBullet5: 'Members are encouraged to respect others and maintain a supportive community environment.',
   AppString.bylawBullet6: 'The platform reserves the right to update policies and take necessary actions.',
+
+  // Group Details Extras
+  AppString.noMembersYet: 'No members yet',
+  AppString.admin: 'Admin',
+  AppString.unknown: 'Unknown',
+  AppString.user: 'User',
+  AppString.cycles: 'Cycles',
+  AppString.groupStartedSuccess: 'Group started successfully!',
 };

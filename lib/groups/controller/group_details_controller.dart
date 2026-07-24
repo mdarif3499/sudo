@@ -96,7 +96,7 @@ class GroupDetailsController extends GetxController {
       final response = await _apiClient.post("${ApiEndPoint.startGroup}$groupId");
       
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Utils.successSnackBar("Group started successfully!");
+        Utils.successSnackBar(AppString.groupStartedSuccess.tr);
 
         // Refresh all data on the current screen
         await fetchGroupDetails(groupId);

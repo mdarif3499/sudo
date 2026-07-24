@@ -6,6 +6,7 @@ import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_icons.dart';
 import '../../config/route/app_routes.dart';
 import '../../utils/constants/app_string.dart';
+import '../../services/theme/theme_controller.dart';
 import '../controller/profile_controller.dart';
 import '../../services/localization/language_controller.dart';
 import '../widget/profile_menu_item.dart';
@@ -19,311 +20,335 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ProfileController controller = Get.put(ProfileController());
     final LanguageController langController = Get.find<LanguageController>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeController = Get.find<ThemeController>();
 
-    return Scaffold(
-      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
-      body: Container(
-        decoration: isDark ? null : const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Color(0xFFFFFDF8),
-              Color(0xFFF2FDFB),
-              Colors.white,
-              Colors.white,
-            ],
-            stops: [0.0, 0.2, 0.5, 1.0],
+    return Obx(() {
+      final isDark = themeController.isDarkMode.value;
+      
+      return Scaffold(
+        backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
+        body: Container(
+          decoration: isDark ? null : const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Color(0xFFFFFDF8),
+                Color(0xFFF2FDFB),
+                Colors.white,
+                Colors.white,
+              ],
+              stops: [0.0, 0.2, 0.5, 1.0],
+            ),
+          ),
+          child: SafeArea(
+            child: controller.isLoading.value
+                ? _buildSkeleton(context)
+                : _buildProfileContent(context, controller, langController, themeController, isDark),
           ),
         ),
-        child: SafeArea(
-          child: Obx(() {
-            if (controller.isLoading.value) {
-              return _buildSkeleton(context);
-            }
+      );
+    });
+  }
 
-            final data = controller.profileData.value;
-
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 20.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CommonText(
-                        text: AppString.profile.tr,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      // Image.asset(
-                      //   AppIcons.notification,
-                      //   height: 42.h,
-                      //   width: 42.w,
-                      // ),
-                    ],
+  Widget _buildProfileContent(
+    BuildContext context, 
+    ProfileController controller, 
+    LanguageController langController, 
+    ThemeController themeController,
+    bool isDark,
+  ) {
+    final data = controller.profileData.value;
+    
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 20.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CommonText(
+                text: AppString.profile.tr,
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : AppColors.textPrimaryColor,
+              ),
+              IconButton(
+                onPressed: () => themeController.toggleTheme(),
+                icon: Icon(
+                  isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+                  size: 28.sp,
+                  color: isDark ? Colors.orangeAccent : AppColors.textPrimaryColor,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 20.h),
+          Center(
+            child: CommonText(
+              text: AppString.accountSettings.tr,
+              fontSize: 14,
+              color: isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C,
+            ),
+          ),
+          SizedBox(height: 20.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(20.w),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkCardBg : Colors.white,
+              borderRadius: BorderRadius.circular(20.r),
+              border: Border.all(
+                color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
+              ),
+              boxShadow: isDark ? [] : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Container(
+                  height: 80.h,
+                  width: 80.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: data?['image'] == null ? AppColors.primaryGradient : null,
                   ),
-                  SizedBox(height: 20.h),
-                  Center(
-                    child: CommonText(
-                      text: AppString.accountSettings.tr,
-                      fontSize: 14,
-                      color: isDark ? Colors.white38 : AppColors.textSecondaryColor7C7C7C,
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(20.w),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkCardBg : Colors.white,
-                      borderRadius: BorderRadius.circular(20.r),
-                      border: Border.all(
-                        color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
-                      ),
-                      boxShadow: isDark ? [] : [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 80.h,
-                          width: 80.h,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: data?['image'] == null ? AppColors.primaryGradient : null,
-                          ),
-                          child: data?['image'] != null
-                              ? CommonImage(
-                                  imageSrc: data!['image'],
-                                  borderRadius: 40,
-                                  height: 80,
-                                  width: 80,
-                                  fill: BoxFit.cover,
-                                )
-                              : Center(
-                                  child: CommonText(
-                                    text: (data?['fullName'] ?? "U").substring(0, 1).toUpperCase(),
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                        ),
-                        SizedBox(height: 12.h),
-                        CommonText(
-                          text: data?['fullName'] ?? "User",
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        SizedBox(height: 4.h),
-                        CommonText(
-                          text: data?['email'] ?? "",
-                          fontSize: 14,
-                          color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
-                        ),
-                        SizedBox(height: 16.h),
-                        GestureDetector(
-                          onTap: () => Get.toNamed(AppRoutes.editProfile, arguments: data),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20.w,
-                              vertical: 8.h,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: AppColors.primaryGradient,
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  AppIcons.edit,
-                                  color: Colors.white,
-                                  height: 18.h,
-                                  width: 18.w,
-                                ),
-                                SizedBox(width: 8.w),
-                                CommonText(
-                                  text: AppString.editProfile.tr,
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  // Stats Row
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: _buildStatCard(
-                            context, 
-                            controller.dashboardData.value?.activeGroups?.toString() ?? "0", 
-                            AppString.activeGroups.tr
-                          )
-                        ),
-                        SizedBox(width: 16.w),
-                        Expanded(
-                          child: _buildStatCard(
-                            context, 
-                            _formatAmount(controller.dashboardData.value?.totalSavings), 
-                            AppString.totalSaved.tr
-                          )
-                        ),
-                      ],
-                    ),
-                  ),
-                  _buildSectionTitle(context, AppString.account.tr),
-                  SizedBox(height: 12.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkCardBg : Colors.white,
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
-                        color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 16.h),
-                        _buildProfileMenu(
-                          icon: AppIcons.profile,
-                          iconColor: Colors.blue,
-                          iconBgColor: Colors.blue.withValues(alpha: 0.1),
-                          title: AppString.editProfile.tr,
-                          onTap: () => Get.toNamed(AppRoutes.editProfile, arguments: data),
-                        ),
-                        SizedBox(height: 5.h),
-                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
-                        _buildProfileMenu(
-                          icon: AppIcons.kyc,
-                          iconColor: Colors.green,
-                          iconBgColor: Colors.green.withValues(alpha: 0.1),
-                          title: AppString.kycVerification.tr,
-                          trailingText: data?['kycStatus']?.toString().capitalizeFirst ?? "Required",
-                          trailingTextColor: data?['kycStatus'] == 'approved' ? Colors.green : Colors.orange,
-                          onTap: () {},
-                        ),
-                        SizedBox(height: 5.h),
-                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
-                        _buildProfileMenu(
-                          icon: AppIcons.subscriptions,
-                          iconColor: Colors.orange,
-                          iconBgColor: Colors.orange.withValues(alpha: 0.1),
-                          title: AppString.subscriptions.tr,
-                          trailingText: AppString.free.tr,
-                          trailingTextColor: Colors.orange,
-                          onTap: () {
-                            Get.toNamed(AppRoutes.subscriptionScreen);
-                          },
-                        ),
-                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
-                        Obx(() => _buildProfileMenu(
-                          icon: Icons.language,
-                          iconColor: Colors.purple,
-                          iconBgColor: Colors.purple.withValues(alpha: 0.1),
-                          title: AppString.language.tr,
-                          trailingText: langController.selectedLanguage.value,
-                          onTap: () => Get.toNamed(AppRoutes.language),
-                        )),
-                        SizedBox(height: 8.h),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                  _buildSectionTitle(context, AppString.support.tr),
-                  SizedBox(height: 8.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkCardBg : Colors.white,
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
-                        color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 16.h),
-                        _buildProfileMenu(
-                          icon: AppIcons.faqs,
-                          iconColor: const Color(0xFF4A7FE0),
-                          iconBgColor: const Color(0xFF4A7FE0).withValues(alpha: 0.1),
-                          title: AppString.faqsTitle.tr,
-                          onTap: () => Get.toNamed(AppRoutes.faq),
-                        ),
-                        SizedBox(height: 5.h),
-                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
-                        _buildProfileMenu(
-                          icon: AppIcons.privacy,
-                          iconColor: const Color(0xFF10B981),
-                          iconBgColor: const Color(0xFF10B981).withValues(alpha: 0.1),
-                          title: AppString.privacyPolicyTitle.tr,
-                          onTap: () => Get.toNamed(AppRoutes.privacyPolicy),
-                        ),
-                        SizedBox(height: 5.h),
-                        Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
-                        _buildProfileMenu(
-                          icon: AppIcons.terms,
-                          iconColor: const Color(0xFF8B5CF6),
-                          iconBgColor: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
-                          title: AppString.termsConditionTitle.tr,
-                          onTap: () => Get.toNamed(AppRoutes.termsCondition),
-                        ),
-                        SizedBox(height: 16.h),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 32.h),
-                  GestureDetector(
-                    onTap: () {
-                      controller.logOut();
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEF4444).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(30.r),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.logout, color: Colors.red, size: 20.sp),
-                          SizedBox(width: 8.w),
-                          CommonText(
-                            text: AppString.logout.tr,
-                            fontSize: 16,
+                  child: data?['image'] != null
+                      ? CommonImage(
+                          imageSrc: data!['image'],
+                          borderRadius: 40,
+                          height: 80,
+                          width: 80,
+                          fill: BoxFit.cover,
+                        )
+                      : Center(
+                          child: CommonText(
+                            text: (data?['fullName'] ?? "U").substring(0, 1).toUpperCase(),
+                            fontSize: 24,
                             fontWeight: FontWeight.w600,
-                            color: Colors.red,
+                            color: Colors.white,
                           ),
-                        ],
-                      ),
+                        ),
+                ),
+                SizedBox(height: 12.h),
+                CommonText(
+                  text: data?['fullName'] ?? "User",
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : AppColors.textPrimaryColor,
+                ),
+                SizedBox(height: 4.h),
+                CommonText(
+                  text: data?['email'] ?? "",
+                  fontSize: 14,
+                  color: isDark ? Colors.white60 : AppColors.textSecondaryColor,
+                ),
+                SizedBox(height: 16.h),
+                GestureDetector(
+                  onTap: () => Get.toNamed(AppRoutes.editProfile, arguments: data),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 8.h,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          AppIcons.edit,
+                          color: Colors.white,
+                          height: 18.h,
+                          width: 18.w,
+                        ),
+                        SizedBox(width: 8.w),
+                        CommonText(
+                          text: AppString.editProfile.tr,
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 40.h),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20.h),
+          // Stats Row
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    context, 
+                    controller.dashboardData.value?.activeGroups?.toString() ?? "0", 
+                    AppString.activeGroups.tr,
+                    isDark,
+                  )
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: _buildStatCard(
+                    context, 
+                    _formatAmount(controller.dashboardData.value?.totalSavings), 
+                    AppString.totalSaved.tr,
+                    isDark,
+                  )
+                ),
+              ],
+            ),
+          ),
+          _buildSectionTitle(context, AppString.account.tr, isDark),
+          SizedBox(height: 12.h),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkCardBg : Colors.white,
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(
+                color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
+              ),
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: 16.h),
+                _buildProfileMenu(
+                  icon: AppIcons.profile,
+                  iconColor: Colors.blue,
+                  iconBgColor: Colors.blue.withValues(alpha: 0.1),
+                  title: AppString.editProfile.tr,
+                  onTap: () => Get.toNamed(AppRoutes.editProfile, arguments: data),
+                  isDark: isDark,
+                ),
+                SizedBox(height: 5.h),
+                Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                _buildProfileMenu(
+                  icon: AppIcons.kyc,
+                  iconColor: Colors.green,
+                  iconBgColor: Colors.green.withValues(alpha: 0.1),
+                  title: AppString.kycVerification.tr,
+                  trailingText: data?['kycStatus']?.toString().capitalizeFirst ?? "Required",
+                  trailingTextColor: data?['kycStatus'] == 'approved' ? Colors.green : Colors.orange,
+                  onTap: () {},
+                  isDark: isDark,
+                ),
+                SizedBox(height: 5.h),
+                Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                _buildProfileMenu(
+                  icon: AppIcons.subscriptions,
+                  iconColor: Colors.orange,
+                  iconBgColor: Colors.orange.withValues(alpha: 0.1),
+                  title: AppString.subscriptions.tr,
+                  trailingText: AppString.free.tr,
+                  trailingTextColor: Colors.orange,
+                  onTap: () {
+                    Get.toNamed(AppRoutes.subscriptionScreen);
+                  },
+                  isDark: isDark,
+                ),
+                Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                _buildProfileMenu(
+                  icon: Icons.language,
+                  iconColor: Colors.purple,
+                  iconBgColor: Colors.purple.withValues(alpha: 0.1),
+                  title: AppString.language.tr,
+                  trailingText: langController.selectedLanguage.value,
+                  onTap: () => Get.toNamed(AppRoutes.language),
+                  isDark: isDark,
+                ),
+                SizedBox(height: 8.h),
+              ],
+            ),
+          ),
+          SizedBox(height: 24.h),
+          _buildSectionTitle(context, AppString.support.tr, isDark),
+          SizedBox(height: 8.h),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkCardBg : Colors.white,
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(
+                color: isDark ? AppColors.darkCardBorder : Colors.grey.withValues(alpha: 0.1),
+              ),
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: 16.h),
+                _buildProfileMenu(
+                  icon: AppIcons.faqs,
+                  iconColor: const Color(0xFF4A7FE0),
+                  iconBgColor: const Color(0xFF4A7FE0).withValues(alpha: 0.1),
+                  title: AppString.faqsTitle.tr,
+                  onTap: () => Get.toNamed(AppRoutes.faq),
+                  isDark: isDark,
+                ),
+                SizedBox(height: 5.h),
+                Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                _buildProfileMenu(
+                  icon: AppIcons.privacy,
+                  iconColor: const Color(0xFF10B981),
+                  iconBgColor: const Color(0xFF10B981).withValues(alpha: 0.1),
+                  title: AppString.privacyPolicyTitle.tr,
+                  onTap: () => Get.toNamed(AppRoutes.privacyPolicy),
+                  isDark: isDark,
+                ),
+                SizedBox(height: 5.h),
+                Divider(height: 1, color: isDark ? Colors.white10 : const Color(0xFFE0E4ED)),
+                _buildProfileMenu(
+                  icon: AppIcons.terms,
+                  iconColor: const Color(0xFF8B5CF6),
+                  iconBgColor: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+                  title: AppString.termsConditionTitle.tr,
+                  onTap: () => Get.toNamed(AppRoutes.termsCondition),
+                  isDark: isDark,
+                ),
+                SizedBox(height: 16.h),
+              ],
+            ),
+          ),
+          SizedBox(height: 32.h),
+          GestureDetector(
+            onTap: () {
+              controller.logOut();
+            },
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 12.h),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(30.r),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.logout, color: Colors.red, size: 20.sp),
+                  SizedBox(width: 8.w),
+                  CommonText(
+                    text: AppString.logout.tr,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.red,
+                  ),
                 ],
               ),
-            );
-          }),
-        ),
+            ),
+          ),
+          SizedBox(height: 40.h),
+        ],
       ),
     );
   }
@@ -372,6 +397,7 @@ class ProfileScreen extends StatelessWidget {
     Color? trailingTextColor,
     Widget? trailing,
     required VoidCallback onTap,
+    required bool isDark,
   }) {
     return ProfileMenuItem(
       icon: icon,
@@ -382,11 +408,11 @@ class ProfileScreen extends StatelessWidget {
       trailingTextColor: trailingTextColor,
       trailing: trailing,
       onTap: onTap,
+      titleColor: isDark ? Colors.white : AppColors.textPrimaryColor,
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String value, String label) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Widget _buildStatCard(BuildContext context, String value, String label, bool isDark) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16.h),
       decoration: BoxDecoration(
@@ -401,6 +427,7 @@ class ProfileScreen extends StatelessWidget {
             fontSize: 20,
             fontWeight: FontWeight.w600,
             textAlign: TextAlign.center,
+            color: isDark ? Colors.white : AppColors.textPrimaryColor,
           ),
           SizedBox(height: 4.h),
           CommonText(
@@ -414,8 +441,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Widget _buildSectionTitle(BuildContext context, String title, bool isDark) {
     return CommonText(
       text: title,
       fontSize: 18,

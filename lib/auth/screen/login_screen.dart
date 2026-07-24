@@ -14,7 +14,6 @@ class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -47,26 +46,6 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Professional Theme Toggle Icon
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 10.h),
-                      child: Obx(() => IconButton(
-                        onPressed: () => themeController.toggleTheme(),
-                        icon: Icon(
-                          themeController.isDarkMode.value
-                              ? Icons.wb_sunny_rounded
-                              : Icons.nightlight_round,
-                          size: 28.sp,
-                          color: themeController.isDarkMode.value 
-                              ? Colors.orangeAccent 
-                              : AppColors.textPrimaryColor,
-                        ),
-                      )),
-                    ),
-                  ),
-                  
                   SizedBox(height: 20.h),
                   CommonText(
                     text: AppString.welcomeBack.tr,

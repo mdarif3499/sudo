@@ -13,6 +13,7 @@ class ProfileMenuItem extends StatelessWidget {
   final VoidCallback onTap;
   final Color iconColor;
   final Color iconBgColor;
+  final Color? titleColor;
 
   const ProfileMenuItem({
     super.key,
@@ -24,6 +25,7 @@ class ProfileMenuItem extends StatelessWidget {
     required this.onTap,
     required this.iconColor,
     required this.iconBgColor,
+    this.titleColor,
     this.dived = false,
   });
 
@@ -65,7 +67,7 @@ class ProfileMenuItem extends StatelessWidget {
                     text: title,
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
-                    color: AppColors.textPrimaryColor,
+                    color: titleColor ?? AppColors.textPrimaryColor,
                   ),
                 ),
 
