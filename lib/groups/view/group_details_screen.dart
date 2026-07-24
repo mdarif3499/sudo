@@ -853,10 +853,12 @@ class GroupDetailsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CommonText(
-                text: isPast ? AppString.overdue.tr : "${AppString.due.tr}: $nextDate",
-                fontSize: 14,
-                color: isPast ? Colors.redAccent : (isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C),
+              Expanded(
+                child: CommonText(
+                  text: isPast ? AppString.overdue.tr : "${AppString.due.tr}: $nextDate",
+                  fontSize: 14,
+                  color: isPast ? Colors.redAccent : (isDark ? Colors.white60 : AppColors.textSecondaryColor7C7C7C),
+                ),
               ),
               GestureDetector(
                 onTap: () => Get.toNamed(
