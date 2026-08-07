@@ -20,7 +20,6 @@ class ReviewPaymentScreen extends StatelessWidget {
           'groupName': 'Family Savings',
           'dueDate': 'Jun 15, 2026',
         };
-
     return Scaffold(
       backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.white,
       body: Container(
@@ -79,7 +78,7 @@ class ReviewPaymentScreen extends StatelessWidget {
                         onTap: () {
                           Get.to(() => const StripeWebViewPage(
                                 checkoutUrl: 'https://checkout.stripe.com/pay/placeholder_url',
-                              ));
+                          ));
                         },
                       ),
                       SizedBox(height: 12.h),
