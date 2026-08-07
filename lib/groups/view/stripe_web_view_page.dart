@@ -8,15 +8,12 @@ class StripeWebViewPage extends StatefulWidget {
   final String checkoutUrl;
 
   const StripeWebViewPage({super.key, required this.checkoutUrl});
-
   @override
   State<StripeWebViewPage> createState() => _StripeWebViewPageState();
 }
-
 class _StripeWebViewPageState extends State<StripeWebViewPage> {
   late final WebViewController _controller;
   bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
@@ -34,12 +31,10 @@ class _StripeWebViewPageState extends State<StripeWebViewPage> {
               _isLoading = false;
             });
 
-            // If success
             if (url.contains("success")) {
               Get.offAll(() => NavbarScreen());
               Utils.successSnackBar("Payment successful");
             } 
-            // If cancel or failure
             else if (url.contains("cancel") || url.contains("failure")) {
               Get.back();
               Utils.errorSnackBar("Payment Status", "Payment was cancelled or failed.");
@@ -52,7 +47,6 @@ class _StripeWebViewPageState extends State<StripeWebViewPage> {
       )
       ..loadRequest(Uri.parse(widget.checkoutUrl));
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
